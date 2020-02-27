@@ -1,0 +1,22 @@
+[
+  {
+    "manufacturer": "Hex",
+    "model": "150w beam",
+    "attributes": [
+      { "name": "pan", "offset": 0, "attribute_type": "position", "range": 540, "default": 127 },
+      { "name": "tilt", "offset": 1, "attribute_type": "position", "range": 250, "default": 127 },
+      { "name": "dimmer", "offset": 6, "attribute_type": "intensity", "multiplier_type": "equal", "multiplier_length": 3 }
+    ]
+  },
+  {
+    "manufacturer": "Robe",
+    "model": "ColorSpot 250AT",
+    "attributes": [
+      { "name": "pan", "offset": 0, "attribute_type": "position", "range": 540, "default": 127 },
+      { "name": "tilt", "offset": 2, "attribute_type": "position", "range": 250, "default": 127 },
+      { "name": "focus", "offset": 15, "attribute_type": "beam", "default": 80, "multiplier_type": "wide" },
+      { "name": "shutter", "offset": 17, "attribute_type": "intensity", "default": 255 },
+      { "name": "dimmer", "offset": 18, "attribute_type": "intensity", "multiplier_type": "wide" }
+    ]
+  }
+]

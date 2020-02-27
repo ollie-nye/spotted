@@ -1,0 +1,19 @@
+[
+  {
+    "url": "rtsp://192.168.0.62/11",
+    "position": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "rotation": {
+      "x": 0.0,
+      "y": 0.0,
+      "z": 0.0
+    },
+    "viewing_angle": {
+      "vertical": 140,
+      "horizontal": 140
+    }
+  }
+]
