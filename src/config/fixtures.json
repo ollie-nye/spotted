@@ -1,13 +1,31 @@
 [
   {
+    "personality": 1,
     "net": 0,
     "subnet": 0,
     "universe": 0,
     "address": 1,
     "position": {
+      "x": 1.35,
+      "y": 2.1,
+      "z": 0.4
+    },
+    "rotation": {
       "x": 0.0,
       "y": 0.0,
       "z": 0.0
+    }
+  },
+  {
+    "personality": 1,
+    "net": 0,
+    "subnet": 0,
+    "universe": 0,
+    "address": 17,
+    "position": {
+      "x": 2.35,
+      "y": 2.1,
+      "z": 0.4
     },
     "rotation": {
       "x": 0.0,

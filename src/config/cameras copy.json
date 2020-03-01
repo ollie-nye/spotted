@@ -19,5 +19,26 @@
       "vertical": 1536,
       "horizontal": 2048
     }
+  },
+  {
+    "url": "rtmp://10.0.0.23/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
+    "position": {
+      "x": 1.8,
+      "y": 2.4,
+      "z": 4.4
+    },
+    "rotation": {
+      "x": 0.0,
+      "y": 90.0,
+      "z": 20.0
+    },
+    "viewing_angle": {
+      "vertical": 58,
+      "horizontal": 80
+    },
+    "resolution": {
+      "vertical": 1536,
+      "horizontal": 2048
+    }
   }
 ]
