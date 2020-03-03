@@ -4,6 +4,7 @@ import math
 from datetime import datetime
 
 from spotted_coordinate import SpottedCoordinate
+from spotted_point_of_interest import SpottedPointOfInterest
 
 def scale(value, old_min, old_max, new_min, new_max):
   old_range = (old_max - old_min)
@@ -25,17 +26,9 @@ class SpottedCamera:
   def __init__(self, json):
     self.url = json['url']
 
-    self.position = {
-      'x': json['position']['x'],
-      'y': json['position']['y'],
-      'z': json['position']['z']
-    }
+    self.position = SpottedCoordinate(json['position']['x'], json['position']['y'], json['position']['z'])
 
-    self.rotation = {
-      'x': json['rotation']['x'],
-      'y': json['rotation']['y'],
-      'z': json['rotation']['z']
-    }
+    self.rotation = SpottedCoordinate(json['rotation']['x'], json['rotation']['y'], json['rotation']['z'])
 
     self.viewing_angle = {
       'vertical': json['viewing_angle']['vertical'],
@@ -47,6 +40,11 @@ class SpottedCamera:
       'horizontal': json['resolution']['horizontal'],
     }
 
+    self.virtual_resolution = {
+      'vertical': 480,
+      'horizontal': 640
+    }
+
     self.capture = cv.VideoCapture(self.url)
 
     self.background_frame_length = 90.0
@@ -55,8 +53,18 @@ class SpottedCamera:
 
     self.points_of_interest = []
 
+    a = math.radians(self.rotation.z)
+    b = math.radians(self.rotation.y)
+    c = math.radians(self.rotation.x)
+
+    self.rotation_matrix = np.array([
+      [math.cos(a) * math.cos(b), (math.cos(a) * math.sin(b) * math.sin(c)) - (math.sin(a) * math.cos(c)), (math.cos(a) * math.sin(b) * math.cos(c)) + (math.sin(a) * math.sin(c))],
+      [math.sin(a) * math.cos(b), (math.sin(a) * math.sin(b) * math.sin(c)) + (math.cos(a) * math.cos(c)), (math.sin(a) * math.sin(b) * math.cos(c)) - (math.cos(a) * math.sin(c))],
+      [-math.sin(b), math.cos(b) * math.sin(c), math.cos(b) * math.cos(c)]
+    ])
+
   def y_offset(self, distance):
-    return math.tan(self.rotation['z']) * distance
+    return math.tan(self.rotation.z) * distance
 
   def update_background(self, new_frame):
     if self.current_background is None:
@@ -75,6 +83,7 @@ class SpottedCamera:
       if frame is not None:
         frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
         frame = calibration.restore(frame)
+        frame = cv.resize(frame, (self.virtual_resolution['horizontal'], self.virtual_resolution['vertical']))
         
         
         # cv.threshold(frame, 120, 255, cv.THRESH_TOZERO, frame)
@@ -103,74 +112,199 @@ class SpottedCamera:
         # self.current_frame = imfill(diff)
 
         # self.current_frame = cv.morphologyEx(diff, cv.MORPH_CLOSE, kernel)
+
+
+
+
+
         frame = cv.morphologyEx(diff, cv.MORPH_OPEN, kernel)
 
         frame = np.array(frame, dtype=np.uint8)
         # print(type(frame))
         contours, hierarchy = cv.findContours(frame, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
-        largest_contour = None
-        largest_area = 0
+        # self.points_of_interest = []
+
+        # largest_contour = None
+        # largest_area = 0
+        # for contour in contours:
+        #   area = cv.contourArea(contour)
+        #   if area > largest_area:
+        #     largest_area = area
+        #     largest_contour = contour
+        
+        # if largest_contour is not None:
+        cv.normalize(frame, frame, 0, 30, cv.NORM_MINMAX)
+
+        updated_pois = []
+
+
         for contour in contours:
           area = cv.contourArea(contour)
-          if area > largest_area:
-            largest_area = area
-            largest_contour = contour
-        
-        if largest_contour is not None:
-          M = cv.moments(largest_contour)
+          if area < 500:
+            continue
+
+          cv.drawContours(frame, [contour], -1, 100, 2)
+          M = cv.moments(contour)
           cX = int(M["m10"] / M["m00"])
           cY = int(M["m01"] / M["m00"])
           # draw the contour and center of the shape on the image
 
-          cv.normalize(frame, frame, 0, 50, cv.NORM_MINMAX)
+          # Calculate distance along origin axis
+          #   horizontal displacement
+          #   vertical displacement
+          # Translate by camera position
+          # Translate by camera rotation matrix
 
-          cv.drawContours(frame, [largest_contour], -1, 150, 2)
-          cv.circle(frame, (cX, cY), 20, 255, -1)
 
-          horiz_midpoint = self.viewing_angle['horizontal'] / 2
-          vert_midpoint = self.viewing_angle['vertical'] / 2
+          # identity position is a fixed 1m distance from the camera
+          # Multiply the difference by actual depth value to get absolute positions
 
-          angle_horizontal = scale(cX, 0, self.resolution['horizontal'], 0, self.viewing_angle['horizontal'])
-          angle_vertical = scale(cY, 0, self.resolution['vertical'], 0, self.viewing_angle['vertical'])
+          # cX = 1024
+          # cY = 768
 
-          horiz_from_camera = (self.rotation['y'] - (self.viewing_angle['horizontal'] / 2) + angle_horizontal) % 360
-          vert_from_camera = (self.rotation['z'] - (self.viewing_angle['vertical'] / 2) + angle_vertical) % 360
+          angular_horiz_midpoint = self.viewing_angle['horizontal'] / 2
+          angular_vert_midpoint = self.viewing_angle['vertical'] / 2
+          horiz_midpoint = self.virtual_resolution['horizontal'] / 2
+          vert_midpoint = self.virtual_resolution['vertical'] / 2
 
-          # print((cX, cY), ' gave absolute angle ', horiz_from_camera, ', ', vert_from_camera)
+          displacement_horizontal = cX - horiz_midpoint
+          displacement_vertical = -(cY - vert_midpoint)
 
-          # tan angle * 2m gives difference in real space from cameras location
+          # print('Displacement distance', displacement_horizontal, displacement_vertical)
 
-          horizontal_direction = 1
-          vertical_direction = 1
+          # angular_displacement_horizontal = math.radians((360 - scale(displacement_horizontal, 0, horiz_midpoint, 0, angular_horiz_midpoint)) % 360)
+          # angular_displacement_vertical = math.radians((360 - scale(displacement_vertical, 0, vert_midpoint, 0, angular_vert_midpoint)) % 360)
 
-          absolute_horiz = angle_horizontal
-          if absolute_horiz > horiz_midpoint:
-            absolute_horiz -= horiz_midpoint
+          angular_displacement_horizontal = math.radians(scale(displacement_horizontal, 0, horiz_midpoint, 0, angular_horiz_midpoint))
+          angular_displacement_vertical = math.radians(scale(displacement_vertical, 0, vert_midpoint, 0, angular_vert_midpoint))
+
+          # print('Displacement angle', angular_displacement_horizontal, angular_displacement_vertical)
+
+          identity_x = 1.0
+          identity_y = identity_x * math.tan(angular_displacement_vertical)
+          identity_z = identity_x * math.tan(angular_displacement_horizontal)
+
+          identity_position = [identity_x, identity_y, identity_z]
+
+          # print('Identity', identity_position[0], identity_position[1], identity_position[2])
+
+          # rotated_position = identity_position.dot(self.rotation_matrix)
+          rotated_position = self.rotation_matrix.dot(identity_position)
+
+          # print('Rotated', rotated_position[0], rotated_position[1], rotated_position[2])
+
+          rotated_position = SpottedCoordinate(rotated_position[0], rotated_position[1], rotated_position[2])
+
+          displaced_position = rotated_position.displace_by(self.position)
+
+          # print('Displaced', displaced_position.x, displaced_position.y, displaced_position.z)
+
+
+
+
+          point_of_interest = None
+          made_update = False
+          for poi in self.points_of_interest:
+            diff_from_pos = poi.diff_from_position(displaced_position)
+            # print('Diff is ', diff_from_pos)
+            if diff_from_pos < 0.05:
+              poi.update_position(displaced_position, (cX, cY))
+              poi.increment_count()
+              point_of_interest = poi
+              updated_pois.append(poi)
+              made_update = True
+              break
+          
+          if not made_update:
+            poi = SpottedPointOfInterest(self.position, displaced_position, (cX, cY))
+            point_of_interest = poi
+            updated_pois.append(poi)
+            self.points_of_interest.append(poi)
+
+          # weight = point_of_interest.weight * 30
+          # if weight > 255:
+          #   weight = 255
+
+          # print('Display weight is', weight)
+          
+          # cv.circle(frame, (cX, cY), 15, weight, -1)
+
+        missing_pois = set(self.points_of_interest) - set(updated_pois)
+        for missing_poi in missing_pois:
+          missing_poi.decrement_count()
+
+        self.points_of_interest = [x for x in self.points_of_interest if x.count != 1]
+
+        highest_weight = 0
+        significant_poi = None
+        for poi in self.points_of_interest:
+          if poi.weight > highest_weight:
+            highest_weight = poi.weight
+            significant_poi = poi
+
+        for poi in self.points_of_interest:
+          # print('Position', poi.position.as_vector(), 'and direction vector', poi.direction_vector)
+          if poi is significant_poi:
+            cv.circle(frame, poi.location, 15, 255, -1)
           else:
-            absolute_horiz = horiz_midpoint - absolute_horiz
-            horizontal_direction = -1
+            cv.circle(frame, poi.location, 15, 150, -1)
 
-          absolute_vert = angle_vertical
-          if absolute_vert > vert_midpoint:
-            absolute_vert -= vert_midpoint
-          else:
-            absolute_vert = vert_midpoint - absolute_vert
-            vertical_direction = -1
 
-          horiz_distance = math.tan(math.radians(absolute_horiz)) * 2
-          vert_distance = math.tan(math.radians(absolute_vert)) * 2
 
-          point = SpottedCoordinate(
-            #TODO: Fix these static values
-            4 - (self.position['x'] + (horiz_distance * horizontal_direction)),
-            self.position['y'] + self.y_offset(2) + (vert_distance * vertical_direction),
-            2
-          )
 
-          self.points_of_interest = [point]
-        else:
-          self.points_of_interest = []
+
+
+
+
+
+
+
+
+
+          # horiz_midpoint = self.viewing_angle['horizontal'] / 2
+          # vert_midpoint = self.viewing_angle['vertical'] / 2
+
+          # angle_horizontal = scale(cX, 0, self.resolution['horizontal'], 0, self.viewing_angle['horizontal'])
+          # angle_vertical = scale(cY, 0, self.resolution['vertical'], 0, self.viewing_angle['vertical'])
+
+          # horiz_from_camera = (self.rotation['y'] - (self.viewing_angle['horizontal'] / 2) + angle_horizontal) % 360
+          # vert_from_camera = (self.rotation['z'] - (self.viewing_angle['vertical'] / 2) + angle_vertical) % 360
+
+          # # print((cX, cY), ' gave absolute angle ', horiz_from_camera, ', ', vert_from_camera)
+
+          # # tan angle * 2m gives difference in real space from cameras location
+
+          # horizontal_direction = 1
+          # vertical_direction = 1
+
+          # absolute_horiz = angle_horizontal
+          # if absolute_horiz > horiz_midpoint:
+          #   absolute_horiz -= horiz_midpoint
+          # else:
+          #   absolute_horiz = horiz_midpoint - absolute_horiz
+          #   horizontal_direction = -1
+
+          # absolute_vert = angle_vertical
+          # if absolute_vert > vert_midpoint:
+          #   absolute_vert -= vert_midpoint
+          # else:
+          #   absolute_vert = vert_midpoint - absolute_vert
+          #   vertical_direction = -1
+
+          # horiz_distance = math.tan(math.radians(absolute_horiz)) * 2
+          # vert_distance = math.tan(math.radians(absolute_vert)) * 2
+
+          # point = SpottedCoordinate(
+          #   #TODO: Fix these static values
+          #   4 - (self.position['x'] + (horiz_distance * horizontal_direction)),
+          #   self.position['y'] + self.y_offset(2) + (vert_distance * vertical_direction),
+          #   2
+          # )
+
+          # self.points_of_interest = [point]
+        # else:
+        #   self.points_of_interest = []
           # print(self.points_of_interest)
           
           # x_position = math.tan(math.radians(vert_from_camera)) * self.position['y']
