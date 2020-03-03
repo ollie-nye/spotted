@@ -3,16 +3,37 @@
     "url": "rtmp://10.0.0.22/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
     "position": {
       "x": 1.8,
-      "y": 2.4,
-      "z": 0.35
+      "y": 2.25,
+      "z": 0.5
     },
     "rotation": {
-      "x": 0.0,
+      "x": 25.0,
       "y": 270.0,
-      "z": 40.0
+      "z": 0.0
     },
     "viewing_angle": {
-      "vertical": 58,
+      "vertical": 42,
+      "horizontal": 80
+    },
+    "resolution": {
+      "vertical": 1536,
+      "horizontal": 2048
+    }
+  },
+  {
+    "url": "rtmp://10.0.0.23/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
+    "position": {
+      "x": 1.4,
+      "y": 2.25,
+      "z": 4.0
+    },
+    "rotation": {
+      "x": 25.0,
+      "y": 90.0,
+      "z": 0.0
+    },
+    "viewing_angle": {
+      "vertical": 42,
       "horizontal": 80
     },
     "resolution": {
