@@ -1,0 +1,92 @@
+{
+  "calibration": {
+    "dimension": [2048, 1536],
+    "camera": [[1739.0072076512008, 0.0, 1094.1547861092195], [0.0, 1715.3793484933933, 714.8431601041761], [0.0, 0.0, 1.0]],
+    "distortion": [[0.10101718971446061], [-1.1768049120332442], [2.3397431068756416], [-1.877526489124148]]
+  },
+  "room": {
+    "x": 4,
+    "y": 2.5,
+    "z": 4.2
+  },
+  "cameras": [
+    {
+      "url": "rtmp://10.0.0.22/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
+      "position": {
+        "x": 1.8,
+        "y": 2.25,
+        "z": 0.5
+      },
+      "rotation": {
+        "x": 25.0,
+        "y": 270.0,
+        "z": 0.0
+      },
+      "viewing_angle": {
+        "vertical": 42,
+        "horizontal": 80
+      },
+      "resolution": {
+        "vertical": 1536,
+        "horizontal": 2048
+      }
+    },
+    {
+      "url": "rtmp://10.0.0.23/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
+      "position": {
+        "x": 1.8,
+        "y": 2.25,
+        "z": 4.0
+      },
+      "rotation": {
+        "x": 25.0,
+        "y": 90.0,
+        "z": 0.0
+      },
+      "viewing_angle": {
+        "vertical": 42,
+        "horizontal": 80
+      },
+      "resolution": {
+        "vertical": 1536,
+        "horizontal": 2048
+      }
+    }
+  ],
+  "fixtures": [
+    {
+      "personality": 1,
+      "net": 0,
+      "subnet": 0,
+      "universe": 0,
+      "address": 1,
+      "position": {
+        "x": 1.35,
+        "y": 2.1,
+        "z": 0.4
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    },
+    {
+      "personality": 1,
+      "net": 0,
+      "subnet": 0,
+      "universe": 0,
+      "address": 17,
+      "position": {
+        "x": 2.35,
+        "y": 2.1,
+        "z": 0.4
+      },
+      "rotation": {
+        "x": 0.0,
+        "y": 0.0,
+        "z": 0.0
+      }
+    }
+  ]
+}

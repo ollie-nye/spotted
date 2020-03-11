@@ -4,7 +4,7 @@ import numpy as np
 def pythagoras(ax, ay, az, bx, by, bz):
   return math.sqrt(math.pow((ax - bx), 2) + math.pow((ay - by), 2) + math.pow((az - bz), 2))
 
-class SpottedPointOfInterest:
+class PointOfInterest:
   def __init__(self, camera_position, position, location):
     self.camera_position = camera_position
     self.update_position(position, location)

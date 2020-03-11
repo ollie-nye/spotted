@@ -3,32 +3,21 @@ import numpy as np
 import math
 from datetime import datetime
 
-from spotted_coordinate import SpottedCoordinate
-from spotted_point_of_interest import SpottedPointOfInterest
+from spotted.coordinate import Coordinate
+from spotted.point_of_interest import PointOfInterest
 
 def scale(value, old_min, old_max, new_min, new_max):
   old_range = (old_max - old_min)
   new_range = (new_max - new_min)
   return (((value - old_min) * new_range) / old_range) + new_min
 
-def imfill(frame):
-  im_flood_fill = frame.copy()
-  h, w = frame.shape[:2]
-  mask = np.zeros((h + 2, w + 2), np.uint8)
-  im_flood_fill = im_flood_fill.astype('uint8')
-  cv.floodFill(im_flood_fill, mask, (0, 0), 255)
-  im_flood_fill_inv = cv.bitwise_not(im_flood_fill)
-  # im_flood_fill_inv = im_flood_fill_inv.astype('float')
-  frame = frame.astype('uint8')
-  return frame | im_flood_fill_inv
-
-class SpottedCamera:
+class Camera:
   def __init__(self, json):
     self.url = json['url']
 
-    self.position = SpottedCoordinate(json['position']['x'], json['position']['y'], json['position']['z'])
+    self.position = Coordinate(json['position']['x'], json['position']['y'], json['position']['z'])
 
-    self.rotation = SpottedCoordinate(json['rotation']['x'], json['rotation']['y'], json['rotation']['z'])
+    self.rotation = Coordinate(json['rotation']['x'], json['rotation']['y'], json['rotation']['z'])
 
     self.viewing_angle = {
       'vertical': json['viewing_angle']['vertical'],
@@ -58,10 +47,33 @@ class SpottedCamera:
     c = math.radians(self.rotation.x)
 
     self.rotation_matrix = np.array([
-      [math.cos(a) * math.cos(b), (math.cos(a) * math.sin(b) * math.sin(c)) - (math.sin(a) * math.cos(c)), (math.cos(a) * math.sin(b) * math.cos(c)) + (math.sin(a) * math.sin(c))],
-      [math.sin(a) * math.cos(b), (math.sin(a) * math.sin(b) * math.sin(c)) + (math.cos(a) * math.cos(c)), (math.sin(a) * math.sin(b) * math.cos(c)) - (math.cos(a) * math.sin(c))],
-      [-math.sin(b), math.cos(b) * math.sin(c), math.cos(b) * math.cos(c)]
+      [
+        math.cos(a) * math.cos(b),
+        (math.cos(a) * math.sin(b) * math.sin(c)) - (math.sin(a) * math.cos(c)),
+        (math.cos(a) * math.sin(b) * math.cos(c)) + (math.sin(a) * math.sin(c))
+      ],
+      [
+        math.sin(a) * math.cos(b),
+        (math.sin(a) * math.sin(b) * math.sin(c)) + (math.cos(a) * math.cos(c)),
+        (math.sin(a) * math.sin(b) * math.cos(c)) - (math.cos(a) * math.sin(c))
+      ],
+      [
+        -math.sin(b),
+        math.cos(b) * math.sin(c),
+        math.cos(b) * math.cos(c)
+      ]
     ])
+
+  @staticmethod
+  def imfill(frame):
+    im_flood_fill = frame.copy()
+    height, width = frame.shape[:2]
+    mask = np.zeros((height + 2, width + 2), np.uint8)
+    im_flood_fill = im_flood_fill.astype('uint8')
+    cv.floodFill(im_flood_fill, mask, (0, 0), 255)
+    im_flood_fill_inv = cv.bitwise_not(im_flood_fill)
+    frame = frame.astype('uint8')
+    return frame | im_flood_fill_inv
 
   def y_offset(self, distance):
     return math.tan(self.rotation.z) * distance
@@ -84,8 +96,8 @@ class SpottedCamera:
         frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
         frame = calibration.restore(frame)
         frame = cv.resize(frame, (self.virtual_resolution['horizontal'], self.virtual_resolution['vertical']))
-        
-        
+
+
         # cv.threshold(frame, 120, 255, cv.THRESH_TOZERO, frame)
         self.update_background(frame)
 
@@ -93,13 +105,13 @@ class SpottedCamera:
 
         # cv.imshow('VIDEO', frame)
 
-        diff = np.subtract(frame, self.current_background)
+        frame = np.subtract(frame, self.current_background)
 
         # print(diff[0,0])
 
         # ret, diff = cv.threshold(diff, 80, 255, cv.THRESH_TOZERO)
         # ret, diff = cv.threshold(diff, 180, 255, cv.THRESH_TOZERO_INV)
-        ret, diff = cv.threshold(diff, 30, 255, cv.THRESH_BINARY)
+        ret, frame = cv.threshold(frame, 30, 255, cv.THRESH_BINARY)
         # cv.normalize(diff, diff, 0, 255, cv.NORM_MINMAX)
 
 
@@ -116,8 +128,8 @@ class SpottedCamera:
 
 
 
-
-        frame = cv.morphologyEx(diff, cv.MORPH_OPEN, kernel)
+        frame = self.imfill(frame)
+        frame = cv.morphologyEx(frame, cv.MORPH_OPEN, kernel)
 
         frame = np.array(frame, dtype=np.uint8)
         # print(type(frame))
@@ -132,7 +144,7 @@ class SpottedCamera:
         #   if area > largest_area:
         #     largest_area = area
         #     largest_contour = contour
-        
+
         # if largest_contour is not None:
         cv.normalize(frame, frame, 0, 30, cv.NORM_MINMAX)
 
@@ -194,7 +206,7 @@ class SpottedCamera:
 
           # print('Rotated', rotated_position[0], rotated_position[1], rotated_position[2])
 
-          rotated_position = SpottedCoordinate(rotated_position[0], rotated_position[1], rotated_position[2])
+          rotated_position = Coordinate(rotated_position[0], rotated_position[1], rotated_position[2])
 
           displaced_position = rotated_position.displace_by(self.position)
 
@@ -215,9 +227,9 @@ class SpottedCamera:
               updated_pois.append(poi)
               made_update = True
               break
-          
+
           if not made_update:
-            poi = SpottedPointOfInterest(self.position, displaced_position, (cX, cY))
+            poi = PointOfInterest(self.position, displaced_position, (cX, cY))
             point_of_interest = poi
             updated_pois.append(poi)
             self.points_of_interest.append(poi)
@@ -227,7 +239,7 @@ class SpottedCamera:
           #   weight = 255
 
           # print('Display weight is', weight)
-          
+
           # cv.circle(frame, (cX, cY), 15, weight, -1)
 
         missing_pois = set(self.points_of_interest) - set(updated_pois)
@@ -306,7 +318,7 @@ class SpottedCamera:
         # else:
         #   self.points_of_interest = []
           # print(self.points_of_interest)
-          
+
           # x_position = math.tan(math.radians(vert_from_camera)) * self.position['y']
           # print(x_position)
 
@@ -358,7 +370,7 @@ class SpottedCamera:
       vert_from_camera = (self.rotation['z'] - (self.viewing_angle['vertical'] / 2) + angle_vertical) % 360
 
       print(poi, ' gave absolute angle ', horiz_from_camera, ', ', vert_from_camera)
-      
+
       x_position = math.tan(math.radians(vert_from_camera)) * self.position['y']
       print(x_position)
 

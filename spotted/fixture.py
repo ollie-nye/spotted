@@ -1,7 +1,7 @@
 import numpy as np
 
-from spotted_personality import personalities
-from spotted_coordinate import SpottedCoordinate
+from spotted.personality import personalities
+from spotted.coordinate import Coordinate
 
 def find_personality_by_id(id):
   for personality in personalities:
@@ -15,9 +15,12 @@ def pan_angle_to_dmx(angle):
 def tilt_angle_to_dmx(range, angle):
   return (((angle + ((range - 180.0) / 2.0)) * 255.0) / range)
 
-class SpottedFixture:
+class Fixture:
   def __init__(self, json):
     self.personality = find_personality_by_id(json['personality'])
+    self.net = json['net']
+    self.subnet = json['subnet']
+    self.universe = json['universe']
     self.address = json['address']
     self.levels = np.zeros(self.personality.channels)
 
@@ -26,8 +29,8 @@ class SpottedFixture:
       self.levels[channel] = attribute.default
 
     pos = json['position']
-    self.location = SpottedCoordinate(pos['x'], pos['y'], pos['z'])
-    self.position = SpottedCoordinate(0, 0, 0)
+    self.location = Coordinate(pos['x'], pos['y'], pos['z'])
+    self.position = Coordinate(0, 0, 0)
 
     self.pan_offset = 0
     self.tilt_invert = False
@@ -45,7 +48,7 @@ class SpottedFixture:
       channel_value = 255 - channel_value
 
     self.levels[channel] = channel_value
-    
+
   def tilt(self, value):
     tilt_attribute = self.personality.get_attribute('tilt')
     channel = tilt_attribute.offset
@@ -61,7 +64,7 @@ class SpottedFixture:
   def open(self):
     dimmer = self.personality.get_attribute('dimmer')
     self.levels[dimmer.offset] = dimmer.default
-    
+
   def close(self):
     dimmer = self.personality.get_attribute('dimmer')
     self.levels[dimmer.offset] = 0
