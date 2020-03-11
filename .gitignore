@@ -1,2 +1,3 @@
 calibrate_images/*
 */__pycache__/*
+*.pyc
