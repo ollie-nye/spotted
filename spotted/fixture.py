@@ -17,6 +17,7 @@ def tilt_angle_to_dmx(range, angle):
 
 class Fixture:
   def __init__(self, json):
+    self.fixture_id = json['id']
     self.personality = find_personality_by_id(json['personality'])
     self.net = json['net']
     self.subnet = json['subnet']
@@ -71,7 +72,7 @@ class Fixture:
 
   def point_at(self, position):
     # TODO: Why 180?
-    print('Pointing at', position.x, position.y, position.z)
+    # print('Pointing at', position.x, position.y, position.z)
     pan_angle = self.location.pan_angle(position) + 180
     tilt_angle = self.location.tilt_angle(position)
 

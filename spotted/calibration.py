@@ -22,7 +22,7 @@ class Calibration:
       Calibration -- The populated calibration instance
     """
     dimension = (json['dimension'][0], json['dimension'][1])
-    distortion = np.array(json['distorition'])
+    distortion = np.array(json['distortion'])
     camera = np.array(json['camera'])
 
     self.map1, self.map2 = cv.fisheye.initUndistortRectifyMap(

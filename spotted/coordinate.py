@@ -28,3 +28,6 @@ class Coordinate:
 
   def as_vector(self):
     return np.array([self.x, self.y, self.z])
+
+  def as_dict(self):
+    return { 'x': self.x, 'y': self.y, 'z': self.z }

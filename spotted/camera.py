@@ -6,10 +6,7 @@ from datetime import datetime
 from spotted.coordinate import Coordinate
 from spotted.point_of_interest import PointOfInterest
 
-def scale(value, old_min, old_max, new_min, new_max):
-  old_range = (old_max - old_min)
-  new_range = (new_max - new_min)
-  return (((value - old_min) * new_range) / old_range) + new_min
+
 
 class Camera:
   def __init__(self, json):
@@ -75,6 +72,12 @@ class Camera:
     frame = frame.astype('uint8')
     return frame | im_flood_fill_inv
 
+  @staticmethod
+  def scale(value, old_min, old_max, new_min, new_max):
+    old_range = (old_max - old_min)
+    new_range = (new_max - new_min)
+    return (((value - old_min) * new_range) / old_range) + new_min
+
   def y_offset(self, distance):
     return math.tan(self.rotation.z) * distance
 
@@ -87,7 +90,7 @@ class Camera:
   def begin_capture(self, calibration):
     count = 0
     start = datetime.now()
-    kernel = np.ones((8, 8),np.uint8)
+    kernel = np.ones((8, 8), np.uint8)
     while(1):
       # print('Processing frame', count, ' with framerate', (count / (datetime.now() - start).total_seconds()))
       count += 1

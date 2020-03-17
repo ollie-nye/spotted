@@ -45,7 +45,7 @@ class Universe:
     """
 
     if not isinstance(fixture, Fixture):
-      return 'Supplied fixture is not an instance of Fixture'
+      return False, 'Supplied fixture is not an instance of Fixture'
 
     overlap = False
     for channel in range(fixture.address, fixture.personality.channels):
@@ -53,13 +53,13 @@ class Universe:
         overlap = True
 
     if overlap:
-      return 'Supplied fixture clashes with an existing fixture'
+      return False, 'Supplied fixture clashes with an existing fixture'
 
     self.fixtures.append(fixture)
     for channel in range(fixture.address, fixture.personality.channels):
       self.occupied_channels[channel - 1] = True
 
-    return True
+    return True, ''
 
   def get_levels(self):
     for fixture in self.fixtures:

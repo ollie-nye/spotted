@@ -22,20 +22,28 @@ import time
 import threading
 import sys, socket
 
-cameras_json = json.load(open('config/cameras.json'))
+from http.server import HTTPServer
+from spotted.static_server import StaticServer
+from spotted.websocket import Websocket
+# from spotted.websocket_server import Websocket
+import asyncio
+import websockets
+import os
+
 config_json = json.load(open('config/config.json'))
-fixtures_json = json.load(open('config/fixtures.json'))
 load_personalities('config/personalities.json')
 
-cameras = []
-for camera in cameras_json:
-  cameras.append(Camera(camera))
+current_state = dict()
+
+# cameras = []
+# for camera in config_json['cameras']:
+#   cameras.append(Camera(camera))
 
 calibration = Calibration(config_json['calibration'])
 
 universes = Universes()
 # universe = Universe(0, 0, 0)
-for fixture in fixtures_json:
+for fixture in config_json['fixtures']:
   fxt = Fixture(fixture)
   universe = universes.get_universe(fxt.net, fxt.subnet, fxt.universe)
   if universe is None:
@@ -58,54 +66,29 @@ def normalize(frame):
   cv.normalize(frame, frame, 255, 0)
   return frame
 
-# while(count < 1200):
-#   for index, camera in enumerate(cameras):
-#     print('Capturing from camera ', index)
-
-
-#     else:
-#       print('Skipped a frame')
-
-#   count += 1
-#   print('Count ', count)
-
-# finish = datetime.now()
-
-# print(count, 'cycles took', (finish - start).total_seconds(), 'for a frame rate of', count / (finish - start).total_seconds())
-
-# cv.imshow('VIDEO', cameras[0].current_background)
-# cv.waitKey(10000)
-
-# cv.imwrite('output.png', cameras[0].current_background)
-
-
-
-
-
 def start_artnet():
   print('Starting artnet')
   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
   while(1):
     for universe in universes.universes:
-      output = universe.get_levels()
-      packet = ArtnetDmx(output)
+      packet = Dmx(0, universe)
       sock.sendto(packet.serialize(), ('10.0.0.50', 6454))
       time.sleep(1/30)
 
 
-
-room = Room(4, 2.4, 4.2)
+room_json = config_json['room']
+room = Room(room_json['x'], room_json['y'], room_json['z'])
 
 for fixture in universes.universes[0].fixtures:
   fixture.calibrate(room)
 
-artnet = threading.Thread(target=start_artnet, daemon=True)
-artnet.start()
+# artnet = threading.Thread(target=start_artnet, daemon=True)
+# artnet.start()
 
-for camera in cameras:
-  thrd = threading.Thread(target=camera.begin_capture, daemon=True, args=[calibration])
-  thrd.start()
+# for camera in cameras:
+#   thrd = threading.Thread(target=camera.begin_capture, daemon=True, args=[calibration])
+#   thrd.start()
 
 def combine_points():
   pois1 = cameras[0].points_of_interest
@@ -252,14 +235,14 @@ fixture = universes.universes[0].fixtures[0]
 
 
 
-fixture.point_at(Coordinate(1, 0, 0))
-fixture.point_at(Coordinate(0, 1, 0))
-fixture.point_at(Coordinate(0, 0, 1))
-fixture.point_at(Coordinate(1, 1, 1))
-fixture.point_at(Coordinate(-1, 0, 0))
-fixture.point_at(Coordinate(0, -1, 0))
-fixture.point_at(Coordinate(0, 0, -1))
-fixture.point_at(Coordinate(-1, -1, -1))
+# fixture.point_at(Coordinate(1, 0, 0))
+# fixture.point_at(Coordinate(0, 1, 0))
+# fixture.point_at(Coordinate(0, 0, 1))
+# fixture.point_at(Coordinate(1, 1, 1))
+# fixture.point_at(Coordinate(-1, 0, 0))
+# fixture.point_at(Coordinate(0, -1, 0))
+# fixture.point_at(Coordinate(0, 0, -1))
+# fixture.point_at(Coordinate(-1, -1, -1))
 
 
 
@@ -267,14 +250,57 @@ fixture.point_at(Coordinate(-1, -1, -1))
 
 
 
-# while(1):
-#   for x in range(4):
-#     # for y in range(1):
-#     for z in range(4):
-#       for fixture in universes.universes[0].fixtures:
-#         fixture.point_at(Coordinate(x, 0, z))
-#       print('Pointing at', x, 0, z)
-#       time.sleep(2)
+
+
+def start_ui(server_class=HTTPServer, handler_class=StaticServer, port=8080):
+  server_address = ('', port)
+  httpd = server_class(server_address, handler_class)
+  print('Starting httpd on port', port)
+  httpd.serve_forever()
+
+def start_websocket(port=8081):
+  loop = asyncio.new_event_loop()
+  asyncio.set_event_loop(loop)
+  ws = Websocket(config_json, current_state)
+  start_server = websockets.serve(ws.push_state, '0.0.0.0', port)
+  print('Created websocket server')
+  loop.create_task(ws.broadcast_state(1/30))
+  loop.run_until_complete(start_server)
+  loop.run_forever()
+
+ui = threading.Thread(target=start_ui, daemon=True)
+ui.start()
+
+websocket = threading.Thread(target=start_websocket, daemon=True)
+websocket.start()
+# start_websocket()
+
+
+
+
+
+
+
+incoming_frame = cv.cvtColor(cv.imread('ui/favicon.png'), cv.COLOR_BGR2GRAY).tolist()
+
+
+
+while(1):
+  for x in range(360):
+    # for y in range(1):
+    # for z in range(360):
+    current_state.clear()
+    point = Coordinate(2 + (2 * math.sin(math.radians(x))), 1, 2 + (2 *math.cos(math.radians(x))))
+    current_state['subjects'] = []
+    current_state['subjects'].append(point.as_dict())
+    current_state['maps'] = dict()
+    current_state['frames'] = []
+    current_state['frames'].append(incoming_frame)
+    for fixture in universes.universes[0].fixtures:
+      fixture.point_at(point)
+      current_state['maps'][fixture.fixture_id] = 0
+    print('Pointing at', x, 0, x)
+    time.sleep(0.01)
 
 #   for fixture in universes.universes[0].fixtures:
 #     fixture.point_at(Coordinate(3.3, 2.0, 4.0))

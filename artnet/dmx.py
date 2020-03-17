@@ -9,7 +9,7 @@ class Dmx:
   ArtNet DMX packet
   """
 
-  def __init__(self, sequence, universe, data):
+  def __init__(self, sequence, universe):
     """
     Creates a packet
 
@@ -28,7 +28,7 @@ class Dmx:
     self.sub_universe = universe.sub_universe
     self.net = universe.net
     self.length = 0x0200
-    self.data = data
+    self.data = universe.get_levels()
 
   def serialize(self):
     """
