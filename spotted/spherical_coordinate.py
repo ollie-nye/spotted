@@ -6,9 +6,10 @@ def pythagoras(ax, ay, bx, by):
 
 class SphericalCoordinate:
   def __init__(self, r, a, i):
-    self.r = r
-    self.a = a
-    self.i = i
+    self.radius = r
+    self.azimuth = a
+    self.inclination = i
+    self.elevation = (math.pi / 2) - i
 
   @staticmethod
   def from_cartesian(coordinate):
