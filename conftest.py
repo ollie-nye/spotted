@@ -45,3 +45,14 @@ def fixture():
   pers = create_personality()
   personalities.append(pers)
   return Fixture(CONFIG['fixtures'][0])
+
+@pytest.fixture
+def spherical_coordinate():
+  return SphericalCoordinate(0.1, 0.2, 0.3)
+
+@pytest.fixture
+def point_of_interest():
+  camera_position = Coordinate(1, 2, 3)
+  position = Coordinate(2, 4, 6)
+  location = (200, 100)
+  return PointOfInterest(camera_position, position, location)
