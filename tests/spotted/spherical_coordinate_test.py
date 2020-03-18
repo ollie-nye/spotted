@@ -1,20 +1,15 @@
-# import math
-# import numpy as np
-
-# def pythagoras(ax, ay, bx, by):
-#   return math.sqrt(math.pow((ax - bx), 2) + math.pow((ay - by), 2))
-
-# class SphericalCoordinate:
-#   def __init__(self, r, a, i):
-#     self.r = r
-#     self.a = a
-#     self.i = i
-
-#   @staticmethod
-#   def from_cartesian(coordinate):
-#     r = math.sqrt(coordinate.x**2 + coordinate.y**2 + coordinate.z**2)
-#     a = math.atan2(coordinate.y, coordinate.x)
-#     i = math.atan2(math.sqrt(coordinate.x**2 + coordinate.y**2), coordinate.z)
-#     return SphericalCoordinate(r, a, i)
-
 from spotted.spherical_coordinate import SphericalCoordinate
+from spotted.coordinate import Coordinate
+
+def test_init_r(spherical_coordinate):
+  assert spherical_coordinate.r == 0.1
+  assert spherical_coordinate.a == 0.2
+  assert spherical_coordinate.i == 0.3
+
+def test_from_cartesian():
+  coord = Coordinate(1, 1, 1)
+  spherical = SphericalCoordinate.from_cartesian(coord)
+
+  assert spherical.r == 1.7320508075688772
+  assert spherical.a == 0.7853981633974483
+  assert spherical.i == 0.9553166181245093

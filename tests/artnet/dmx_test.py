@@ -1,12 +1,11 @@
 from artnet.dmx import Dmx
 from spotted.universe import Universe
+import numpy as np
 
 universe = Universe(0x12, 0x3, 0x4)
 
-data = []
-for i in range(512):
-  data.append(i % 255)
-init_packet = Dmx(0x00, universe, data)
+data = np.zeros(512)
+init_packet = Dmx(0x00, universe)
 
 def test_correct_header():
   assert init_packet.header.opcode == 0x5000
@@ -27,4 +26,4 @@ def test_correct_length():
   assert init_packet.length == 0x0200
 
 def test_correct_payload():
-  assert init_packet.data == data
+  assert all([a == b for a, b in zip(init_packet.data, data)])

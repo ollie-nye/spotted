@@ -55,6 +55,7 @@
   ],
   "fixtures": [
     {
+      "id": 1,
       "personality": 1,
       "net": 0,
       "subnet": 0,
@@ -72,6 +73,7 @@
       }
     },
     {
+      "id": 2,
       "personality": 1,
       "net": 0,
       "subnet": 0,

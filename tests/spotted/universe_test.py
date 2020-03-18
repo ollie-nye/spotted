@@ -31,12 +31,14 @@ def test_add_fixture(universe, fixture):
   assert res
 
 def test_add_fixture_incorrect_type(universe):
-  res = universe.add_fixture('frog')
-  assert 'not an instance of Fixture' in res
+  res, msg = universe.add_fixture('frog')
+  assert not res
+  assert 'not an instance of Fixture' in msg
 
 def test_add_fixture_twice(universe, fixture):
-  res = universe.add_fixture(fixture)
+  res, msg = universe.add_fixture(fixture)
   assert res
 
-  res = universe.add_fixture(fixture)
-  assert 'existing fixture' in res
+  res, msg = universe.add_fixture(fixture)
+  assert not res
+  assert 'existing fixture' in msg
