@@ -20,7 +20,9 @@ import math
 from artnet.dmx import Dmx
 import time
 import threading
-import sys, socket
+import socket
+
+import itertools
 
 from http.server import HTTPServer
 from spotted.static_server import StaticServer
@@ -91,93 +93,145 @@ for fixture in universes.universes[0].fixtures:
 #   thrd.start()
 
 def combine_points():
-  pois1 = cameras[0].points_of_interest
-  pois2 = cameras[1].points_of_interest
+  pois = []
+  for camera in cameras:
+    pois.append(camera.points_of_interest)
 
-  if len(pois1) > 0:
-    if len(pois2) > 0:
-      # for poi in pois2:
-      #   print('Camera 1 can see', poi.position.as_vector())
-      highest_weight_1 = 0
-      poi1 = None
-      highest_weight_2 = 0
-      poi2 = None
-      for poi in pois1:
-        if poi.weight >= highest_weight_1:
-          highest_weight_1 = poi.weight
-          poi1 = poi
+  pois = itertools.product(*pois)
 
-      for poi in pois2:
-        if poi.weight >= highest_weight_2:
-          highest_weight_2 = poi.weight
-          poi2 = poi
+  points_of_interest = []
 
+  for poi in pois:
+    close_enough = True
+
+    points = []
+
+    for poi1, poi2 in itertools.combinations(poi):
       u = poi1.direction_vector
       v = poi2.direction_vector
-
-      # print('u:', u, 'v:', v)
 
       a = np.dot(u, u)
       b = np.dot(u, v)
       c = np.dot(v, v)
+
       w = np.subtract(poi1.position.as_vector(), poi2.position.as_vector())
       d = np.dot(u, w)
       e = np.dot(v, w)
 
-      # print('a:', a, 'b:', b, 'c:', c, 'd:', d, 'e:', e, 'w:', w)
-
       acb = (a * c) - (b * b)
 
-      # print('acb:', acb)
-
-      s = ((b * e) - (c * d)) / acb
-      t = ((a * e) - (b * d)) / acb
-
-      # print('s:', s, 't:', t)
-
-      s = np.dot(s, u)
-      t = np.dot(t, v)
-
-      # print('s:', s, 't:', t)
-
-      ps = np.add(poi1.position.as_vector(), s)
-      qt = np.add(poi2.position.as_vector(), t)
-
-      # print('ps:', ps, 'qt:', qt)
-
-      # distance = abs(w + ((((b * e) - (c * d) * u) - ((a * e) - (b * d) * v)) / acb))
-
-      # print('Shortest distance between', poi1.direction_vector, poi2.direction_vector)
-
-      # z = [
-      #   abs(s[0] - t[0]),
-      #   abs(s[1] - t[1]),
-      #   abs(s[2] - t[2]),
-      # ]
+      s = np.dot(((b * e) - (c * d)) / acb, u)
+      t = np.dot(((a * e) - (b * d)) / acb, v)
 
       z = abs(np.subtract(t, s))
 
-      # print('z:', z)
       distance = np.add(w, z)
-
-      # print(distance)
 
       euclid_distance = math.sqrt(distance[0]**2 + distance[1]**2 + distance[2]**2)
 
-      print(euclid_distance)
+      if euclid_distance > 0.2:
+        close_enough = False
+      else:
+        ps = np.add(poi1.position.as_vector(), s)
+        qt = np.add(poi2.position.as_vector(), t)
+        abs_point = np.add(qt, ps) / 2
+        points.append(abs_point)
 
-      # euclid_distance = math.sqrt(math.pow((ps[0] - qt[0]), 2) + math.pow((ps[1] - qt[1]), 2) + math.pow((ps[2] - qt[2]), 2))
+    if close_enough:
+      points_of_interest.append(Coordinate(*np.mean(list(zip(*points)), axis=1)))
 
-      # print('Shortest distance between', poi1.direction_vector, poi2.direction_vector, 'is', euclid_distance)
-      # print('Shortest distance is', distance)
 
-      abs_point = np.add(qt, ps) / 2
-      world_point = Coordinate(abs_point[0], abs_point[1], abs_point[2])
-      print('Real world point is', abs_point)
+  return points_of_interest
 
-      for universe in universes.universes:
-        for fixture in universe.fixtures:
-          fixture.point_at(world_point)
+
+
+  # pois1 = cameras[0].points_of_interest
+  # pois2 = cameras[1].points_of_interest
+
+  # if len(pois1) > 0:
+  #   if len(pois2) > 0:
+  #     # for poi in pois2:
+  #     #   print('Camera 1 can see', poi.position.as_vector())
+  #     highest_weight_1 = 0
+  #     poi1 = None
+  #     highest_weight_2 = 0
+  #     poi2 = None
+  #     for poi in pois1:
+  #       if poi.weight >= highest_weight_1:
+  #         highest_weight_1 = poi.weight
+  #         poi1 = poi
+
+  #     for poi in pois2:
+  #       if poi.weight >= highest_weight_2:
+  #         highest_weight_2 = poi.weight
+  #         poi2 = poi
+
+  #     u = poi1.direction_vector
+  #     v = poi2.direction_vector
+
+  #     # print('u:', u, 'v:', v)
+
+  #     a = np.dot(u, u)
+  #     b = np.dot(u, v)
+  #     c = np.dot(v, v)
+  #     w = np.subtract(poi1.position.as_vector(), poi2.position.as_vector())
+  #     d = np.dot(u, w)
+  #     e = np.dot(v, w)
+
+  #     # print('a:', a, 'b:', b, 'c:', c, 'd:', d, 'e:', e, 'w:', w)
+
+  #     acb = (a * c) - (b * b)
+
+  #     # print('acb:', acb)
+
+  #     s = ((b * e) - (c * d)) / acb
+  #     t = ((a * e) - (b * d)) / acb
+
+  #     # print('s:', s, 't:', t)
+
+  #     s = np.dot(s, u)
+  #     t = np.dot(t, v)
+
+  #     # print('s:', s, 't:', t)
+
+  #     ps = np.add(poi1.position.as_vector(), s)
+  #     qt = np.add(poi2.position.as_vector(), t)
+
+  #     # print('ps:', ps, 'qt:', qt)
+
+  #     # distance = abs(w + ((((b * e) - (c * d) * u) - ((a * e) - (b * d) * v)) / acb))
+
+  #     # print('Shortest distance between', poi1.direction_vector, poi2.direction_vector)
+
+  #     # z = [
+  #     #   abs(s[0] - t[0]),
+  #     #   abs(s[1] - t[1]),
+  #     #   abs(s[2] - t[2]),
+  #     # ]
+
+  #     z = abs(np.subtract(t, s))
+
+  #     # print('z:', z)
+  #     distance = np.add(w, z)
+
+  #     # print(distance)
+
+  #     euclid_distance = math.sqrt(distance[0]**2 + distance[1]**2 + distance[2]**2)
+
+  #     print(euclid_distance)
+
+  #     # euclid_distance = math.sqrt(math.pow((ps[0] - qt[0]), 2) + math.pow((ps[1] - qt[1]), 2) + math.pow((ps[2] - qt[2]), 2))
+
+  #     # print('Shortest distance between', poi1.direction_vector, poi2.direction_vector, 'is', euclid_distance)
+  #     # print('Shortest distance is', distance)
+
+  #     abs_point = np.add(qt, ps) / 2
+  #     world_point = Coordinate(abs_point[0], abs_point[1], abs_point[2])
+  #     print('Real world point is', abs_point)
+
+  #     for universe in universes.universes:
+  #       for fixture in universe.fixtures:
+  #         fixture.point_at(world_point)
 
 # while(1):
 #   # if len(cameras[0].points_of_interest) > 0:
@@ -281,11 +335,15 @@ websocket.start()
 
 
 
-incoming_frame = cv.cvtColor(cv.imread('ui/favicon.png'), cv.COLOR_BGR2GRAY).tolist()
+# incoming_frame = cv.cvtColor(cv.imread('ui/favicon.png'), cv.COLOR_BGR2GRAY).tolist()
 
 
 
 while(1):
+  current_state.clear()
+  points = combine_points()
+
+
   for x in range(360):
     # for y in range(1):
     # for z in range(360):
@@ -294,8 +352,8 @@ while(1):
     current_state['subjects'] = []
     current_state['subjects'].append(point.as_dict())
     current_state['maps'] = dict()
-    current_state['frames'] = []
-    current_state['frames'].append(incoming_frame)
+    # current_state['frames'] = []
+    # current_state['frames'].append(incoming_frame)
     for fixture in universes.universes[0].fixtures:
       fixture.point_at(point)
       current_state['maps'][fixture.fixture_id] = 0
