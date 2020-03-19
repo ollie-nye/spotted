@@ -37,9 +37,9 @@ load_personalities('config/personalities.json')
 
 current_state = dict()
 
-# cameras = []
-# for camera in config_json['cameras']:
-#   cameras.append(Camera(camera))
+cameras = []
+for camera in config_json['cameras']:
+  cameras.append(Camera(camera))
 
 calibration = Calibration(config_json['calibration'])
 
@@ -85,19 +85,23 @@ room = Room(room_json['x'], room_json['y'], room_json['z'])
 for fixture in universes.universes[0].fixtures:
   fixture.calibrate(room)
 
-# artnet = threading.Thread(target=start_artnet, daemon=True)
-# artnet.start()
+artnet = threading.Thread(target=start_artnet, daemon=True)
+artnet.start()
 
-# for camera in cameras:
-#   thrd = threading.Thread(target=camera.begin_capture, daemon=True, args=[calibration])
-#   thrd.start()
+for camera in cameras:
+  thrd = threading.Thread(target=camera.begin_capture, daemon=True, args=[calibration])
+  thrd.start()
 
 def combine_points():
   pois = []
   for camera in cameras:
     pois.append(camera.points_of_interest)
 
-  pois = itertools.product(*pois)
+  # print('pois:', pois)
+
+  pois = list(itertools.product(*pois))
+
+  # print('pois:', pois)
 
   points_of_interest = []
 
@@ -106,7 +110,7 @@ def combine_points():
 
     points = []
 
-    for poi1, poi2 in itertools.combinations(poi):
+    for poi1, poi2 in itertools.combinations(poi, len(poi)):
       u = poi1.direction_vector
       v = poi2.direction_vector
 
@@ -340,25 +344,59 @@ websocket.start()
 
 
 while(1):
-  current_state.clear()
-  points = combine_points()
+  for fixture in universes.universes[0].fixtures:
+    # fixture.point_at(Coordinate(0.4, 2, 3))
+    # fixture.point_at(Coordinate(3, 1, 3))
+    pois = combine_points()
+    if len(pois) > 0:
+      point = pois[0]
+      current_state.clear()
+      current_state['subjects'] = []
+      current_state['subjects'].append(point.as_dict())
+      current_state['maps'] = dict()
+      for fixture in universes.universes[0].fixtures:
+        fixture.point_at(point)
+        current_state['maps'][fixture.fixture_id] = 0
+
+    # time.sleep(1/30)
+
+    out_frame = None
+    if cameras[0].current_frame is not None:
+      out_frame = cameras[0].current_frame
+    if cameras[1].current_frame is not None:
+      if out_frame is not None:
+        out_frame = np.hstack((out_frame, cameras[1].current_frame))
+      else:
+        out_frame = cameras[1].current_frame
+    if out_frame is not None:
+      cv.imshow('VIDEO', out_frame)
+      cv.waitKey(1)
+    time.sleep(1/30)
+    # fixture.point_at(Coordinate(10, 0, -5))
+    # current_state['maps'][fixture.fixture_id] = 0
+
+#   # current_state.clear()
+#   # points = combine_points()
 
 
-  for x in range(360):
-    # for y in range(1):
-    # for z in range(360):
-    current_state.clear()
-    point = Coordinate(2 + (2 * math.sin(math.radians(x))), 1, 2 + (2 *math.cos(math.radians(x))))
-    current_state['subjects'] = []
-    current_state['subjects'].append(point.as_dict())
-    current_state['maps'] = dict()
-    # current_state['frames'] = []
-    # current_state['frames'].append(incoming_frame)
-    for fixture in universes.universes[0].fixtures:
-      fixture.point_at(point)
-      current_state['maps'][fixture.fixture_id] = 0
-    print('Pointing at', x, 0, x)
-    time.sleep(0.01)
+#   for x in range(360):
+#     # for y in range(1):
+#     # for z in range(360):
+#     current_state.clear()
+#     point = Coordinate(2 + (2 * math.sin(math.radians(x))), 1, 2 + (2 *math.cos(math.radians(x))))
+#     current_state['subjects'] = []
+#     current_state['subjects'].append(point.as_dict())
+#     current_state['maps'] = dict()
+#     # current_state['frames'] = []
+#     # current_state['frames'].append(incoming_frame)
+#     for fixture in universes.universes[0].fixtures:
+#       fixture.point_at(point)
+#       current_state['maps'][fixture.fixture_id] = 0
+#     print('Pointing at', x, 0, x)
+#     time.sleep(0.01)
+
+
+
 
 #   for fixture in universes.universes[0].fixtures:
 #     fixture.point_at(Coordinate(3.3, 2.0, 4.0))
