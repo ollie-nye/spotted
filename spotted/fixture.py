@@ -38,15 +38,21 @@ class Fixture:
     self.pan_offset = 0
     self.tilt_invert = False
 
-    a = math.radians(0)
-    b = math.radians(0)
-    c = math.radians(90)
+    a = math.radians(json['rotation']['z'])
+    b = math.radians(json['rotation']['y'])
+    c = math.radians(json['rotation']['x'])
 
     self.rotation_matrix = np.array([
       [math.cos(a) * math.cos(b), (math.cos(a) * math.sin(b) * math.sin(c)) - (math.sin(a) * math.cos(c)), (math.cos(a) * math.sin(b) * math.cos(c)) + (math.sin(a) * math.sin(c))],
       [math.sin(a) * math.cos(b), (math.sin(a) * math.sin(b) * math.sin(c)) + (math.cos(a) * math.cos(c)), (math.sin(a) * math.sin(b) * math.cos(c)) - (math.cos(a) * math.sin(c))],
       [-math.sin(b), math.cos(b) * math.sin(c), math.cos(b) * math.cos(c)]
     ])
+
+  @staticmethod
+  def scale(value, old_min, old_max, new_min, new_max):
+    old_range = (old_max - old_min)
+    new_range = (new_max - new_min)
+    return (((value - old_min) * new_range) / old_range) + new_min
 
   def pan(self, value):
     pan_attribute = self.personality.get_attribute('pan')
@@ -63,7 +69,7 @@ class Fixture:
     #   channel_value = 255 - channel_value
 
     self.levels[channel] = channel_value
-    
+
   def tilt(self, value):
     tilt_attribute = self.personality.get_attribute('tilt')
     channel = tilt_attribute.offset
@@ -87,23 +93,31 @@ class Fixture:
 
   def point_at(self, position):
     # TODO: Why 180?
-    # print('Pointing at', position.x, position.y, position.z)
+    print('Pointing at', position.x, position.y, position.z)
 
     pos_from_fixture = position.diff(self.location).as_vector()
-    print('pos_from_fixture:', pos_from_fixture)
+    pos_from_fixture[1] = -pos_from_fixture[1]
+    # print('pos_from_fixture:', pos_from_fixture)
 
-    rotated = rotation_matrix.dot(pos_from_fixture)
-    print('rotated:', rotated)
+    # rotated = self.rotation_matrix.dot(pos_from_fixture)
+    # print('rotated:', rotated)
 
-    coordinate = SpottedSphericalCoordinate.from_cartesian(*rotated)
+    # coordinate = SphericalCoordinate.from_cartesian(*rotated)
+    coordinate = SphericalCoordinate.from_cartesian(*pos_from_fixture)
 
-    print('azimuth:', coordinate.azimuth, 'elevation:', coordinate.elevation, 'inclination:', coordinate.inclination)
+    # print('azimuth:', math.degrees(coordinate.azimuth), 'elevation:', math.degrees(coordinate.elevation), 'inclination:', math.degrees(coordinate.inclination))
 
     pan_range = math.radians(self.personality.get_attribute('pan').range)
-    pan_angle = scale(coordinate.azimuth, -(pan_range / 2), (pan_range / 2), 0, 255)
+    # pan_angle = self.scale(coordinate.azimuth, -(pan_range / 2), (pan_range / 2), 0, 255)
+    pan_angle = self.scale(coordinate.azimuth + math.radians(180), 0, pan_range, 0, 255)
 
     tilt_range = math.radians(self.personality.get_attribute('tilt').range)
-    tilt_angle = scale(coordinate.inclination, -(tilt_range / 2), (tilt_range / 2), 0, 255)
+    # tilt_angle = self.scale(coordinate.inclination, -(tilt_range / 2), (tilt_range / 2), 0, 255)
+    tilt_extension = (tilt_range - math.pi) / 2
+    # print('tilt_range:', tilt_range)
+    # print('tilt_extension:', tilt_extension)
+    # tilt_angle = self.scale(coordinate.elevation, -tilt_extension, tilt_range, 0, 255)
+    tilt_angle = self.scale(coordinate.elevation + tilt_extension, 0, tilt_range, 255, 0)
 
     # print(coordinate.r, coordinate.a, coordinate.i)
 
