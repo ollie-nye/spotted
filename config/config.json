@@ -13,12 +13,12 @@
     {
       "url": "rtmp://10.0.0.22/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
       "position": {
-        "x": 1.8,
+        "x": 2.1,
         "y": 2.25,
-        "z": 0.5
+        "z": 0.7
       },
       "rotation": {
-        "x": 25.0,
+        "x": 20.0,
         "y": 270.0,
         "z": 0.0
       },
@@ -39,7 +39,7 @@
         "z": 4.0
       },
       "rotation": {
-        "x": 25.0,
+        "x": 40.0,
         "y": 90.0,
         "z": 0.0
       },
@@ -62,32 +62,32 @@
       "universe": 0,
       "address": 1,
       "position": {
-        "x": 1.35,
+        "x": 2.2,
         "y": 2.1,
-        "z": 0.4
+        "z": 0.6
       },
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       }
     },
     {
-      "id": 2,
+      "id": 1,
       "personality": 1,
       "net": 0,
       "subnet": 0,
       "universe": 0,
       "address": 17,
       "position": {
-        "x": 2.35,
+        "x": 3.3,
         "y": 2.1,
-        "z": 0.4
+        "z": 0.6
       },
       "rotation": {
-        "x": 0.0,
-        "y": 0.0,
-        "z": 0.0
+        "x": 0,
+        "y": 0,
+        "z": 0
       }
     }
   ]
