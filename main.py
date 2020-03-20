@@ -38,8 +38,8 @@ load_personalities('config/personalities.json')
 current_state = dict()
 
 cameras = []
-for camera in config_json['cameras']:
-  cameras.append(Camera(camera))
+# for camera in config_json['cameras']:
+#   cameras.append(Camera(camera))
 
 calibration = Calibration(config_json['calibration'])
 
@@ -47,9 +47,9 @@ universes = Universes()
 # universe = Universe(0, 0, 0)
 for fixture in config_json['fixtures']:
   fxt = Fixture(fixture)
-  universe = universes.get_universe(fxt.net, fxt.subnet, fxt.universe)
+  universe = universes.get_universe(fxt.address['net'], fxt.address['subnet'], fxt.address['universe'])
   if universe is None:
-    universe = Universe(fxt.net, fxt.subnet, fxt.universe)
+    universe = Universe(fxt.address['net'], fxt.address['subnet'], fxt.address['universe'])
     universes.add_universe(universe)
   universe.add_fixture(fxt)
 
@@ -96,6 +96,8 @@ def combine_points():
   pois = []
   for camera in cameras:
     pois.append(camera.points_of_interest)
+  if len(pois) == 0:
+    return []
 
   # print('pois:', pois)
 
@@ -344,33 +346,34 @@ websocket.start()
 
 
 while(1):
-  for fixture in universes.universes[0].fixtures:
+  # for fixture in universes.universes[0].fixtures:
     # fixture.point_at(Coordinate(0.4, 2, 3))
     # fixture.point_at(Coordinate(3, 1, 3))
-    pois = combine_points()
-    if len(pois) > 0:
-      point = pois[0]
-      current_state.clear()
-      current_state['subjects'] = []
-      current_state['subjects'].append(point.as_dict())
-      current_state['maps'] = dict()
-      for fixture in universes.universes[0].fixtures:
-        fixture.point_at(point)
-        current_state['maps'][fixture.fixture_id] = 0
+  # pois = combine_points()
+  # if len(pois) > 0:
+    # point = pois[0]
+  point = Coordinate(2.8, 1.7, 2.5)
+  # current_state.clear()
+  current_state['subjects'] = []
+  current_state['subjects'].append(point.as_dict())
+  current_state['maps'] = dict()
+  for fixture in universes.universes[0].fixtures:
+    fixture.point_at(point)
+    current_state['maps'][fixture.fixture_id] = 0
 
     # time.sleep(1/30)
 
-    out_frame = None
-    if cameras[0].current_frame is not None:
-      out_frame = cameras[0].current_frame
-    if cameras[1].current_frame is not None:
-      if out_frame is not None:
-        out_frame = np.hstack((out_frame, cameras[1].current_frame))
-      else:
-        out_frame = cameras[1].current_frame
-    if out_frame is not None:
-      cv.imshow('VIDEO', out_frame)
-      cv.waitKey(1)
+    # out_frame = None
+    # if cameras[0].current_frame is not None:
+    #   out_frame = cameras[0].current_frame
+    # if cameras[1].current_frame is not None:
+    #   if out_frame is not None:
+    #     out_frame = np.hstack((out_frame, cameras[1].current_frame))
+    #   else:
+    #     out_frame = cameras[1].current_frame
+    # if out_frame is not None:
+    #   cv.imshow('VIDEO', out_frame)
+    #   cv.waitKey(1)
     time.sleep(1/30)
     # fixture.point_at(Coordinate(10, 0, -5))
     # current_state['maps'][fixture.fixture_id] = 0
