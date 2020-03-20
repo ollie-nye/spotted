@@ -1,9 +1,10 @@
-import numpy as np
-from spotted.fixture import Fixture
-
 """
 Holds single universe data and fixtures
 """
+
+import numpy as np
+
+from spotted.fixture import Fixture
 
 class Universe:
   """
@@ -48,7 +49,7 @@ class Universe:
       return False, 'Supplied fixture is not an instance of Fixture'
 
     overlap = False
-    for channel in range(fixture.address, fixture.personality.channels):
+    for channel in range(fixture.address['address'], fixture.personality.channels):
       if self.occupied_channels[channel - 1]:
         overlap = True
 
@@ -56,14 +57,21 @@ class Universe:
       return False, 'Supplied fixture clashes with an existing fixture'
 
     self.fixtures.append(fixture)
-    for channel in range(fixture.address, fixture.personality.channels):
+    for channel in range(fixture.address['address'], fixture.personality.channels):
       self.occupied_channels[channel - 1] = True
 
     return True, ''
 
   def get_levels(self):
+    """
+    Collect the DMX universe data for all fixtures in this universe
+
+    Returns:
+      512 length uint8 array with applicable values set for fixture states
+    """
+
     for fixture in self.fixtures:
-      start_addr = fixture.address - 1
+      start_addr = fixture.address['address'] - 1
       for index, level in enumerate(fixture.levels):
         self.levels[start_addr + index] = level
     return self.levels
