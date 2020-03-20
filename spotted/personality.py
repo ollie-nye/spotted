@@ -24,3 +24,9 @@ def load_personalities(path):
   personalities_json = json.load(open(path))
   for pers in personalities_json:
     personalities.append(Personality(pers))
+
+def find_personality_by_id(personality_id):
+  for personality in personalities:
+    if personality.id == personality_id:
+      return personality
+  return None
