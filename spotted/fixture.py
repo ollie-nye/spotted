@@ -50,28 +50,6 @@ class Fixture:
       json['rotation']['x'], json['rotation']['y'], json['rotation']['z']
     )
 
-    # a = math.radians(json['rotation']['z'])
-    # b = math.radians(json['rotation']['y'])
-    # c = math.radians(json['rotation']['x'])
-
-    # self.rotation_matrix = np.array([
-    #   [
-    #     math.cos(a) * math.cos(b),
-    #     (math.cos(a) * math.sin(b) * math.sin(c)) - (math.sin(a) * math.cos(c)),
-    #     (math.cos(a) * math.sin(b) * math.cos(c)) + (math.sin(a) * math.sin(c))
-    #   ],
-    #   [
-    #     math.sin(a) * math.cos(b),
-    #     (math.sin(a) * math.sin(b) * math.sin(c)) + (math.cos(a) * math.cos(c)),
-    #     (math.sin(a) * math.sin(b) * math.cos(c)) - (math.cos(a) * math.sin(c))
-    #   ],
-    #   [
-    #     -math.sin(b),
-    #     math.cos(b) * math.sin(c),
-    #     math.cos(b) * math.cos(c)
-    #   ]
-    # ])
-
   def pan(self, value):
     """
     Set pan of fixture
