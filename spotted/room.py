@@ -1,8 +1,8 @@
-from spotted.coordinate import Coordinate
-
 """
 Room to contain all fixtures and cameras
 """
+
+from spotted.coordinate import Coordinate
 
 class Room:
   """
