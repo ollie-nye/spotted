@@ -1,10 +1,10 @@
-import threading
-
-from spotted.universe import Universe
-
 """
 Collection of universes to transmit data for
 """
+
+import threading
+
+from spotted.universe import Universe
 
 class Universes:
   """
