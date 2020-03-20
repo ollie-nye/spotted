@@ -14,9 +14,6 @@ def test_init(point_of_interest):
   assert point_of_interest.weight == 1
   assert all([a == b for a, b in zip(point_of_interest.direction_vector, [1, 2, 3])])
 
-def test_pythagoras():
-  assert PointOfInterest.pythagoras(2, 2, 2, 1, 1, 1) == 1.7320508075688772
-
 def test_increment_count(point_of_interest):
   point_of_interest.increment_count()
   assert point_of_interest.count == 102
