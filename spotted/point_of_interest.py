@@ -1,10 +1,10 @@
-import math
-import numpy as np
-
 """
 An interesting point for the system, knows about the camera position it came from, the position it
 is pointing at, and the relative pixel coordinates that produced it
 """
+
+import math
+import numpy as np
 
 class PointOfInterest:
   """
