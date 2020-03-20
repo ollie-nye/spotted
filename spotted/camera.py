@@ -5,7 +5,7 @@ from datetime import datetime
 
 from spotted.coordinate import Coordinate
 from spotted.point_of_interest import PointOfInterest
-
+from spotted.helpers import imfill, scale, create_rotation_matrix
 
 
 class Camera:
@@ -40,44 +40,31 @@ class Camera:
 
     self.points_of_interest = []
 
-    a = math.radians(self.rotation.z)
-    b = math.radians(self.rotation.y)
-    c = math.radians(self.rotation.x)
+    self.rotation_matrix = create_rotation_matrix(
+      self.rotation.x, self.rotation.y, self.rotation.z
+    )
 
-    self.rotation_matrix = np.array([
-      [
-        math.cos(a) * math.cos(b),
-        (math.cos(a) * math.sin(b) * math.sin(c)) - (math.sin(a) * math.cos(c)),
-        (math.cos(a) * math.sin(b) * math.cos(c)) + (math.sin(a) * math.sin(c))
-      ],
-      [
-        math.sin(a) * math.cos(b),
-        (math.sin(a) * math.sin(b) * math.sin(c)) + (math.cos(a) * math.cos(c)),
-        (math.sin(a) * math.sin(b) * math.cos(c)) - (math.cos(a) * math.sin(c))
-      ],
-      [
-        -math.sin(b),
-        math.cos(b) * math.sin(c),
-        math.cos(b) * math.cos(c)
-      ]
-    ])
+    # a = math.radians(self.rotation.z)
+    # b = math.radians(self.rotation.y)
+    # c = math.radians(self.rotation.x)
 
-  @staticmethod
-  def imfill(frame):
-    im_flood_fill = frame.copy()
-    height, width = frame.shape[:2]
-    mask = np.zeros((height + 2, width + 2), np.uint8)
-    im_flood_fill = im_flood_fill.astype('uint8')
-    cv.floodFill(im_flood_fill, mask, (0, 0), 255)
-    im_flood_fill_inv = cv.bitwise_not(im_flood_fill)
-    frame = frame.astype('uint8')
-    return frame | im_flood_fill_inv
-
-  @staticmethod
-  def scale(value, old_min, old_max, new_min, new_max):
-    old_range = (old_max - old_min)
-    new_range = (new_max - new_min)
-    return (((value - old_min) * new_range) / old_range) + new_min
+    # self.rotation_matrix = np.array([
+    #   [
+    #     math.cos(a) * math.cos(b),
+    #     (math.cos(a) * math.sin(b) * math.sin(c)) - (math.sin(a) * math.cos(c)),
+    #     (math.cos(a) * math.sin(b) * math.cos(c)) + (math.sin(a) * math.sin(c))
+    #   ],
+    #   [
+    #     math.sin(a) * math.cos(b),
+    #     (math.sin(a) * math.sin(b) * math.sin(c)) + (math.cos(a) * math.cos(c)),
+    #     (math.sin(a) * math.sin(b) * math.cos(c)) - (math.cos(a) * math.sin(c))
+    #   ],
+    #   [
+    #     -math.sin(b),
+    #     math.cos(b) * math.sin(c),
+    #     math.cos(b) * math.cos(c)
+    #   ]
+    # ])
 
   def y_offset(self, distance):
     return math.tan(self.rotation.z) * distance
@@ -108,8 +95,8 @@ class Camera:
     # for row_index, row in enumerate(frame):
     #   for col_index, col in enumerate(row):
     #     # col[2] = 127
-    #     # h = self.scale(col[0], 0, 360, 0, 255)
-    #     grey[row_index][col_index] = self.scale(col[0], 0, 360, 0, 255)
+    #     # h = scale(col[0], 0, 360, 0, 255)
+    #     grey[row_index][col_index] = scale(col[0], 0, 360, 0, 255)
     print('calibrated in', (datetime.now() - start).total_seconds())
     # print('restored calibration')
 
@@ -165,7 +152,7 @@ class Camera:
 
 
 
-    frame = self.imfill(frame)
+    frame = imfill(frame)
     frame = cv.morphologyEx(frame, cv.MORPH_OPEN, kernel)
 
     # self.current_frame = frame
@@ -227,8 +214,8 @@ class Camera:
       # angular_displacement_horizontal = math.radians((360 - scale(displacement_horizontal, 0, horiz_midpoint, 0, angular_horiz_midpoint)) % 360)
       # angular_displacement_vertical = math.radians((360 - scale(displacement_vertical, 0, vert_midpoint, 0, angular_vert_midpoint)) % 360)
 
-      angular_displacement_horizontal = math.radians(self.scale(displacement_horizontal, 0, horiz_midpoint, 0, angular_horiz_midpoint))
-      angular_displacement_vertical = math.radians(self.scale(displacement_vertical, 0, vert_midpoint, 0, angular_vert_midpoint))
+      angular_displacement_horizontal = math.radians(scale(displacement_horizontal, 0, horiz_midpoint, 0, angular_horiz_midpoint))
+      angular_displacement_vertical = math.radians(scale(displacement_vertical, 0, vert_midpoint, 0, angular_vert_midpoint))
 
       # print('Displacement angle', angular_displacement_horizontal, angular_displacement_vertical)
 
@@ -450,7 +437,7 @@ class Camera:
         frame = cv.filter2D(frame, -1, blur_kernel)
 
         # frame = cv.morphologyEx(frame, cv.MORPH_OPEN, kernel)
-        # frame = self.imfill(frame.astype(np.float))
+        # frame = imfill(frame.astype(np.float))
 
 
         # frame = np.zeros_like(frame)
@@ -565,8 +552,8 @@ class Camera:
             # angular_displacement_horizontal = math.radians((360 - scale(displacement_horizontal, 0, horiz_midpoint, 0, angular_horiz_midpoint)) % 360)
             # angular_displacement_vertical = math.radians((360 - scale(displacement_vertical, 0, vert_midpoint, 0, angular_vert_midpoint)) % 360)
 
-            angular_displacement_horizontal = math.radians(self.scale(displacement_horizontal, 0, horiz_midpoint, 0, angular_horiz_midpoint))
-            angular_displacement_vertical = math.radians(self.scale(displacement_vertical, 0, vert_midpoint, 0, angular_vert_midpoint))
+            angular_displacement_horizontal = math.radians(scale(displacement_horizontal, 0, horiz_midpoint, 0, angular_horiz_midpoint))
+            angular_displacement_vertical = math.radians(scale(displacement_vertical, 0, vert_midpoint, 0, angular_vert_midpoint))
 
             # print('Displacement angle', angular_displacement_horizontal, angular_displacement_vertical)
 
@@ -666,8 +653,8 @@ class Camera:
     print(self.position)
 
     for poi in self.points_of_interest:
-      angle_horizontal = self.scale(poi['x'], 0, self.resolution['horizontal'], 0, self.viewing_angle['horizontal'])
-      angle_vertical = self.scale(poi['y'], 0, self.resolution['vertical'], 0, self.viewing_angle['vertical'])
+      angle_horizontal = scale(poi['x'], 0, self.resolution['horizontal'], 0, self.viewing_angle['horizontal'])
+      angle_vertical = scale(poi['y'], 0, self.resolution['vertical'], 0, self.viewing_angle['vertical'])
 
       horiz_from_camera = (self.rotation.y - (self.viewing_angle['horizontal'] / 2) + angle_horizontal) % 360
       vert_from_camera = (self.rotation.z - (self.viewing_angle['vertical'] / 2) + angle_vertical) % 360
