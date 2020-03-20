@@ -1,39 +1,80 @@
+"""
+Spotted Websocket
+"""
+
 import asyncio
-import websockets
 import json
 
 class Websocket:
+  """
+  Spotted Websocket
+  """
+
   def __init__(self, config, state):
+    """
+    Creates new websocket collection instance
+    """
+
     self.config = config
     self.state = state
     self.clients = set()
 
   def state_event(self):
+    """
+    Returns:
+      JSON string representation of self.state
+    """
+
     return json.dumps(self.state)
 
-  async def notify_state(self):
-    if self.clients:
-      message = self.state_event()
-      await asyncio.wait([client.send(message) for client in self.clients])
-
   async def register(self, websocket):
+    """
+    Adds client to clients set and sends the initial config out
+
+    Arguments:
+      websocket {Websocket} -- connection to add to clients
+    """
+
     self.clients.add(websocket)
     await websocket.send("init      " + json.dumps(self.config))
 
   async def unregister(self, websocket):
+    """
+    Removes a client from the set
+
+    Arguments:
+      websocket {Websocket} -- client to remove
+    """
+
     self.clients.remove(websocket)
 
   async def broadcast_state(self, sleep_time):
+    """
+    Broadcast infinite loop
+    Sends current state to every connected client in the interval defined by
+    sleep_time
+
+    Arguments:
+      sleep_time {float} -- inverval to wait between sending updates
+    """
+
     while True:
-      for ws in self.clients:
-        await ws.send("state     " + self.state_event())
+      for websocket in self.clients:
+        await websocket.send("state     " + self.state_event())
       await asyncio.sleep(sleep_time)
 
-  async def push_state(self, websocket, path):
+  async def push_state(self, websocket, _):
+    """
+    Main handler method, maintains connections to and from websockets
+
+    Arguments:
+      websocket {Websocket} -- websocket connection to manage
+    """
+
     await self.register(websocket)
     # self.state = current_state
     try:
       async for msg in websocket:
-        pass
+        print('Received', msg, 'on websocket')
     finally:
       await self.unregister(websocket)

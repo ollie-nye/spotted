@@ -15,8 +15,6 @@ class Universes:
     self.universes = []
     self._lock = threading.Lock()
 
-    # race condition?
-
   def add_universe(self, universe):
     """
     Adds a universe to the collection
@@ -30,8 +28,7 @@ class Universes:
     if isinstance(universe, Universe):
       self.universes.append(universe)
       return True
-    else:
-      return False, 'Supplied universe is not an instance of Universe'
+    return False, 'Supplied universe is not an instance of Universe'
 
   def get_universe(self, uni_net, uni_subnet, uni_universe):
     """

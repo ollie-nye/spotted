@@ -9,19 +9,23 @@
       canvas { width: 100%; height: 100% }
     </style>
   </head>
-  <body>
+  <body style="background-color: black;">
     <script src="js/three.js"></script>
     <script src="js/OrbitControls.js"></script>
+    <div style="background-color: #ffffff; height: 9vh">
+      <button>Open camera 1</button>
+      <button>Open camera 2</button>
+    </div>
     <script>
       var scene = new THREE.Scene();
       var renderer = new THREE.WebGLRenderer();
-      var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 50 );
+      var camera = new THREE.PerspectiveCamera( 75, window.innerWidth / (window.innerHeight * 0.9), 0.1, 50 );
       var controls = new THREE.OrbitControls(camera, renderer.domElement);
 
       // var axesHelper = new THREE.AxesHelper( 5 );
       // scene.add( axesHelper )
 
-      renderer.setSize( window.innerWidth, window.innerHeight )
+      renderer.setSize( window.innerWidth, Math.floor(window.innerHeight * 0.9) )
       document.body.appendChild( renderer.domElement )
 
       var line_material = new THREE.LineBasicMaterial( { color: 0x999999 } );
@@ -32,8 +36,6 @@
 
       let room = []
 
-      function offset_x(val) { return (-room[0] / 2) + val }
-      function offset_z(val) { return (-room[2] / 2) + val }
       // Websockets galore
 
       let socket = new WebSocket("ws://" + window.location.hostname + ":8081");
@@ -43,7 +45,6 @@
 
       socket.onopen = function(e) {
         console.log("Socket opened successfully")
-        // socket.send("hola");
       }
 
       socket.onmessage = function(e) {
@@ -51,7 +52,6 @@
         var type = data.substring(0, 10)
         if (type.trim() == "state") {
           state = JSON.parse(data.substring(10))
-          // console.log(state);
           update_state(state)
         } else if (type.trim() == "init") {
           state = JSON.parse(data.substring(10))
@@ -59,44 +59,6 @@
         } else {
           alert("received something else")
         }
-          // var binary = '';
-          // var bytes = new Uint8Array( e.data );
-          // console.log(bytes);
-
-          // var len = bytes.byteLength;
-          // for (var i = 0; i < len; i++) {
-          //     binary += String.fromCharCode( bytes[ i ] );
-          // }
-
-          // var img = document.querySelector( "#camera" );
-          // img.src = 'data:image/bmp;base64,'+btoa(binary);
-          // var imageWidth = 255, imageHeight = 255; // hardcoded width & height.
-          // var byteArray = new Uint8Array(e.data);
-
-          // console.log(byteArray);
-
-          // var canvas = document.createElement('canvas');
-          // canvas.height = imageWidth;
-          // canvas.width = imageHeight;
-          // var ctx = canvas.getContext('2d');
-
-          // var imageData = ctx.getImageData(0, 0, imageWidth, imageHeight); // total size: imageWidth * imageHeight * 4; color format BGRA
-          // var dataLen = imageData.data.length / 4;
-          // for (var i = 0; i < dataLen; i++)
-          // {
-          //   offset = i * 4;
-          //   imageData.data[offset] = byteArray[i];
-          //   imageData.data[offset + 1] = byteArray[i];
-          //   imageData.data[offset + 2] = byteArray[i];
-          //   imageData.data[offset + 3] = byteArray[i];
-          // }
-          // ctx.putImageData(imageData, 0, 0);
-
-          // // create a new element and add it to div
-          // var image = document.querySelector('#camera');
-          // image.width = imageWidth;
-          // image.height = imageHeight;
-          // image.src = canvas.toDataURL();
       }
 
       socket.onerror = function(e) {
@@ -108,19 +70,19 @@
         room[1] = state['room']['y']
         room[2] = state['room']['z']
 
-        let room_x = room[0] / 2
+        let room_x = room[0]
         let room_y = room[1]
-        let room_z = room[2] / 2
+        let room_z = room[2]
 
         let room_verticies = [
-          [-room_x, 0, -room_z],
-          [room_x, 0, -room_z],
-          [room_x, room_y, -room_z],
-          [-room_x, room_y, -room_z],
-          [-room_x, 0, room_z],
+          [0, 0, 0],
+          [room_x, 0, 0],
+          [room_x, room_y, 0],
+          [0, room_y, 0],
+          [0, 0, room_z],
           [room_x, 0, room_z],
           [room_x, room_y, room_z],
-          [-room_x, room_y, room_z]
+          [0, room_y, room_z]
         ]
 
         let edges = [
@@ -140,11 +102,10 @@
           scene.add(line)
         })
 
-        camera.position.x = 0
-        camera.position.y = room_y - (room_y / 4)
-        camera.position.z = room_z * 4
-        // camera.up = new THREE.Vector3(0,1,0);
-        // camera.lookAt(room_x, room_y, room_z)
+        camera.position.x = room_z * 1.5
+        camera.position.y = room_y * 1.5
+        camera.position.z = room_z * 1.5
+        controls.target = new THREE.Vector3(room_x / 2, room_y / 2, room_z / 2)
         controls.update()
 
         console.log(state)
@@ -154,7 +115,7 @@
         })
 
         fixtures = state.fixtures.reduce(function (map, fixt) {
-          map[fixt.id] = [offset_x(fixt.position.x), fixt.position.y, offset_z(fixt.position.z)]
+          map[fixt.id] = [fixt.position.x, fixt.position.y, fixt.position.z]
           return map
         }, {})
 
@@ -164,15 +125,14 @@
           var material = new THREE.MeshBasicMaterial( { color: 0x0099ff } )
           var cube = new THREE.Mesh( geometry, material )
 
-          cube.position.x = offset_x(x)
+          cube.position.x = x
           cube.position.y = y
-          cube.position.z = offset_z(z)
+          cube.position.z = z
 
           scene.add( cube )
         })
 
         for (let [key, value] of Object.entries(fixtures)) {
-        // fixtures.forEach(function(element) {
           [x, y, z] = value
           var geometry = new THREE.BoxGeometry( 0.25, 0.25, 0.25 )
           var material = new THREE.MeshBasicMaterial( { color: 0x9900ff } )
@@ -187,36 +147,22 @@
       }
 
       function update_state(state) {
-        // subjects = state.subjects.map(function (subject) {
-        //   return [subject.x, subject.y, subject.z]
-        // }, {})
-
-        // console.log(state)
-
-
-        // console.log(subjects)
         for (key in state.subjects) {
           var element = state.subjects[key];
-          // console.log(key)
-          // console.log(element)
 
-        // }
-        // state.subjects.forEach(function(key, element) {
-          // for (sub in state.subjects) {
-            cube = null
-            if (key in subjects) {
-              cube = subjects[key]
-            } else {
-              var geometry = new THREE.BoxGeometry( 0.25, 0.25, 0.25 )
-              var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
-              cube = new THREE.Mesh( geometry, material )
-              scene.add( cube )
-              subjects[key] = cube
-            }
-            cube.position.x = offset_x(element.x)
-            cube.position.y = element.y
-            cube.position.z = offset_z(element.z)
-          // }
+          cube = null
+          if (key in subjects) {
+            cube = subjects[key]
+          } else {
+            var geometry = new THREE.BoxGeometry( 0.25, 0.25, 0.25 )
+            var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
+            cube = new THREE.Mesh( geometry, material )
+            scene.add( cube )
+            subjects[key] = cube
+          }
+          cube.position.x = element.x
+          cube.position.y = element.y
+          cube.position.z = element.z
         }
 
         for (let [fxt, subject] of Object.entries(state.maps)) {
@@ -236,101 +182,16 @@
             fixture_subjects[fxt] = line
           }
         }
-          // if fixture_subject_lines
-          // subject = state[0];
-          // fixture_subject_geometry.vertices.push(new THREE.Vector3(subject.x, subject.y, subject.z));
         console.log('Update state called')
       }
-
-
-
-
-
-
-      // var subject = [7.5, 1, 11.5];
-
-
-
-
-
-
-
-      // var geometry = new THREE.BoxGeometry( 0.25, 0.25, 0.25 );
-      // var material = new THREE.MeshBasicMaterial( { color: 0x99ff00 } );
-      // var subject_cube = new THREE.Mesh( geometry, material );
-
-      // subject_cube.position.x = subject[0] - point_x;
-      // subject_cube.position.y = subject[1];
-      // subject_cube.position.z = subject[2] - point_z;
-
-      // scene.add( subject_cube );
-
-      //lines from fixtures to subjects
-      // line_material = new THREE.LineBasicMaterial( { color: 0xffffff } );
-
-      // var fixture_subject_line;
-      // var fixture_subject_geometry = new THREE.Geometry();
-
-      // fixtures.forEach(function(fixture) {
-      //   [x,y,z] = fixture;
-      //   fixture_subject_geometry.vertices.push(new THREE.Vector3(x - point_x, y, z - point_z));
-      //   [x,y,z] = subject;
-      //   fixture_subject_geometry.vertices.push(new THREE.Vector3(x - point_x, y, z - point_z));
-      // })
-      // fixture_subject_line = new THREE.Line(fixture_subject_geometry, line_material);
-      // scene.add(fixture_subject_line);
-
-
 
       function animate() {
         requestAnimationFrame( animate );
         controls.update();
-
-        // subject = [
-        //   ( Math.random() - 0.5 ) * 5,
-        //   ( Math.random() - 0.5 ) * 5,
-        //   ( Math.random() - 0.5 ) * 5
-        // ]
-
-        // [x, y, z] = subject;
-
-        // subject_cube.position.x += 0.05;
-        // // subject_cube.position.y = y;
-        // subject_cube.position.z += 0.05;
-
-        // if (subject_cube.position.x >= point_x) {
-        //   subject_cube.position.x = (point_x * -1);
-        // }
-        // if (subject_cube.position.z >= point_z) {
-        //   subject_cube.position.z = (point_z * -1);
-        // }
-
-        // subject_cube.geometry.needsUpdate = true
-
-        // sc_x = subject_cube.position.x;
-        // sc_y = subject_cube.position.y;
-        // sc_z = subject_cube.position.z;
-
-        // fixture_subject_geometry = new THREE.Geometry();
-        // fixtures.forEach(function(fixture) {
-        //   [x,y,z] = fixture;
-        //   fixture_subject_geometry.vertices.push(new THREE.Vector3(x - point_x, y, z - point_z));
-        //   fixture_subject_geometry.vertices.push(new THREE.Vector3(sc_x, sc_y, sc_z));
-        // })
-
-        // fixture_subject_line.geometry = fixture_subject_geometry;
-
-        // fixture_subject_line.geometry.needsUpdate = true;
-
         renderer.render( scene, camera );
       }
+
       animate();
     </script>
-    <div>
-      <image id="camera" />
-    </div>
-    <div style="z-index: 1000; color: white;">
-      <p>Things are happening?</p>
-    </div>
   </body>
 </html>

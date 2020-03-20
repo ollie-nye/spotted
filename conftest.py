@@ -1,12 +1,12 @@
-import pytest
 import json
+import pytest
 
 from spotted.attribute import Attribute
 from spotted.calibration import Calibration
 from spotted.camera import Camera
 from spotted.coordinate import Coordinate
 from spotted.fixture import Fixture
-from spotted.personality import Personality, personalities
+from spotted.personality import Personality, load_personalities, PERSONALITIES
 from spotted.point_of_interest import PointOfInterest
 from spotted.room import Room
 from spotted.spherical_coordinate import SphericalCoordinate
@@ -14,7 +14,7 @@ from spotted.universe import Universe
 from spotted.universes import Universes
 
 CONFIG = json.load(open('tests/config.json'))
-PERSONALITIES = json.load(open('tests/personalities.json'))
+load_personalities('tests/personalities.json')
 
 def create_universe():
   return Universe(0, 1, 2)
@@ -42,8 +42,6 @@ def personality():
 
 @pytest.fixture
 def fixture():
-  pers = create_personality()
-  personalities.append(pers)
   return Fixture(CONFIG['fixtures'][0])
 
 @pytest.fixture

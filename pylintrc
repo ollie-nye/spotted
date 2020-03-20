@@ -3,11 +3,11 @@
 # A comma-separated list of package or module names from where C extensions may
 # be loaded. Extensions are loading into the active Python interpreter and may
 # run arbitrary code.
-extension-pkg-whitelist=cv2
+extension-pkg-whitelist=cv2,cv2.fisheye
 
 # Add files or directories to the blacklist. They should be base names, not
 # paths.
-ignore=tests,config,pylintrc,README.md,requirements.txt,network
+ignore=tests,config,conftest.py,pylintrc,README.md,requirements.txt,network
 
 # Add files or directories matching the regex patterns to the blacklist. The
 # regex matches against base names, not paths.

@@ -16,21 +16,21 @@ class Fixture:
   """
 
   # pylint: disable=invalid-name, too-many-instance-attributes
-  def __init__(self, json):
+  def __init__(self, config):
     """
-    Create fixture from given json
+    Create fixture from given config
 
     Returns:
       Fixture
     """
 
-    self.fixture_id = json['id']
-    self.personality = find_personality_by_id(json['personality'])
+    self.fixture_id = config['id']
+    self.personality = find_personality_by_id(config['personality'])
     self.address = {
-      'net': json['net'],
-      'subnet': json['subnet'],
-      'universe': json['universe'],
-      'address': json['address']
+      'net': config['net'],
+      'subnet': config['subnet'],
+      'universe': config['universe'],
+      'address': config['address']
     }
 
     self.levels = np.zeros(self.personality.channels)
@@ -39,7 +39,7 @@ class Fixture:
       channel = attribute.offset
       self.levels[channel] = attribute.default
 
-    pos = json['position']
+    pos = config['position']
     self.location = Coordinate(pos['x'], pos['y'], pos['z'])
     self.position = Coordinate(0, 0, 0)
 
@@ -47,7 +47,7 @@ class Fixture:
     self.tilt_invert = False
 
     self.rotation_matrix = create_rotation_matrix(
-      json['rotation']['x'], json['rotation']['y'], json['rotation']['z']
+      config['rotation']['x'], config['rotation']['y'], config['rotation']['z']
     )
 
   def pan(self, value):
@@ -124,9 +124,9 @@ class Fixture:
       room {Room} -- Room to align to
     """
 
-    offset_angle = self.location.pan_angle(room.center())
-    if offset_angle >= 180.0:
-      self.pan_offset = offset_angle - 180.0
-      self.tilt_invert = True
-    else:
-      self.pan_offset = offset_angle
+    # offset_angle = self.location.pan_angle(room.center())
+    # if offset_angle >= 180.0:
+    #   self.pan_offset = offset_angle - 180.0
+    #   self.tilt_invert = True
+    # else:
+    #   self.pan_offset = offset_angle

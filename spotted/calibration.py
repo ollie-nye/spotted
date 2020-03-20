@@ -25,8 +25,9 @@ class Calibration:
     distortion = np.array(json['distortion'])
     camera = np.array(json['camera'])
 
+    # pylint: disable=no-member
     self.map1, self.map2 = cv.fisheye.initUndistortRectifyMap(
-        camera, distortion, np.eye(3), camera, dimension, cv.CV_16SC2
+      camera, distortion, np.eye(3), camera, dimension, cv.CV_16SC2
     )
 
   def restore(self, frame):
@@ -39,4 +40,10 @@ class Calibration:
     Returns:
       array -- frame after applying the filter, same dimension as passed frame
     """
-    return cv.remap(frame, self.map1, self.map2, interpolation=cv.INTER_LINEAR, borderMode=cv.BORDER_CONSTANT)
+    return cv.remap(
+      frame,
+      self.map1,
+      self.map2,
+      interpolation=cv.INTER_LINEAR,
+      borderMode=cv.BORDER_CONSTANT
+    )

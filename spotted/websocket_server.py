@@ -150,7 +150,7 @@ class HTTPWebSocketsHandler(SimpleHTTPRequestHandler):
         self.close_connection = 1
         try:
           self.__send_close()
-        except:
+        except socket.error:
           pass
         self.on_ws_closed()
       else:

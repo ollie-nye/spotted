@@ -2,6 +2,7 @@
 Attribute holds all data about a particular fixture channel
 """
 
+# pylint: disable=too-many-instance-attributes, too-few-public-methods
 class Attribute:
   """
   Attribute holds all data about a particular fixture channel
