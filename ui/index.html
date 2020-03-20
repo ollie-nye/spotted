@@ -194,7 +194,7 @@
         // console.log(state)
 
 
-        console.log(subjects)
+        // console.log(subjects)
         for (key in state.subjects) {
           var element = state.subjects[key];
           // console.log(key)
@@ -205,7 +205,6 @@
           // for (sub in state.subjects) {
             cube = null
             if (key in subjects) {
-              console.log('updating existing mesh')
               cube = subjects[key]
             } else {
               var geometry = new THREE.BoxGeometry( 0.25, 0.25, 0.25 )
