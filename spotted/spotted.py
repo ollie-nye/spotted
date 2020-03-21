@@ -16,6 +16,7 @@ from http.server import HTTPServer
 import websockets
 
 import numpy as np
+import cv2 as cv
 
 from artnet.dmx import Dmx
 from spotted.camera import Camera
@@ -196,15 +197,15 @@ class Spotted:
 
         # time.sleep(1/30)
 
-        # out_frame = None
-        # if self.cameras[0].current_frame is not None:
-        #   out_frame = self.cameras[0].current_frame
-        # if self.cameras[1].current_frame is not None:
-        #   if out_frame is not None:
-        #     out_frame = np.hstack((out_frame, self.cameras[1].current_frame))
-        #   else:
-        #     out_frame = self.cameras[1].current_frame
-        # if out_frame is not None:
-        #   cv.imshow('VIDEO', out_frame)
-        #   cv.waitKey(1)
+        out_frame = None
+        if self.cameras[0].current_frame is not None:
+          out_frame = self.cameras[0].current_frame
+        if self.cameras[1].current_frame is not None:
+          if out_frame is not None:
+            out_frame = np.hstack((out_frame, self.cameras[1].current_frame))
+          else:
+            out_frame = self.cameras[1].current_frame
+        if out_frame is not None:
+          cv.imshow('VIDEO', out_frame)
+          cv.waitKey(1)
         time.sleep(1/30)
