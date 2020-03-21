@@ -4,7 +4,7 @@ import numpy as np
 
 universe = Universe(0x12, 0x3, 0x4)
 
-data = np.zeros(512)
+data = np.zeros(512, dtype=np.uint8)
 init_packet = Dmx(0x00, universe)
 
 def test_correct_header():
@@ -27,3 +27,26 @@ def test_correct_length():
 
 def test_correct_payload():
   assert all([a == b for a, b in zip(init_packet.data, data)])
+
+def test_serialize():
+  output = init_packet.header.serialize()
+  output.append(0x00)
+  output.append(0x00)
+  output.append(0x34)
+  output.append(0x12)
+  output.append(0x02)
+  output.append(0x00)
+  output.extend(data)
+
+  assert all([a == b for a, b in zip(init_packet.serialize(), output)])
+
+
+
+# output = self.header.serialize()
+#     output.append(self.sequence)
+#     output.append(self.physical)
+#     output.append(self.sub_universe)
+#     output.append(self.net)
+#     output.extend(self.length.to_bytes(2, 'big'))
+#     output.extend(self.data)
+#     return output
