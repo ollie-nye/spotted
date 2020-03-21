@@ -16,6 +16,10 @@ from spotted.universes import Universes
 CONFIG = json.load(open('tests/config.json'))
 load_personalities('tests/personalities.json')
 
+@pytest.fixture
+def calibration():
+  return Calibration(CONFIG['calibration'])
+
 def create_universe():
   return Universe(0, 1, 2)
 
@@ -34,7 +38,7 @@ def room():
 
 def create_personality():
   # Mirrors a beam
-  return Personality(PERSONALITIES[0])
+  return PERSONALITIES[0]
 
 @pytest.fixture
 def personality():
@@ -47,6 +51,10 @@ def fixture():
 @pytest.fixture
 def spherical_coordinate():
   return SphericalCoordinate(0.1, 0.2, 0.3)
+
+@pytest.fixture
+def coordinate():
+  return Coordinate(0.1, 0.2, 0.3)
 
 @pytest.fixture
 def point_of_interest():
