@@ -80,3 +80,20 @@ def create_rotation_matrix(x, y, z):
       math.cos(b) * math.cos(c)
     ]
   ])
+
+# pylint: disable=invalid-name
+def pythagoras(a_x, a_y, b_x, b_y):
+  """
+  Returns the euclidian distance between two points
+
+  Arguments:
+    a_x {float} -- x coordinate of a
+    a_y {float} -- y coordinate of a
+    b_x {float} -- x coordinate of b
+    b_y {float} -- y coordinate of b
+
+  Returns:
+    Distance
+  """
+
+  return math.sqrt((a_x - b_x) ** 2 + (a_y - b_y) ** 2)
