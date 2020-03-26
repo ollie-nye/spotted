@@ -27,7 +27,7 @@ jobs:
     - name: Lint with pylint
       run: |
         pip install pylint
-        pylint *
+        python lint.py * --fail-under
     - name: Test with pytest
       run: |
         pip install pytest
