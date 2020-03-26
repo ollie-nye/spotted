@@ -18,10 +18,9 @@ with x being horizontal, y being vertical, and z being depth
 
 ## Hardware requirements
 
-At least two PoE cameras broadcasting the RTSP protocol
-An existing ArtNet network
-
-A multi-threaded CPU is required for system stability, ideally one thread per
+- At least two PoE cameras broadcasting the RTSP protocol
+- An existing ArtNet network
+- A multi-threaded CPU is required for system stability, ideally one thread per
 two cameras in the system
 
 ## Configuring
@@ -283,13 +282,13 @@ A boolean value to set whether or not to invert the channel value on output
 This requires at least Python 3.7
 
 Required libraries
-  - opencv-python
-  - numpy
-  - websockets
+- opencv-python
+- numpy
+- websockets
 
 Development libraries
-  - coverage
-  - pylint
+- coverage
+- pylint
 
 Start the control server with `python3 main.py` from within the project
 directory
