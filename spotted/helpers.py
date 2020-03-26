@@ -59,27 +59,45 @@ def create_rotation_matrix(x, y, z):
     2D np.array -- rotation matrix
   """
 
-  a = math.radians(z)
+  a = math.radians(x)
   b = math.radians(y)
-  c = math.radians(x)
+  c = math.radians(z)
 
   return np.array([
     [
-      math.cos(a) * math.cos(b),
-      (math.cos(a) * math.sin(b) * math.sin(c)) - (math.sin(a) * math.cos(c)),
-      (math.cos(a) * math.sin(b) * math.cos(c)) + (math.sin(a) * math.sin(c))
+      [1, 0, 0],
+      [0, math.cos(a), math.sin(a)],
+      [0, -math.sin(a), math.cos(a)]
     ],
     [
-      math.sin(a) * math.cos(b),
-      (math.sin(a) * math.sin(b) * math.sin(c)) + (math.cos(a) * math.cos(c)),
-      (math.sin(a) * math.sin(b) * math.cos(c)) - (math.cos(a) * math.sin(c))
+      [math.cos(b), 0, -math.sin(b)],
+      [0, 1, 0],
+      [math.sin(b), 0, math.cos(b)]
     ],
     [
-      -math.sin(b),
-      math.cos(b) * math.sin(c),
-      math.cos(b) * math.cos(c)
+      [math.cos(c), math.sin(c), 0],
+      [-math.sin(c), math.cos(c), 0],
+      [0, 0, 1]
     ]
   ])
+
+  # return np.array([
+  #   [
+  #     math.cos(a) * math.cos(b),
+  #     (math.cos(a) * math.sin(b) * math.sin(c)) - (math.sin(a) * math.cos(c)),
+  #     (math.cos(a) * math.sin(b) * math.cos(c)) + (math.sin(a) * math.sin(c))
+  #   ],
+  #   [
+  #     math.sin(a) * math.cos(b),
+  #     (math.sin(a) * math.sin(b) * math.sin(c)) + (math.cos(a) * math.cos(c)),
+  #     (math.sin(a) * math.sin(b) * math.cos(c)) - (math.cos(a) * math.sin(c))
+  #   ],
+  #   [
+  #     -math.sin(b),
+  #     math.cos(b) * math.sin(c),
+  #     math.cos(b) * math.cos(c)
+  #   ]
+  # ])
 
 # pylint: disable=invalid-name
 def pythagoras(a_x, a_y, b_x, b_y):
