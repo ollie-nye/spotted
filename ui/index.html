@@ -30,6 +30,7 @@
 
       var line_material = new THREE.LineBasicMaterial( { color: 0x999999 } );
 
+      let camera_positions = {}
       let fixtures = {}
       let subjects = {}
       let fixture_subjects = {}
@@ -111,8 +112,16 @@
         console.log(state)
 
         let cameras = state.cameras.map( function (camera) {
-          return [camera.position.x, camera.position.y, camera.position.z]
+          cam_id = camera.id
+
+          camera_positions[cam_id] = camera.position
+          return [
+            [camera.position.x, camera.position.y, camera.position.z],
+            [camera.initial_point.x, camera.initial_point.y, camera.initial_point.z]
+          ]
         })
+
+        console.log(camera_positions)
 
         fixtures = state.fixtures.reduce(function (map, fixt) {
           map[fixt.id] = [fixt.position.x, fixt.position.y, fixt.position.z]
@@ -120,8 +129,8 @@
         }, {})
 
         cameras.forEach(function(element) {
-          [x, y, z] = element
-          var geometry = new THREE.BoxGeometry( 0.25, 0.25, 0.25 )
+          [[x, y, z], [ix, iy, iz]] = element
+          var geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 )
           var material = new THREE.MeshBasicMaterial( { color: 0x0099ff } )
           var cube = new THREE.Mesh( geometry, material )
 
@@ -130,11 +139,17 @@
           cube.position.z = z
 
           scene.add( cube )
+
+          var line = new THREE.Geometry();
+          line.vertices.push(new THREE.Vector3(x, y, z))
+          line.vertices.push(new THREE.Vector3(ix, iy, iz))
+          let cam_line = new THREE.Line(line, line_material)
+          scene.add(cam_line)
         })
 
         for (let [key, value] of Object.entries(fixtures)) {
           [x, y, z] = value
-          var geometry = new THREE.BoxGeometry( 0.25, 0.25, 0.25 )
+          var geometry = new THREE.BoxGeometry( 0.2, 0.2, 0.2 )
           var material = new THREE.MeshBasicMaterial( { color: 0x9900ff } )
           var cube = new THREE.Mesh( geometry, material )
 
@@ -146,19 +161,50 @@
         }
       }
 
+      camera_lines = []
+
       function update_state(state) {
+        console.log(camera_lines)
+        for (line in camera_lines) {
+          scene.remove(camera_lines[line])
+        }
+
+        camera_lines = []
+
+        for (cam in state.cameras) {
+          positions = state.cameras[cam]
+
+
+          for (position in positions) {
+            var line = new THREE.Geometry();
+            line.vertices.push(new THREE.Vector3(...positions[position]))
+            let { x, y, z } = camera_positions[cam]
+            console.log([x, y, z])
+            line.vertices.push(new THREE.Vector3(x, y, z))
+            let cam_line = new THREE.Line(line, line_material)
+            scene.add(cam_line)
+            camera_lines.push(cam_line)
+          }
+        }
+
+        diff = Object.keys(subjects).filter(x => !Object.keys(state.subjects).includes(x));
+        diff.forEach(function(key) {
+          scene.remove(subjects[key])
+        })
         for (key in state.subjects) {
           var element = state.subjects[key];
 
+          console.log(state.subjects)
           cube = null
           if (key in subjects) {
             cube = subjects[key]
           } else {
-            var geometry = new THREE.BoxGeometry( 0.25, 0.25, 0.25 )
+            var geometry = new THREE.BoxGeometry( 0.1, 0.1, 0.1 )
             var material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } )
             cube = new THREE.Mesh( geometry, material )
             scene.add( cube )
             subjects[key] = cube
+            console.log(subjects)
           }
           cube.position.x = element.x
           cube.position.y = element.y
@@ -182,7 +228,7 @@
             fixture_subjects[fxt] = line
           }
         }
-        console.log('Update state called')
+        // console.log('Update state called')
       }
 
       function animate() {
