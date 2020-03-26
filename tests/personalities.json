@@ -3,25 +3,38 @@
     "id": 1,
     "manufacturer": "Hex",
     "model": "150w beam",
-    "channels": 16,
-    "attributes": [
-      { "name": "pan", "offset": 0, "attribute_type": "position", "range": 540, "default": 127, "multiplier_type": "wide", "invert": "true" },
-      { "name": "tilt", "offset": 2, "attribute_type": "position", "range": 230, "default": 127, "multiplier_type": "wide" },
-      { "name": "dimmer", "offset": 5, "attribute_type": "intensity", "default": 40 },
-      { "name": "focus", "offset": 6, "attribute_type": "beam", "multiplier_length": 3, "default": 40 }
+    "modes": [
+      {
+        "id": 1,
+        "name": "Extended",
+        "channels": 16,
+        "attributes": [
+          { "name": "pan", "offset": 0, "attribute_type": "position", "range": 540, "default": 127, "multiplier_type": "wide", "invert": "true" },
+          { "name": "tilt", "offset": 2, "attribute_type": "position", "range": 220, "default": 127, "multiplier_type": "wide" },
+          { "name": "dimmer", "offset": 5, "attribute_type": "intensity", "default": 0, "range": 255 },
+          { "name": "focus", "offset": 11, "attribute_type": "beam", "default": 180 },
+          { "name": "gobo", "offset": 8, "attribute_type": "beam", "default": 0 }
+        ]
+      }
     ]
   },
   {
     "id": 2,
     "manufacturer": "Robe",
     "model": "ColorSpot 250AT",
-    "channels": 20,
-    "attributes": [
-      { "name": "pan", "offset": 0, "attribute_type": "position", "range": 540, "default": 127 },
-      { "name": "tilt", "offset": 2, "attribute_type": "position", "range": 250, "default": 127 },
-      { "name": "focus", "offset": 15, "attribute_type": "beam", "default": 80, "multiplier_type": "wide" },
-      { "name": "shutter", "offset": 17, "attribute_type": "intensity", "default": 255 },
-      { "name": "dimmer", "offset": 18, "attribute_type": "intensity", "multiplier_type": "wide" }
+    "modes": [
+      {
+        "id": 1,
+        "name": "Extended",
+        "channels": 20,
+        "attributes": [
+          { "name": "pan", "offset": 0, "attribute_type": "position", "range": 540, "default": 127 },
+          { "name": "tilt", "offset": 2, "attribute_type": "position", "range": 250, "default": 127 },
+          { "name": "focus", "offset": 15, "attribute_type": "beam", "default": 80, "multiplier_type": "wide" },
+          { "name": "shutter", "offset": 17, "attribute_type": "intensity", "default": 255 },
+          { "name": "dimmer", "offset": 18, "attribute_type": "intensity", "multiplier_type": "wide" }
+        ]
+      }
     ]
   }
 ]
