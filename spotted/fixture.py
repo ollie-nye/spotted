@@ -25,7 +25,7 @@ class Fixture:
     """
 
     self.fixture_id = config['id']
-    self.personality = find_personality_by_id(config['personality'])
+    self.personality = find_personality_by_id(config['personality'], config['mode'])
     self.address = {
       'net': config['net'],
       'subnet': config['subnet'],
@@ -80,7 +80,11 @@ class Fixture:
     """
 
     dimmer = self.personality.get_attribute('dimmer')
-    self.levels[dimmer.offset] = dimmer.default
+    max = dimmer.range
+    self.levels[dimmer.offset] += 1
+
+    if self.levels[dimmer.offset] > max:
+      self.levels[dimmer.offset] = max
 
   def close(self):
     """
@@ -88,7 +92,11 @@ class Fixture:
     """
 
     dimmer = self.personality.get_attribute('dimmer')
+    # self.levels[dimmer.offset] -= 2
     self.levels[dimmer.offset] = 0
+
+    # if self.levels[dimmer.offset] < 0:
+    #   self.levels[dimmer.offset] = 0
 
   def point_at(self, position):
     """

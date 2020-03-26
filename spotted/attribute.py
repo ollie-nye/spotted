@@ -33,7 +33,7 @@ class Attribute:
     if 'range' in json:
       self.range = json['range']
 
-    self.default = 255
+    self.default = 0
     if 'default' in json:
       self.default = json['default']
 
