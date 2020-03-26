@@ -23,6 +23,8 @@ with x being horizontal, y being vertical, and z being depth
 - A multi-threaded CPU is required for system stability, ideally one thread per
 two cameras in the system
 
+![Example network layout](hardware_network.png)
+
 ## Configuring
 
 ### System
