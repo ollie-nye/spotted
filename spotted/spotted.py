@@ -2,6 +2,7 @@
 Spotted
 """
 
+import sys
 import math
 import json
 
@@ -89,18 +90,42 @@ class Spotted:
     Sets up state, calibration, personalities, cameras, room, fixtures and universes
     """
 
-    self.config = json.load(open('config/config.json'))
-    load_personalities('config/personalities.json')
+    try:
+      self.config = json.load(open('config/config.json'))
+      load_personalities('config/personalities.json')
+    except FileNotFoundError as error:
+      print('A required config file could not be found:', error)
+      sys.exit(2)
 
     self.current_state = dict()
-    self.calibration = Calibration(self.config['calibration'])
+
+    if 'calibration' in self.config:
+      self.calibration = Calibration(self.config['calibration'])
+    else:
+      print("'calibration' key does not exist in the config")
+      sys.exit(3)
+
     self.cameras = []
-    for camera in self.config['cameras']:
-      self.cameras.append(Camera(camera, self.calibration))
+    if 'cameras' in self.config:
+      for index, camera in enumerate(self.config['cameras']):
+        cam = Camera(camera, self.calibration)
+        self.cameras.append(cam)
+        self.config['cameras'][index]['initial_point'] = cam.initial_point.as_dict()
+    else:
+      print("'cameras' key does not exist in the config")
+      sys.exit(3)
 
+    for camera in self.cameras:
+      if not camera.capture.isOpened():
+        print('Camera', camera.cam_id, 'could not be opened. Exiting')
+        sys.exit(4)
 
-    room_json = self.config['room']
-    self.room = Room(room_json['x'], room_json['y'], room_json['z'])
+    if 'room' in self.config:
+      room_json = self.config['room']
+      self.room = Room(room_json['x'], room_json['y'], room_json['z'])
+    else:
+      print("'room' key does not exist in the config")
+      sys.exit(3)
 
     self.universes = Universes()
     for fixture_config in self.config['fixtures']:

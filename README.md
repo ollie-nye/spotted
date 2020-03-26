@@ -292,3 +292,10 @@ Development libraries
 
 Start the control server with `python3 main.py` from within the project
 directory
+
+### Exit codes
+
+- 1 - General failure
+- 2 - Missing config file
+- 3 - Missing config key
+- 4 - Incorrect configuration
