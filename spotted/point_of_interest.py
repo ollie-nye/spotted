@@ -14,14 +14,14 @@ class PointOfInterest:
   produced it
   """
 
-  def __init__(self, camera_position, position, location):
+  def __init__(self, position, location=None, camera_position=None, *, increment_step=2, decrement_step=30):
     """
     Creates an instance of a point
 
     Arguments:
-      camera_position {Coordinate} -- Position of the origin camera
       position {Coordinate} -- Position of the point
-      location {tuple} -- Pixel coordinates of the point
+      location {tuple} -- Pixel coordinates of the point. Can be None
+      camera_position {Coordinate} -- Position of the origin camera. Can be None
 
     Returns:
       Instance of PointOfInterest
@@ -32,12 +32,15 @@ class PointOfInterest:
     self.count = 100
     self.weight = 1
 
+    self.increment_step = increment_step
+    self.decrement_step = decrement_step
+
   def increment_count(self):
     """
     Increase count and recalculate weight
     """
 
-    self.count += 2
+    self.count += self.increment_step
     self.recalculate_weight()
 
   def decrement_count(self):
@@ -46,7 +49,7 @@ class PointOfInterest:
     Count cannot go below 1
     """
 
-    self.count -= 30
+    self.count -= self.decrement_step
     if self.count < 1:
       self.count = 1
     self.recalculate_weight()
@@ -61,7 +64,7 @@ class PointOfInterest:
     if self.weight > 255:
       self.weight = 255
 
-  def update_position(self, position, location):
+  def update_position(self, position, location=None):
     """
     Update position, location and direction vector from camera position
 
@@ -72,7 +75,8 @@ class PointOfInterest:
 
     self.position = position
     self.location = location
-    self.direction_vector = np.subtract(position.as_vector(), self.camera_position.as_vector())
+    if self.camera_position is not None:
+      self.direction_vector = np.subtract(position.as_vector(), self.camera_position.as_vector())
 
   def diff_from_position(self, position):
     """
