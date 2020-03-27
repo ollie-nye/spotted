@@ -6,7 +6,8 @@ Spotted is a vision based automated followspot, focused on live events. It takes
 the feed from multiple IP cameras, and outputs data to fixtures spaced around a
 room to keep subjects in the room in the spotlight.
 
-This is the primary deliverable for a university final year project
+This is the primary deliverable for a university final year project and as such
+is not suitable for commercial use.
 
 ## Behaviour
 
