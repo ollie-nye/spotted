@@ -304,3 +304,7 @@ directory
 - 2 - Missing config file
 - 3 - Missing config key
 - 4 - Incorrect configuration
+
+## License
+
+This project is intentionally unlicensed, all rights reserved.
