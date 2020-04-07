@@ -81,24 +81,6 @@ def create_rotation_matrix(x, y, z):
     ]
   ])
 
-  # return np.array([
-  #   [
-  #     math.cos(a) * math.cos(b),
-  #     (math.cos(a) * math.sin(b) * math.sin(c)) - (math.sin(a) * math.cos(c)),
-  #     (math.cos(a) * math.sin(b) * math.cos(c)) + (math.sin(a) * math.sin(c))
-  #   ],
-  #   [
-  #     math.sin(a) * math.cos(b),
-  #     (math.sin(a) * math.sin(b) * math.sin(c)) + (math.cos(a) * math.cos(c)),
-  #     (math.sin(a) * math.sin(b) * math.cos(c)) - (math.cos(a) * math.sin(c))
-  #   ],
-  #   [
-  #     -math.sin(b),
-  #     math.cos(b) * math.sin(c),
-  #     math.cos(b) * math.cos(c)
-  #   ]
-  # ])
-
 # pylint: disable=invalid-name
 def pythagoras(a_x, a_y, b_x, b_y):
   """
