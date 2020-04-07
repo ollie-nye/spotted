@@ -80,11 +80,11 @@ class Fixture:
     """
 
     dimmer = self.personality.get_attribute('dimmer')
-    max = dimmer.range
+    max_val = dimmer.range
     self.levels[dimmer.offset] += 1
 
-    if self.levels[dimmer.offset] > max:
-      self.levels[dimmer.offset] = max
+    if self.levels[dimmer.offset] > max_val:
+      self.levels[dimmer.offset] = max_val
 
   def close(self):
     """
