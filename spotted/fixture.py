@@ -43,7 +43,7 @@ class Fixture:
     self.location = Coordinate(pos['x'], pos['y'], pos['z'])
     self.position = Coordinate(0, 0, 0)
 
-    self.pan_offset = 0
+    self.pan_offset = math.radians(config['rotation']['y'])
     self.tilt_invert = False
 
     self.rotation_matrix = create_rotation_matrix(
@@ -60,7 +60,12 @@ class Fixture:
 
     pan_attribute = self.personality.get_attribute('pan')
     channel = pan_attribute.offset
-    self.levels[channel] = value
+
+    if pan_attribute.multiplier_type == 'wide':
+      self.levels[channel] = value // 255 # Course channel
+      self.levels[channel + 1] = value % 255 # Fine channel
+    else:
+      self.levels[channel] = value // 255
 
   def tilt(self, value):
     """
@@ -72,11 +77,16 @@ class Fixture:
 
     tilt_attribute = self.personality.get_attribute('tilt')
     channel = tilt_attribute.offset
-    self.levels[channel] = value
+
+    if tilt_attribute.multiplier_type == 'wide':
+      self.levels[channel] = value // 255 # Course channel
+      self.levels[channel + 1] = value % 255 # Fine channel
+    else:
+      self.levels[channel] = value // 255
 
   def open(self):
     """
-    Light fixture
+    Strike fixture
     """
 
     dimmer = self.personality.get_attribute('dimmer')
@@ -106,19 +116,17 @@ class Fixture:
       position {Coordinate} -- Position to point at, real world
     """
 
-    print('Pointing at', position.x, position.y, position.z)
-
     pos_from_fixture = position.diff(self.location).as_vector()
     pos_from_fixture[1] = -pos_from_fixture[1]
 
     coordinate = SphericalCoordinate.from_cartesian(*pos_from_fixture)
 
     pan_range = math.radians(self.personality.get_attribute('pan').range)
-    pan_angle = scale(coordinate.azimuth + math.radians(180), 0, pan_range, 0, 255)
+    pan_angle = scale(coordinate.azimuth + math.radians(180) + self.pan_offset, 0, pan_range, 0, 65025)
 
     tilt_range = math.radians(self.personality.get_attribute('tilt').range)
     tilt_extension = (tilt_range - math.pi) / 2
-    tilt_angle = scale(coordinate.elevation + tilt_extension, 0, tilt_range, 255, 0)
+    tilt_angle = scale(coordinate.elevation + tilt_extension, 0, tilt_range, 65025, 0)
 
     self.pan(pan_angle)
     self.tilt(tilt_angle)
