@@ -28,6 +28,21 @@ class Coordinate:
     self.y = y
     self.z = z
 
+  def __str__(self):
+    return f"({self.x}, {self.y}, {self.z})"
+
+  def __repr__(self):
+    return f"({self.x}, {self.y}, {self.z})"
+
+  def __add__(self, coordinate):
+    return Coordinate(self.x + coordinate.x, self.y + coordinate.y, self.z + coordinate.z)
+
+  def __sub__(self, coordinate):
+    return Coordinate(self.x - coordinate.x, self.y - coordinate.y, self.z - coordinate.z)
+
+  def __truediv__(self, divisor):
+    return Coordinate(self.x / divisor, self.y / divisor, self.z / divisor)
+
   def diff(self, position):
     """
     Difference between self and position
