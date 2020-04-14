@@ -2,24 +2,24 @@
   "artnet": "10.0.0.50",
   "calibration": {
     "dimension": [2048, 1536],
-    "camera": [[1739.0072076512008, 0.0, 1094.1547861092195], [0.0, 1715.3793484933933, 714.8431601041761], [0.0, 0.0, 1.0]],
-    "distortion": [[0.10101718971446061], [-1.1768049120332442], [2.3397431068756416], [-1.877526489124148]]
+    "camera": [[1560.4213486225046, 0.0, 1050.8972596532385], [0.0, 1563.2664464043153, 747.1487200699582], [0.0, 0.0, 1.0]],
+    "distortion": [[-0.059142684903839664], [0.02386601511813416], [-0.32038269497024474], [0.34536003649836755]]
   },
-  "room": { "x": 3.52, "y": 2.42, "z": 3.85 },
+  "room": { "x": 4.922, "y": 3.5, "z": 7.66 },
   "cameras": [
     {
       "id": 1,
-      "url": "rtmp://10.0.0.22/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
-      "position": { "x": 1.35, "y": 2.04, "z": 0.5 },
-      "rotation": { "x": -25.535, "y": 77.324, "z": -7.141 },
+      "url": "rtmp://10.0.0.23/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
+      "position": { "x": 2.18, "y": 2.31, "z": 0.47 },
+      "rotation": { "x": -26.19, "y": 100, "z": 5.36 },
       "viewing_angle": { "horizontal": 80, "vertical": 42 },
       "resolution": { "horizontal": 2048, "vertical": 1536 }
     },
     {
       "id": 2,
-      "url": "rtmp://10.0.0.23/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
-      "position": { "x": 1.53, "y": 2.23, "z": 3.67 },
-      "rotation": { "x": 25.0, "y": -90.0, "z": 0.0 },
+      "url": "rtmp://10.0.0.22/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
+      "position": { "x": 2.03, "y": 2.28, "z": 7.56 },
+      "rotation": { "x": 28, "y": -92, "z": 0.0 },
       "viewing_angle": { "horizontal": 80, "vertical": 42 },
       "resolution": { "horizontal": 2048, "vertical": 1536 }
     }
@@ -33,8 +33,8 @@
       "subnet": 0,
       "universe": 0,
       "address": 1,
-      "position": { "x": 2.2, "y": 2.1, "z": 0.6 },
-      "rotation": { "x": 0, "y": 0, "z": 0 }
+      "position": { "x": 1.969, "y": 2.716, "z":0.349 },
+      "rotation": { "x": 0, "y": 180, "z": 0 }
     },
     {
       "id": 2,
@@ -44,8 +44,30 @@
       "subnet": 0,
       "universe": 0,
       "address": 17,
-      "position": { "x": 3.3, "y": 2.1, "z": 0.6 },
-      "rotation": { "x": 0, "y": 0, "z": 0 }
+      "position": { "x": 2.902, "y": 2.716, "z": 0.349 },
+      "rotation": { "x": 0, "y": 180, "z": 0 }
+    },
+    {
+      "id": 3,
+      "personality": 1,
+      "mode": 1,
+      "net": 0,
+      "subnet": 0,
+      "universe": 0,
+      "address": 33,
+      "position": { "x": 3.475, "y": 2.685, "z": 4.936 },
+      "rotation": { "x": 0, "y": -90, "z": 0 }
+    },
+    {
+      "id": 4,
+      "personality": 1,
+      "mode": 1,
+      "net": 0,
+      "subnet": 0,
+      "universe": 0,
+      "address": 49,
+      "position": { "x": 3.475, "y": 2.685, "z": 5.947 },
+      "rotation": { "x": 0, "y": -90, "z": 0 }
     }
   ]
 }
