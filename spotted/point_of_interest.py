@@ -14,7 +14,7 @@ class PointOfInterest:
   produced it
   """
 
-  def __init__(self, position, location=None, camera_position=None, *, increment_step=2, decrement_step=30):
+  def __init__(self, position, location=None, camera_position=None, *, increment_step=2, decrement_step=15):
     """
     Creates an instance of a point
 
