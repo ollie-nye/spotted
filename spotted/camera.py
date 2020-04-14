@@ -114,7 +114,6 @@ def contour_closeness(pair):
 
   return pythagoras(one.center_x, one.center_y, two.center_x, two.center_y) - one.radius - two.radius
 
-
 # pylint: disable=too-many-instance-attributes
 class Camera:
   """
@@ -152,8 +151,8 @@ class Camera:
     }
 
     self.virtual_resolution = {
-      'horizontal': 640,
-      'vertical': 480
+      'horizontal': 960,
+      'vertical': 720
     }
 
     self.angular_horiz_midpoint = self.viewing_angle['horizontal'] / 2
@@ -165,7 +164,7 @@ class Camera:
 
     self.capture = cv.VideoCapture(self.url)
 
-    self.current_background = None
+    self.current_background = np.zeros((self.resolution['vertical'], self.resolution['horizontal']), dtype=np.uint8)
     self.current_frame = None
 
     self.points_of_interest = []
@@ -182,18 +181,33 @@ class Camera:
     Sets self.current_frame to the overdrawn frame for possible output
     """
 
-    kernel = np.ones((9, 9), np.uint8)
-    blur_kernel = np.ones((9, 9), np.uint8) / (9**2)
+    kernel = np.ones((4, 4), np.uint8)
+    blur_kernel = np.ones((4, 4), np.uint8) / (4**2)
     resolution = (self.virtual_resolution['horizontal'], self.virtual_resolution['vertical'])
 
-    last_frame = None
-    avg_frame = np.zeros((480, 640), dtype=np.float)
+    avg_frame = np.zeros((self.virtual_resolution['vertical'], self.virtual_resolution['horizontal']), dtype=np.float)
+    init_frame = np.zeros((self.virtual_resolution['vertical'], self.virtual_resolution['horizontal']), dtype=np.float)
+
+    initial_frames = 30
+    skip_frames = 60
+
+    for i in range(initial_frames + skip_frames):
+      ret, frame = self.capture.read()
+      if i < skip_frames:
+        continue
+
+      if ret:
+        frame = self.calibration.restore(frame)
+        frame = cv.resize(frame, resolution)
+        frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+        frame = cv.filter2D(frame, -1, blur_kernel)
+        cv.accumulateWeighted(frame, init_frame, 0.1)
+
 
     while 1:
       ret, frame = self.capture.read()
 
       if ret:
-
         frame = self.calibration.restore(frame)
         frame = cv.resize(frame, resolution)
         frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
@@ -226,52 +240,59 @@ class Camera:
 
         # print(frame)
 
-
         # diff = (np.not_equal(last_frame, frame)*255).astype(np.uint8)
-        diff = (np.subtract(frame, avg_frame)).astype(np.uint8)
+        composite_average = np.add((init_frame * 0.25), (avg_frame * 0.75))
+        diff = abs(np.subtract(frame, init_frame)).astype(np.uint8)
+
+
+
+
         # diff = (np.subtract(np.full_like(frame, 127), frame))
         # cv.normalize(diff, diff, 0, 255, cv.NORM_MINMAX)
-        _, diff = cv.threshold(diff, 20, 255, cv.THRESH_BINARY)
-        diff = cv.erode(diff, kernel)
-        diff = cv.erode(diff, kernel)
-        diff = cv.dilate(diff, kernel)
+        _, diff = cv.threshold(diff, 255//4, 255, cv.THRESH_BINARY)
+
+        # diff = cv.erode(diff, kernel)
+        # diff = cv.dilate(diff, kernel)
+        # diff = cv.erode(diff, kernel)
+        # diff = cv.dilate(diff, kernel)
+
         # self.current_frame = diff
         # continue
-        # diff = cv.morphologyEx(diff, cv.MORPH_OPEN, kernel)
-        # diff = cv.morphologyEx(diff, cv.MORPH_CLOSE, kernel)
+        diff = cv.morphologyEx(diff, cv.MORPH_OPEN, kernel)
+        diff = cv.morphologyEx(diff, cv.MORPH_CLOSE, kernel)
+        diff = cv.erode(diff, kernel)
+        raw_diff = diff
 
 
         contours, _ = cv.findContours(diff, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         diff = np.zeros_like(diff)
 
-        grouped_contours = [Contour(points) for points in contours]
+        grouped_contours = set()
+        for contour in [contour for contour in [Contour(points) for points in contours] if contour.area > 6000]:
+          grouped_contours.add(contour)
+
         made_update = True
+        it = 0
         while made_update:
+          it += 1
           made_update = False
-          added_contours = set()
 
           contour_pairs = sorted(itertools.combinations(grouped_contours, 2), key=contour_closeness)
-          grouped_contours = []
           for pair in contour_pairs:
             one, two = pair
             closeness = contour_closeness(pair)
-            if closeness < 25:
-              if (not one in added_contours) and (not two in added_contours):
-                points = []
-                points.extend(one.points)
-                points.extend(two.points)
-                grouped_contours.append(Contour(points))
-                made_update = True
-            else:
-              if not one in added_contours:
-                grouped_contours.append(one)
-              if not two in added_contours:
-                grouped_contours.append(two)
-            added_contours.add(one)
-            added_contours.add(two)
+            if closeness < 15:
+              points = []
+              points.extend(one.points)
+              points.extend(two.points)
+              grouped_contours.add(Contour(points))
+              grouped_contours.remove(one)
+              grouped_contours.remove(two)
+              made_update = True
+              break
 
-        # contours = [contour.np_points for contour in grouped_contours if contour.area > 100]
         contours = [contour.np_points for contour in grouped_contours]
+        # contours = [contour.np_points for contour in grouped_contours]
         # contours = group_contours(contours)
 
         self.update_pois(contours, diff)
@@ -290,7 +311,13 @@ class Camera:
             cv.circle(diff, poi.location, 15, 255, -1)
           else:
             cv.circle(diff, poi.location, 15, 150, -1)
-        self.current_frame = np.vstack((frame, diff))
+
+        out_frame = cv.resize(diff, (300, 225))
+        for frm in [self.current_background]:
+          if frm is not None:
+            frm = cv.resize(frm, (300, 225))
+            out_frame = np.vstack((out_frame, frm))
+        self.current_frame = out_frame
 
   def calculate_real_world_coordinate(self, location):
     """
@@ -316,15 +343,21 @@ class Camera:
       scale(displacement_vertical, 0, self.vert_midpoint, 0, self.angular_vert_midpoint)
     )
 
+    # print('horiz:', angular_displacement_horizontal, 'vert:', angular_displacement_vertical)
+
     identity_x = 1.0
     identity_y = identity_x * math.tan(angular_displacement_vertical)
     identity_z = identity_x * math.tan(angular_displacement_horizontal)
 
     identity_position = [identity_x, identity_y, identity_z]
 
-    rotated_position = self.rotation_matrix[1].dot(identity_position)
+    # rotated_position = self.rotation_matrix[1].dot(identity_position)
+    # rotated_position = self.rotation_matrix[0].dot(rotated_position)
+    # rotated_position = self.rotation_matrix[2].dot(rotated_position)
+
+    rotated_position = self.rotation_matrix[2].dot(identity_position)
+    rotated_position = self.rotation_matrix[1].dot(rotated_position)
     rotated_position = self.rotation_matrix[0].dot(rotated_position)
-    rotated_position = self.rotation_matrix[2].dot(rotated_position)
 
     rotated_position = Coordinate(*rotated_position)
 
@@ -353,13 +386,14 @@ class Camera:
 
       displaced_position = self.calculate_real_world_coordinate((center_x, center_y))
 
+      # keep it within the bounds of the world
       if (displaced_position.x < 0) or (displaced_position.y < 0) or (displaced_position.z < 0):
         continue
 
       made_update = False
       for poi in self.points_of_interest:
         diff_from_pos = poi.diff_from_position(displaced_position)
-        if diff_from_pos < 0.05:
+        if diff_from_pos < 0.1:
           poi.update_position(displaced_position, (center_x, center_y))
           poi.increment_count()
           updated_pois.append(poi)
