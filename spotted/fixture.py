@@ -3,6 +3,7 @@ Spotted Fixture
 """
 
 import math
+import time
 import numpy as np
 
 from spotted.personality import find_personality_by_id
@@ -42,6 +43,11 @@ class Fixture:
     pos = config['position']
     self.location = Coordinate(pos['x'], pos['y'], pos['z'])
     self.position = Coordinate(0, 0, 0)
+
+    self.last_position = None
+    self.current_aim = None
+    self.position_step = None
+    self.steps_taken = 0
 
     self.pan_offset = math.radians(config['rotation']['y'])
     self.tilt_invert = False
@@ -116,20 +122,12 @@ class Fixture:
       position {Coordinate} -- Position to point at, real world
     """
 
-    pos_from_fixture = position.diff(self.location).as_vector()
-    pos_from_fixture[1] = -pos_from_fixture[1]
+    if self.current_aim is None:
+      self.last_position = position
 
-    coordinate = SphericalCoordinate.from_cartesian(*pos_from_fixture)
-
-    pan_range = math.radians(self.personality.get_attribute('pan').range)
-    pan_angle = scale(coordinate.azimuth + math.radians(180) + self.pan_offset, 0, pan_range, 0, 65025)
-
-    tilt_range = math.radians(self.personality.get_attribute('tilt').range)
-    tilt_extension = (tilt_range - math.pi) / 2
-    tilt_angle = scale(coordinate.elevation + tilt_extension, 0, tilt_range, 65025, 0)
-
-    self.pan(pan_angle)
-    self.tilt(tilt_angle)
+    self.current_aim = position
+    self.position_step = (self.current_aim - self.last_position) / 10
+    self.steps_taken = 0
 
   def calibrate(self, room):
     """
@@ -146,3 +144,45 @@ class Fixture:
     #   self.tilt_invert = True
     # else:
     #   self.pan_offset = offset_angle
+
+  def follow(self):
+    """
+    Infinite loop that decelerates towards a configured point
+    """
+
+    while True:
+      time.sleep(1/50)
+
+      if self.current_aim is None:
+        continue
+      else:
+        if self.steps_taken >= 10:
+          continue
+
+        new_step = self.last_position + self.position_step
+        self.last_position = new_step
+        self.steps_taken += 1
+
+        pos_from_fixture = new_step.diff(self.location).as_vector()
+        pos_from_fixture[1] = -pos_from_fixture[1]
+
+        coordinate = SphericalCoordinate.from_cartesian(*pos_from_fixture)
+
+        pan_range = math.radians(self.personality.get_attribute('pan').range)
+
+        pan_val = coordinate.azimuth + self.pan_offset
+
+        pan_angle = scale(pan_val, 0, pan_range, 0, 65025)
+
+        tilt_range = math.radians(self.personality.get_attribute('tilt').range)
+        tilt_extension = (tilt_range - math.pi) / 2
+
+        if pan_val < 0: # pan is inverted, invert tilt to match
+          tilt_val = -(coordinate.elevation + tilt_extension)
+        else:
+          tilt_val = coordinate.elevation + tilt_extension
+
+        tilt_angle = scale(tilt_val, 0, tilt_range, 65025, 0)
+
+        self.pan(pan_angle)
+        self.tilt(tilt_angle)
