@@ -31,6 +31,7 @@ from spotted.room import Room
 from spotted.calibration import Calibration
 from spotted.websocket import Websocket
 from spotted.static_server import StaticServer
+from spotted.helpers import scale
 
 def start_ui(server_class=HTTPServer, handler_class=StaticServer, port=8080):
   """
@@ -70,10 +71,14 @@ class Spotted:
 
     self.cameras = []
     if 'cameras' in self.config:
-      for index, camera in enumerate(self.config['cameras']):
-        cam = Camera(camera, self.calibration)
-        self.cameras.append(cam)
-        self.config['cameras'][index]['initial_point'] = cam.initial_point.as_dict()
+      if len(self.config['cameras']) < 1:
+        print("'cameras' key must contain at least one camera")
+        sys.exit(4)
+      else:
+        for index, camera in enumerate(self.config['cameras']):
+          cam = Camera(camera, self.calibration)
+          self.cameras.append(cam)
+          self.config['cameras'][index]['initial_point'] = cam.initial_point.as_dict()
     else:
       print("'cameras' key does not exist in the config")
       sys.exit(3)
@@ -105,9 +110,6 @@ class Spotted:
       print("'fixtures' key does not exist in the config")
       sys.exit(3)
 
-
-
-
   # pylint: disable=invalid-name, too-many-locals
   def calculate_intersection(self, poi1, poi2, close_enough, points):
     """
@@ -136,7 +138,9 @@ class Spotted:
 
     euclid_distance = math.sqrt(distance[0]**2 + distance[1]**2 + distance[2]**2)
 
-    if euclid_distance > 0.5:
+    print('distance:', euclid_distance)
+
+    if euclid_distance > 0.25:
       close_enough = False
     else:
       ps = np.add(poi1.position.as_vector(), s)
@@ -157,7 +161,7 @@ class Spotted:
 
     updated_pois = []
 
-    print('There are', len(current_pois), 'pois coming in')
+    # print('There are', len(current_pois), 'pois coming in')
 
     for incoming_poi in current_pois:
       made_update = False
@@ -165,7 +169,7 @@ class Spotted:
         poi = sorted(self.pois, key=lambda p: p.diff_from_position(incoming_poi.position))[0]
         diff_from_pos = poi.diff_from_position(incoming_poi.position)
         if diff_from_pos < 0.50:
-          print('Updated position')
+          # print('Updated position')
           poi.update_position(incoming_poi.position)
           poi.increment_count()
           updated_pois.append(poi)
@@ -189,10 +193,10 @@ class Spotted:
     self.pois = [p for p in self.pois if p.count != 1]
     self.pois = sorted(self.pois, key=lambda p: p.weight, reverse=True)
 
-    print('There are', len(self.pois), 'pois going out')
+    # print('There are', len(self.pois), 'pois going out')
 
-    for poi in self.pois:
-      print(poi, poi.weight)
+    # for poi in self.pois:
+    #   print(poi, poi.weight)
 
   def combine_points(self):
     """
@@ -200,7 +204,71 @@ class Spotted:
     interest
     """
 
-    pois = [camera.points_of_interest for camera in self.cameras]
+    fixture_positions = []
+    for universe in self.universes.universes:
+      for fixture in universe.fixtures:
+        if fixture.last_position is not None:
+          fixture_positions.append(fixture.last_position)
+
+    threshold = 25
+
+    pois = []
+    for camera in self.cameras:
+      fixture_camera_coordinates = []
+      inverse_rotation = np.linalg.inv(camera.rotation_matrix)
+      for fixt_pos in fixture_positions:
+        displaced = (fixt_pos - camera.position).as_vector()
+
+        # print('displaced:', displaced)
+
+        # print('inverse_rotation:', inverse_rotation)
+
+        identity = inverse_rotation[0].dot(displaced)
+        identity = inverse_rotation[1].dot(identity)
+        identity = inverse_rotation[2].dot(identity)
+
+        # identity = identity
+
+        # print('identity:', identity)
+
+        angular_displacement_horizontal = math.degrees(math.atan2(identity[2], 1.0))
+        angular_displacement_vertical = -math.degrees(math.atan2(identity[1], 1.0))
+
+        # print('angular_displacement_horizontal:', angular_displacement_horizontal)
+        # print('angular_displacement_vertical:', angular_displacement_vertical)
+
+        displacement_horizontal = round(scale(angular_displacement_horizontal, 0, camera.angular_horiz_midpoint, 0, camera.horiz_midpoint) + camera.horiz_midpoint)
+        displacement_vertical = round(scale(angular_displacement_vertical, 0, camera.angular_vert_midpoint, 0, camera.vert_midpoint) + camera.vert_midpoint)
+
+        print('predicted camera coordinates are', displacement_horizontal, displacement_vertical)
+
+        fixture_camera_coordinates.append((displacement_horizontal, displacement_vertical))
+
+        camera.current_background = np.zeros((camera.resolution['vertical'], camera.resolution['horizontal']), dtype=np.uint8)
+
+        cv.circle(camera.current_background, (displacement_vertical, displacement_horizontal), 15, 255, 2)
+
+      possible_camera_pois = camera.points_of_interest
+      camera_pois = []
+      for poi in possible_camera_pois:
+        collision = False
+        for fixt_pos in fixture_camera_coordinates:
+          lx, ly = poi.location
+          fx, fy = fixt_pos
+
+          if abs(lx - fx) < threshold and abs(ly - fy) < threshold:
+            print('poi got too close')
+            collision = True
+
+        if not collision:
+          camera_pois.append(poi)
+
+
+
+
+
+      pois.append(camera_pois)
+
     if len(pois) == 0:
       return []
 
@@ -237,7 +305,8 @@ class Spotted:
       for universe in self.universes.universes:
         packet = Dmx(0, universe)
         sock.sendto(packet.serialize(), (self.config['artnet'], 6454))
-        time.sleep(1/30)
+        sock.sendto(packet.serialize(), ('10.0.0.19', 6454))
+        time.sleep(1/50)
 
   def start_websocket(self, port=8081):
     """
@@ -258,30 +327,50 @@ class Spotted:
     Starts up all essential threads and drops to processing points from cameras
     """
 
-    threading.Thread(target=start_ui, daemon=True).start()
-    threading.Thread(target=self.start_websocket, daemon=True).start()
+    daemon = False
+
+    threading.Thread(target=start_ui, daemon=daemon).start()
+    threading.Thread(target=self.start_websocket, daemon=daemon).start()
 
     for camera in self.cameras:
-      threading.Thread(target=camera.begin_capture, daemon=True).start()
+      threading.Thread(target=camera.begin_capture, daemon=daemon).start()
 
-    threading.Thread(target=self.start_artnet, daemon=True).start()
+    threading.Thread(target=self.start_artnet, daemon=daemon).start()
+
+    for universe in self.universes.universes:
+      for fixture in universe.fixtures:
+        threading.Thread(target=fixture.follow, daemon=daemon).start()
 
     # coords = [
     #   (0, 0),
-    #   (640, 0),
-    #   (640, 480),
-    #   (0, 480),
-    #   (320, 240)
+    #   (960, 0),
+    #   (960, 720),
+    #   (0, 720),
+    #   (480, 360)
     # ]
 
     # for coord in coords:
     #   real_coord = self.cameras[0].calculate_real_world_coordinate(coord)
-    #   print(coord, 'is at', real_coord.x, real_coord.y, real_coord.z)
+    #   print('1:', coord, 'is at', real_coord.x, real_coord.y, real_coord.z)
+
+    #   real_coord = self.cameras[1].calculate_real_world_coordinate(coord)
+    #   print('2:', coord, 'is at', real_coord.x, real_coord.y, real_coord.z)
     # exit()
 
     last_poi = None
 
     while 1:
+
+      # Uncomment this block for static values
+      # point = Coordinate(0, 0, 0.0)
+      # for fixture in self.universes.universes[0].fixtures:
+      #   fixture.point_at(point)
+      #   fixture.open()
+      #   # self.current_state['maps'][fixture.fixture_id] = id(live_pois[index])
+      # time.sleep(1/30)
+      # continue
+
+
       self.update_pois()
 
       # live_pois = [p for p in self.pois if p.weight > 2.5]
@@ -313,7 +402,7 @@ class Spotted:
         #   point = next_poi
 
 
-        print('There are', len(live_pois), 'points of interest')
+        # print('There are', len(live_pois), 'points of interest')
 
         # point = Coordinate(0.2, 1.7, 3.0)
 
@@ -322,26 +411,33 @@ class Spotted:
         fixture_count = len(self.universes.universes[0].fixtures)
         poi_count = len(live_pois)
 
-        for index in range(min(poi_count, fixture_count)):
-          fixture = self.universes.universes[0].fixtures[index]
-          fixture.point_at(live_pois[index].position)
+        # for index in range(min(poi_count, fixture_count)):
+        #   fixture = self.universes.universes[0].fixtures[index]
+        #   fixture.point_at(live_pois[index].position)
+        #   # fixture.open()
+        #   self.current_state['maps'][fixture.fixture_id] = id(live_pois[index])
+
+        pos = live_pois[0].position
+        for fixture in self.universes.universes[0].fixtures:
+          fixture.point_at(pos)
           fixture.open()
-          self.current_state['maps'][fixture.fixture_id] = id(live_pois[index])
+
+          self.current_state['maps'][fixture.fixture_id] = id(live_pois[0])
 
           # time.sleep(1/30)
       else:
         for fixture in self.universes.universes[0].fixtures:
           fixture.close()
 
-      # out_frame = None
-      # if self.cameras[0].current_frame is not None:
-      #   out_frame = self.cameras[0].current_frame
-      # if self.cameras[1].current_frame is not None:
-      #   if out_frame is not None:
-      #     out_frame = np.hstack((out_frame, self.cameras[1].current_frame))
-      #   else:
-      #     out_frame = self.cameras[1].current_frame
-      # if out_frame is not None:
-      #   cv.imshow('VIDEO', out_frame)
-      #   cv.waitKey(1)
+      out_frame = None
+      if self.cameras[0].current_frame is not None:
+        out_frame = self.cameras[0].current_frame
+      if self.cameras[1].current_frame is not None:
+        if out_frame is not None:
+          out_frame = np.hstack((out_frame, self.cameras[1].current_frame))
+        else:
+          out_frame = self.cameras[1].current_frame
+      if out_frame is not None:
+        cv.imshow('VIDEO', out_frame)
+        cv.waitKey(1)
       time.sleep(1/30)
