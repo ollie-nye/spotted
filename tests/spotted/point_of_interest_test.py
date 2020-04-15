@@ -21,7 +21,7 @@ def test_increment_count(point_of_interest):
 
 def test_decrement_count(point_of_interest):
   point_of_interest.decrement_count()
-  assert point_of_interest.count == 70
+  assert point_of_interest.count == 85
 
   point_of_interest.count = 10
   point_of_interest.decrement_count()

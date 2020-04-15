@@ -5,6 +5,7 @@ Spotted Personality
 import json
 from spotted.mode import Mode
 
+# pylint: disable=too-few-public-methods
 class Personality:
   """
   Spotted Personality

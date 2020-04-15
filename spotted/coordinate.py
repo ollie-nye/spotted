@@ -2,7 +2,6 @@
 Spotted Coordinate
 """
 
-import math
 import numpy as np
 
 class Coordinate:
@@ -42,32 +41,6 @@ class Coordinate:
 
   def __truediv__(self, divisor):
     return Coordinate(self.x / divisor, self.y / divisor, self.z / divisor)
-
-  def diff(self, position):
-    """
-    Difference between self and position
-
-    Arguments:
-      position {Coordinate} -- position to diff to
-
-    Returns:
-      Coordinate with components as difference values
-    """
-
-    return Coordinate(self.x - position.x, self.y - position.y, self.z - position.z)
-
-  def displace_by(self, position):
-    """
-    Add two coordinates
-
-    Arguments:
-      position {Coordinate} -- position to add to self
-
-    Returns:
-      Coordinate with components as summed values
-    """
-
-    return Coordinate(self.x + position.x, self.y + position.y, self.z + position.z)
 
   def as_vector(self):
     """

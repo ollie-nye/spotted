@@ -8,8 +8,6 @@ import itertools
 import numpy as np
 import cv2 as cv
 
-from datetime import datetime
-
 from spotted.contour import Contour
 from spotted.coordinate import Coordinate
 from spotted.point_of_interest import PointOfInterest
@@ -65,54 +63,42 @@ def group_contours(contours):
     list -- New list of joined contours
   """
 
-  groups = []
+  grouped_contours = set()
+  contour_objects = [Contour(points) for points in contours]
+  for contour in [contour for contour in contour_objects if contour.area > 6000]:
+    grouped_contours.add(contour)
 
-  # Group contours into neighbourhoods
-  for contour in contours:
-    if cv.contourArea(contour) < 20:
-      continue
-    center_x, center_y = contour_center(contour)
-    contour = {'contour': contour, 'center': (center_x, center_y)}
+  made_update = True
+  while made_update:
+    made_update = False
 
-    # Do the grouping
-    if len(groups) == 0:
-      groups.append([contour])
-    else:
-      close_groups = find_neighbours(groups, center_x, center_y, 100)
-      if len(close_groups) > 1:
-        new_groups = []
-        for i, group in enumerate(groups):
-          if i not in close_groups:
-            new_groups.append(group)
-        neighbourhood = []
-        for i in close_groups:
-          neighbourhood.extend(groups[i])
-        neighbourhood.append(contour)
-        new_groups.append(neighbourhood)
-        groups = new_groups
-      elif len(close_groups) == 1:
-        groups[list(close_groups)[0]].append(contour)
-      else:
-        groups.append([contour])
+    contour_pairs = sorted(itertools.combinations(grouped_contours, 2), key=contour_closeness)
+    for pair in contour_pairs:
+      one, two = pair
+      closeness = contour_closeness(pair)
+      if closeness < 15:
+        points = []
+        points.extend(one.points)
+        points.extend(two.points)
+        grouped_contours.add(Contour(points))
+        grouped_contours.remove(one)
+        grouped_contours.remove(two)
+        made_update = True
+        break
 
-  # Create the singular neighbourhoods in place of multiple contours
-  contours = []
-  for group in groups:
-    neighbourhood = []
-    for contour in group:
-      neighbourhood.extend(contour['contour'])
-    contours.append(np.array(neighbourhood))
-
+  contours = [contour.np_points for contour in grouped_contours]
   return contours
 
 def contour_closeness(pair):
   """
-
+  Returns the edge-to-edge difference between a pair of contours
   """
 
   one, two = pair
 
-  return pythagoras(one.center_x, one.center_y, two.center_x, two.center_y) - one.radius - two.radius
+  spread = pythagoras(one.center_x, one.center_y, two.center_x, two.center_y)
+
+  return spread - one.radius - two.radius
 
 # pylint: disable=too-many-instance-attributes
 class Camera:
@@ -164,8 +150,15 @@ class Camera:
 
     self.capture = cv.VideoCapture(self.url)
 
-    self.current_background = np.zeros((self.resolution['vertical'], self.resolution['horizontal']), dtype=np.uint8)
+    self.resolution_yx = (self.resolution['vertical'], self.resolution['horizontal'])
+    self.resolution_xy = (self.resolution['horizontal'], self.resolution['vertical'])
+
+
+    self.current_background = np.zeros(self.resolution_yx, dtype=np.uint8)
     self.current_frame = None
+
+    self.kernel = np.ones((4, 4), np.uint8)
+    self.blur_kernel = np.ones((4, 4), np.uint8) / (4**2)
 
     self.points_of_interest = []
 
@@ -173,20 +166,18 @@ class Camera:
       self.rotation.x, self.rotation.y, self.rotation.z
     )
 
-    self.initial_point = self.calculate_real_world_coordinate((self.horiz_midpoint, self.vert_midpoint))
+    midpoint = (self.horiz_midpoint, self.vert_midpoint)
+    self.initial_point = self.calculate_real_world_coordinate(midpoint)
 
-  def begin_capture(self):
+  def create_initial_frame(self):
     """
-    Starts an infinite loop of frame captures.
-    Sets self.current_frame to the overdrawn frame for possible output
+    Create the initial background model
+
+    Returns:
+      np.array
     """
 
-    kernel = np.ones((4, 4), np.uint8)
-    blur_kernel = np.ones((4, 4), np.uint8) / (4**2)
-    resolution = (self.virtual_resolution['horizontal'], self.virtual_resolution['vertical'])
-
-    avg_frame = np.zeros((self.virtual_resolution['vertical'], self.virtual_resolution['horizontal']), dtype=np.float)
-    init_frame = np.zeros((self.virtual_resolution['vertical'], self.virtual_resolution['horizontal']), dtype=np.float)
+    init_frame = np.zeros(self.resolution_yx, dtype=np.float)
 
     initial_frames = 30
     skip_frames = 60
@@ -197,120 +188,79 @@ class Camera:
         continue
 
       if ret:
-        frame = self.calibration.restore(frame)
-        frame = cv.resize(frame, resolution)
-        frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-        frame = cv.filter2D(frame, -1, blur_kernel)
+        frame = self.preprocess_frame(frame)
         cv.accumulateWeighted(frame, init_frame, 0.1)
 
+    return init_frame
 
-    while 1:
+  def preprocess_frame(self, frame):
+    """
+    Apply standard operations to every frame: Undistorts, resizes, blurs and
+    resizes to a standard size
+
+    Arguments:
+      frame {np.array} -- Frame to process
+
+    Returns:
+      np.array
+    """
+
+    frame = self.calibration.restore(frame)
+    frame = cv.resize(frame, self.resolution_xy)
+    frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+    frame = cv.filter2D(frame, -1, self.blur_kernel)
+    return frame
+
+  def process_frame(self, frame, background):
+    """
+    Extracts contours from a frame by segmenting against the given background
+
+    Arguments:
+      frame {np.array} -- Frame to use in comparison
+      background {np.array} -- Background model
+
+    Returns:
+      list of contours
+    """
+
+    diff = abs(np.subtract(frame, background)).astype(np.uint8)
+
+    _, diff = cv.threshold(diff, 255//4, 255, cv.THRESH_BINARY)
+
+    diff = cv.morphologyEx(diff, cv.MORPH_OPEN, self.kernel)
+    diff = cv.morphologyEx(diff, cv.MORPH_CLOSE, self.kernel)
+    diff = cv.erode(diff, self.kernel)
+
+    contours, _ = cv.findContours(diff, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+
+    return contours
+
+  def begin_capture(self):
+    """
+    Starts an infinite loop of frame captures.
+    Sets self.current_frame to the overdrawn frame for possible output
+    """
+
+    avg_frame = np.zeros(self.resolution_yx, dtype=np.float)
+    init_frame = self.create_initial_frame()
+
+    while True:
       ret, frame = self.capture.read()
 
       if ret:
-        frame = self.calibration.restore(frame)
-        frame = cv.resize(frame, resolution)
-        frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-        # frame = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-        # hsv = cv.split(frame)
-        # saturation = np.full_like(hsv[1], 180)
-        # value = np.full_like(hsv[2], 127)
-        # normalized = cv.merge([hsv[0], saturation, value])
-        # frame = cv.cvtColor(normalized, cv.COLOR_HSV2BGR)
-        # frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-        frame = cv.filter2D(frame, -1, blur_kernel)
-
-        # rgb = cv.split(frame)
-        # for index, channel in enumerate(rgb):
-        #   _, channel = cv.threshold(channel, 150, 255, cv.THRESH_TOZERO_INV)
-        #   rgb[index] = channel
-        # frame = cv.merge(rgb)
+        frame = self.preprocess_frame(frame)
 
         if avg_frame is None:
           avg_frame = frame
         cv.accumulateWeighted(frame, avg_frame, 0.2)
-
-        # average_frame_intensity = np.mean(frame)
-        # average_frame = np.full_like(frame, average_frame_intensity)
-
-        # frame = np.subtract(average_frame, frame)
-
-
-        # if last_frame is not None:
-
-        # print(frame)
-
-        # diff = (np.not_equal(last_frame, frame)*255).astype(np.uint8)
         composite_average = np.add((init_frame * 0.25), (avg_frame * 0.75))
-        diff = abs(np.subtract(frame, init_frame)).astype(np.uint8)
+        contours = self.process_frame(frame, init_frame)
 
-
-
-
-        # diff = (np.subtract(np.full_like(frame, 127), frame))
-        # cv.normalize(diff, diff, 0, 255, cv.NORM_MINMAX)
-        _, diff = cv.threshold(diff, 255//4, 255, cv.THRESH_BINARY)
-
-        # diff = cv.erode(diff, kernel)
-        # diff = cv.dilate(diff, kernel)
-        # diff = cv.erode(diff, kernel)
-        # diff = cv.dilate(diff, kernel)
-
-        # self.current_frame = diff
-        # continue
-        diff = cv.morphologyEx(diff, cv.MORPH_OPEN, kernel)
-        diff = cv.morphologyEx(diff, cv.MORPH_CLOSE, kernel)
-        diff = cv.erode(diff, kernel)
-        raw_diff = diff
-
-
-        contours, _ = cv.findContours(diff, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
         diff = np.zeros_like(diff)
-
-        grouped_contours = set()
-        for contour in [contour for contour in [Contour(points) for points in contours] if contour.area > 6000]:
-          grouped_contours.add(contour)
-
-        made_update = True
-        it = 0
-        while made_update:
-          it += 1
-          made_update = False
-
-          contour_pairs = sorted(itertools.combinations(grouped_contours, 2), key=contour_closeness)
-          for pair in contour_pairs:
-            one, two = pair
-            closeness = contour_closeness(pair)
-            if closeness < 15:
-              points = []
-              points.extend(one.points)
-              points.extend(two.points)
-              grouped_contours.add(Contour(points))
-              grouped_contours.remove(one)
-              grouped_contours.remove(two)
-              made_update = True
-              break
-
-        contours = [contour.np_points for contour in grouped_contours]
-        # contours = [contour.np_points for contour in grouped_contours]
-        # contours = group_contours(contours)
-
+        contours = group_contours(contours)
         self.update_pois(contours, diff)
-
         self.points_of_interest = [x for x in self.points_of_interest if x.count != 1]
-
-        highest_weight = 0
-        significant_poi = None
-        for poi in self.points_of_interest:
-          if poi.weight > highest_weight:
-            highest_weight = poi.weight
-            significant_poi = poi
-
-        for poi in self.points_of_interest:
-          if poi is significant_poi:
-            cv.circle(diff, poi.location, 15, 255, -1)
-          else:
-            cv.circle(diff, poi.location, 15, 150, -1)
+        diff = self.draw_pois(diff)
 
         out_frame = cv.resize(diff, (300, 225))
         for frm in [self.current_background]:
@@ -318,6 +268,33 @@ class Camera:
             frm = cv.resize(frm, (300, 225))
             out_frame = np.vstack((out_frame, frm))
         self.current_frame = out_frame
+
+  def draw_pois(self, frame):
+    """
+    Draws all pois on the given frame with the highest weight drawn at 255 and
+    all others at 150 intensity.
+
+    Arguments:
+      frame {np.array} -- Frame to draw on
+
+    Returns:
+      np.array drawn over with location of pois
+    """
+
+    highest_weight = 0
+    significant_poi = None
+    for poi in self.points_of_interest:
+      if poi.weight > highest_weight:
+        highest_weight = poi.weight
+        significant_poi = poi
+
+    for poi in self.points_of_interest:
+      if poi is significant_poi:
+        cv.circle(frame, poi.location, 15, 255, -1)
+      else:
+        cv.circle(frame, poi.location, 15, 150, -1)
+
+    return frame
 
   def calculate_real_world_coordinate(self, location):
     """
@@ -361,7 +338,7 @@ class Camera:
 
     rotated_position = Coordinate(*rotated_position)
 
-    return rotated_position.displace_by(self.position)
+    return rotated_position + self.position
 
   def update_pois(self, contours, frame):
     """

@@ -2,7 +2,6 @@
 Spotted
 """
 
-import sys
 import math
 import json
 
@@ -32,6 +31,7 @@ from spotted.calibration import Calibration
 from spotted.websocket import Websocket
 from spotted.static_server import StaticServer
 from spotted.helpers import scale
+from spotted.error import ErrorCode, exit_with_error
 
 def start_ui(server_class=HTTPServer, handler_class=StaticServer, port=8080):
   """
@@ -58,45 +58,68 @@ class Spotted:
       self.config = json.load(open('config/config.json'))
       load_personalities('config/personalities.json')
     except FileNotFoundError as error:
-      print('A required config file could not be found:', error)
-      sys.exit(2)
+      exit_with_error(ErrorCode.MissingConfig, error)
 
     self.current_state = dict()
+    self.pois = []
+
+    self.setup_calibration()
+    self.setup_cameras()
+    self.setup_room()
+    self.setup_fixtures()
+
+  def setup_calibration(self):
+    """
+    Creates the calibration object from config
+    """
 
     if 'calibration' in self.config:
       self.calibration = Calibration(self.config['calibration'])
     else:
-      print("'calibration' key does not exist in the config")
-      sys.exit(3)
+      exit_with_error(ErrorCode.MissingKey, 'calibration')
+
+  def setup_cameras(self):
+    """
+    Defines the cameras from config
+    """
 
     self.cameras = []
     if 'cameras' in self.config:
       if len(self.config['cameras']) < 1:
-        print("'cameras' key must contain at least one camera")
-        sys.exit(4)
-      else:
-        for index, camera in enumerate(self.config['cameras']):
-          cam = Camera(camera, self.calibration)
-          self.cameras.append(cam)
-          self.config['cameras'][index]['initial_point'] = cam.initial_point.as_dict()
+        exit_with_error(ErrorCode.EmptyKey, 'cameras')
+
+      for index, camera in enumerate(self.config['cameras']):
+        cam = Camera(camera, self.calibration)
+        self.cameras.append(cam)
+        self.config['cameras'][index]['initial_point'] = cam.initial_point.as_dict()
     else:
-      print("'cameras' key does not exist in the config")
-      sys.exit(3)
+      exit_with_error(ErrorCode.MissingKey, 'cameras')
 
     for camera in self.cameras:
       if not camera.capture.isOpened():
-        print('Camera', camera.cam_id, 'could not be opened. Exiting')
-        sys.exit(4)
+        exit_with_error(ErrorCode.CameraConnect, camera.cam_id)
+
+  def setup_room(self):
+    """
+    Defines the room from config
+    """
 
     if 'room' in self.config:
       room_json = self.config['room']
       self.room = Room(room_json['x'], room_json['y'], room_json['z'])
     else:
-      print("'room' key does not exist in the config")
-      sys.exit(3)
+      exit_with_error(ErrorCode.MissingKey, 'room')
+
+  def setup_fixtures(self):
+    """
+    Creates the fixture structure from config
+    """
 
     self.universes = Universes()
     if 'fixtures' in self.config:
+      if len(self.config['fixtures']) < 1:
+        exit_with_error(ErrorCode.EmptyKey, 'fixtures')
+
       for fixture_config in self.config['fixtures']:
         fixture = Fixture(fixture_config)
         addr = fixture.address
@@ -107,8 +130,7 @@ class Spotted:
         universe.add_fixture(fixture)
       self.pois = []
     else:
-      print("'fixtures' key does not exist in the config")
-      sys.exit(3)
+      exit_with_error(ErrorCode.MissingKey, 'fixtures')
 
   # pylint: disable=invalid-name, too-many-locals
   def calculate_intersection(self, poi1, poi2, close_enough, points):
@@ -146,7 +168,11 @@ class Spotted:
       ps = np.add(poi1.position.as_vector(), s)
       qt = np.add(poi2.position.as_vector(), t)
       abs_point = np.add(qt, ps) / 2
-      if not((0 <= abs_point[0] <= self.room.width) and (0 <= abs_point[1] <= self.room.height) and (0 <= abs_point[2] <= self.room.depth)):
+      if not(
+          (0 <= abs_point[0] <= self.room.width) and
+          (0 <= abs_point[1] <= self.room.height) and
+          (0 <= abs_point[2] <= self.room.depth)
+      ):
         close_enough = False
       else:
         points.append(abs_point)
@@ -155,7 +181,7 @@ class Spotted:
 
   def update_pois(self):
     """
-
+    Update 3D points of interest from all camera pois
     """
     current_pois = self.combine_points()
 
@@ -166,22 +192,23 @@ class Spotted:
     for incoming_poi in current_pois:
       made_update = False
       if len(self.pois) > 0:
-        poi = sorted(self.pois, key=lambda p: p.diff_from_position(incoming_poi.position))[0]
-        diff_from_pos = poi.diff_from_position(incoming_poi.position)
+        new_position = incoming_poi.position
+        poi = sorted(self.pois, key=lambda p, np=new_position: p.diff_from_position(np))[0]
+        diff_from_pos = poi.diff_from_position(new_position)
         if diff_from_pos < 0.50:
           # print('Updated position')
-          poi.update_position(incoming_poi.position)
+          poi.update_position(new_position)
           poi.increment_count()
           updated_pois.append(poi)
           made_update = True
           break
 
         if not made_update:
-          poi = PointOfInterest(incoming_poi.position, decrement_step=2)
+          poi = PointOfInterest(new_position, decrement_step=2)
           updated_pois.append(poi)
           self.pois.append(poi)
       else:
-        poi = PointOfInterest(incoming_poi.position, decrement_step=2)
+        poi = PointOfInterest(new_position, decrement_step=2)
         updated_pois.append(poi)
         self.pois.append(poi)
 
@@ -192,11 +219,6 @@ class Spotted:
 
     self.pois = [p for p in self.pois if p.count != 1]
     self.pois = sorted(self.pois, key=lambda p: p.weight, reverse=True)
-
-    # print('There are', len(self.pois), 'pois going out')
-
-    # for poi in self.pois:
-    #   print(poi, poi.weight)
 
   def combine_points(self):
     """
@@ -237,16 +259,29 @@ class Spotted:
         # print('angular_displacement_horizontal:', angular_displacement_horizontal)
         # print('angular_displacement_vertical:', angular_displacement_vertical)
 
-        displacement_horizontal = round(scale(angular_displacement_horizontal, 0, camera.angular_horiz_midpoint, 0, camera.horiz_midpoint) + camera.horiz_midpoint)
-        displacement_vertical = round(scale(angular_displacement_vertical, 0, camera.angular_vert_midpoint, 0, camera.vert_midpoint) + camera.vert_midpoint)
+        displacement_horizontal = round(
+          scale(
+            angular_displacement_horizontal,
+            0, camera.angular_horiz_midpoint,
+            0, camera.horiz_midpoint
+          ) + camera.horiz_midpoint
+        )
+        displacement_vertical = round(
+          scale(
+            angular_displacement_vertical,
+            0, camera.angular_vert_midpoint,
+            0, camera.vert_midpoint
+          ) + camera.vert_midpoint
+        )
 
         print('predicted camera coordinates are', displacement_horizontal, displacement_vertical)
 
         fixture_camera_coordinates.append((displacement_horizontal, displacement_vertical))
 
-        camera.current_background = np.zeros((camera.resolution['vertical'], camera.resolution['horizontal']), dtype=np.uint8)
+        camera.current_background = np.zeros(camera.resolution_yx, dtype=np.uint8)
 
-        cv.circle(camera.current_background, (displacement_vertical, displacement_horizontal), 15, 255, 2)
+        camera_fixture_position = (displacement_vertical, displacement_horizontal)
+        cv.circle(camera.current_background, camera_fixture_position, 15, 255, 2)
 
       possible_camera_pois = camera.points_of_interest
       camera_pois = []
@@ -357,7 +392,7 @@ class Spotted:
     #   print('2:', coord, 'is at', real_coord.x, real_coord.y, real_coord.z)
     # exit()
 
-    last_poi = None
+    # last_poi = None
 
     while 1:
 
@@ -378,7 +413,8 @@ class Spotted:
 
       self.current_state['cameras'] = {}
       for camera in self.cameras:
-        self.current_state['cameras'][camera.cam_id] = [poi.position.as_vector().tolist() for poi in camera.points_of_interest]
+        poi_positions = [poi.position.as_vector().tolist() for poi in camera.points_of_interest]
+        self.current_state['cameras'][camera.cam_id] = poi_positions
 
       self.current_state['subjects'] = {}
       for poi in live_pois:
@@ -408,9 +444,8 @@ class Spotted:
 
         self.current_state['maps'] = dict()
 
-        fixture_count = len(self.universes.universes[0].fixtures)
-        poi_count = len(live_pois)
-
+        # fixture_count = len(self.universes.universes[0].fixtures)
+        # poi_count = len(live_pois)
         # for index in range(min(poi_count, fixture_count)):
         #   fixture = self.universes.universes[0].fixtures[index]
         #   fixture.point_at(live_pois[index].position)

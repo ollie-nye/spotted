@@ -7,6 +7,7 @@ produced it
 import math
 import numpy as np
 
+# pylint: disable=too-many-instance-attributes
 class PointOfInterest:
   """
   An interesting point for the system, knows about the camera position it came
@@ -14,7 +15,15 @@ class PointOfInterest:
   produced it
   """
 
-  def __init__(self, position, location=None, camera_position=None, *, increment_step=2, decrement_step=15):
+  def __init__(
+      self,
+      position,
+      location=None,
+      camera_position=None,
+      *,
+      increment_step=2,
+      decrement_step=15
+  ):
     """
     Creates an instance of a point
 

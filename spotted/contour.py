@@ -5,13 +5,17 @@ OpenCV Contour handler
 import numpy as np
 import cv2 as cv
 
+# pylint: disable=too-few-public-methods
 class Contour:
   """
   OpenCV Contour handler
   """
   def __init__(self, points):
     """
+    Creates a points list and np.array of points from the supplied argument
 
+    Arguments:
+      points {np.array|list} -- points of the contour
     """
 
     if isinstance(points, list):

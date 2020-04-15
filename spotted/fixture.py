@@ -155,34 +155,34 @@ class Fixture:
 
       if self.current_aim is None:
         continue
+
+      if self.steps_taken >= 10:
+        continue
+
+      new_step = self.last_position + self.position_step
+      self.last_position = new_step
+      self.steps_taken += 1
+
+      pos_from_fixture = (new_step - self.location).as_vector()
+      pos_from_fixture[1] = -pos_from_fixture[1]
+
+      coordinate = SphericalCoordinate.from_cartesian(*pos_from_fixture)
+
+      pan_range = math.radians(self.personality.get_attribute('pan').range)
+
+      pan_val = coordinate.azimuth + self.pan_offset
+
+      pan_angle = scale(pan_val, 0, pan_range, 0, 65025)
+
+      tilt_range = math.radians(self.personality.get_attribute('tilt').range)
+      tilt_extension = (tilt_range - math.pi) / 2
+
+      if pan_val < 0: # pan is inverted, invert tilt to match
+        tilt_val = -(coordinate.elevation + tilt_extension)
       else:
-        if self.steps_taken >= 10:
-          continue
+        tilt_val = coordinate.elevation + tilt_extension
 
-        new_step = self.last_position + self.position_step
-        self.last_position = new_step
-        self.steps_taken += 1
+      tilt_angle = scale(tilt_val, 0, tilt_range, 65025, 0)
 
-        pos_from_fixture = new_step.diff(self.location).as_vector()
-        pos_from_fixture[1] = -pos_from_fixture[1]
-
-        coordinate = SphericalCoordinate.from_cartesian(*pos_from_fixture)
-
-        pan_range = math.radians(self.personality.get_attribute('pan').range)
-
-        pan_val = coordinate.azimuth + self.pan_offset
-
-        pan_angle = scale(pan_val, 0, pan_range, 0, 65025)
-
-        tilt_range = math.radians(self.personality.get_attribute('tilt').range)
-        tilt_extension = (tilt_range - math.pi) / 2
-
-        if pan_val < 0: # pan is inverted, invert tilt to match
-          tilt_val = -(coordinate.elevation + tilt_extension)
-        else:
-          tilt_val = coordinate.elevation + tilt_extension
-
-        tilt_angle = scale(tilt_val, 0, tilt_range, 65025, 0)
-
-        self.pan(pan_angle)
-        self.tilt(tilt_angle)
+      self.pan(pan_angle)
+      self.tilt(tilt_angle)

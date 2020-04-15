@@ -7,7 +7,7 @@ extension-pkg-whitelist=cv2,cv2.fisheye
 
 # Add files or directories to the blacklist. They should be base names, not
 # paths.
-ignore=tests,config,conftest.py,pylintrc,README.md,requirements.txt,network,hardware_network.png
+ignore=tests,config,conftest.py,pylintrc,lint.py,README.md,requirements.txt,network,hardware_network.png
 
 # Add files or directories matching the regex patterns to the blacklist. The
 # regex matches against base names, not paths.

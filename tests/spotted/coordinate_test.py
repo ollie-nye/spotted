@@ -12,17 +12,17 @@ def test_init(coordinate):
 #   assert spherical.azimuth == 0.7853981633974483
 #   assert spherical.inclination == 0.9553166181245093
 
-def test_diff(coordinate):
+def test_sub(coordinate):
   secondary = Coordinate(0.2, 0.4, 0.6)
 
-  diff = secondary.diff(coordinate)
+  diff = secondary - coordinate
 
   assert diff.x == 0.1
   assert diff.y == 0.2
   assert diff.z == 0.3
 
-def test_displace_by(coordinate):
-  displaced = coordinate.displace_by(coordinate)
+def test_add(coordinate):
+  displaced = coordinate + coordinate
 
   assert displaced.x == 0.2
   assert displaced.y == 0.4
