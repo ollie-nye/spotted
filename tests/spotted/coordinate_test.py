@@ -12,6 +12,16 @@ def test_init(coordinate):
 #   assert spherical.azimuth == 0.7853981633974483
 #   assert spherical.inclination == 0.9553166181245093
 
+def test_str(coordinate):
+  assert str(coordinate) == "(0.1, 0.2, 0.3)"
+
+def test_add(coordinate):
+  displaced = coordinate + coordinate
+
+  assert displaced.x == 0.2
+  assert displaced.y == 0.4
+  assert displaced.z == 0.6
+
 def test_sub(coordinate):
   secondary = Coordinate(0.2, 0.4, 0.6)
 
@@ -21,12 +31,12 @@ def test_sub(coordinate):
   assert diff.y == 0.2
   assert diff.z == 0.3
 
-def test_add(coordinate):
-  displaced = coordinate + coordinate
+def test_truediv(coordinate):
+  div = coordinate / 2
 
-  assert displaced.x == 0.2
-  assert displaced.y == 0.4
-  assert displaced.z == 0.6
+  assert div.x == 0.05
+  assert div.y == 0.1
+  assert div.z == 0.15
 
 def test_as_vector(coordinate):
   vec = coordinate.as_vector()
