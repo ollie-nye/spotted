@@ -51,44 +51,6 @@ def find_neighbours(groups, center_x, center_y, threshold):
         close_groups.add(i)
   return close_groups
 
-def group_contours(contours):
-  """
-  Groups nearby contours together by appending
-  Does not change any contours until all have been assigned to stop possible random bias
-
-  Arguments:
-    contours {list} -- Original list of individual contours
-
-  Returns:
-    list -- New list of joined contours
-  """
-
-  grouped_contours = set()
-  contour_objects = [Contour(points) for points in contours]
-  for contour in [contour for contour in contour_objects if contour.area > 6000]:
-    grouped_contours.add(contour)
-
-  made_update = True
-  while made_update:
-    made_update = False
-
-    contour_pairs = sorted(itertools.combinations(grouped_contours, 2), key=contour_closeness)
-    for pair in contour_pairs:
-      one, two = pair
-      closeness = contour_closeness(pair)
-      if closeness < 15:
-        points = []
-        points.extend(one.points)
-        points.extend(two.points)
-        grouped_contours.add(Contour(points))
-        grouped_contours.remove(one)
-        grouped_contours.remove(two)
-        made_update = True
-        break
-
-  contours = [contour.np_points for contour in grouped_contours]
-  return contours
-
 def contour_closeness(pair):
   """
   Returns the edge-to-edge difference between a pair of contours
@@ -150,14 +112,20 @@ class Camera:
 
     self.capture = cv.VideoCapture(self.url)
 
-    self.resolution_yx = (self.resolution['vertical'], self.resolution['horizontal'])
-    self.resolution_xy = (self.resolution['horizontal'], self.resolution['vertical'])
-
+    self.resolution_yx = (
+      self.virtual_resolution['vertical'],
+      self.virtual_resolution['horizontal']
+    )
+    self.resolution_xy = (
+      self.virtual_resolution['horizontal'],
+      self.virtual_resolution['vertical']
+    )
 
     self.current_background = np.zeros(self.resolution_yx, dtype=np.uint8)
     self.current_frame = None
 
     self.kernel = np.ones((4, 4), np.uint8)
+    self.big_kernel = np.ones((10, 10), np.uint8)
     self.blur_kernel = np.ones((4, 4), np.uint8) / (4**2)
 
     self.points_of_interest = []
@@ -225,15 +193,83 @@ class Camera:
 
     diff = abs(np.subtract(frame, background)).astype(np.uint8)
 
+    # _, diff = cv.threshold(diff, 250, 255, cv.THRESH_TOZERO_INV)
+    _, mask = cv.threshold(frame, 240, 255, cv.THRESH_TOZERO_INV, frame)
+    # mask = (mask.astype(bool) * 0.5) + 0.5 # 1s end up still being 1, but 0s are now 0.5
+    mask = mask.astype(bool)
     _, diff = cv.threshold(diff, 255//4, 255, cv.THRESH_BINARY)
+    diff = (diff * mask).astype(np.uint8)
 
-    diff = cv.morphologyEx(diff, cv.MORPH_OPEN, self.kernel)
     diff = cv.morphologyEx(diff, cv.MORPH_CLOSE, self.kernel)
+    diff = cv.morphologyEx(diff, cv.MORPH_OPEN, self.kernel)
     diff = cv.erode(diff, self.kernel)
 
     contours, _ = cv.findContours(diff, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
-    return contours
+    return contours, diff, frame
+
+  def group_contours(self, contours):
+    """
+    Groups nearby contours together by appending
+    Does not change any contours until all have been assigned to stop possible random bias
+
+    Arguments:
+      contours {list} -- Original list of individual contours
+
+    Returns:
+      list -- New list of joined contours
+    """
+
+    # grouped_contours = set()
+    # contour_objects = [Contour(points) for points in contours]
+    # for contour in [contour for contour in contour_objects if contour.area > 1500]:
+    #   grouped_contours.add(contour)
+
+    # made_update = True
+    # while made_update:
+    #   made_update = False
+
+    #   contour_pairs = sorted(itertools.combinations(grouped_contours, 2), key=contour_closeness)
+    #   for pair in contour_pairs:
+    #     one, two = pair
+    #     closeness = contour_closeness(pair)
+    #     if closeness < 15:
+    #       points = []
+    #       points.extend(one.points)
+    #       points.extend(two.points)
+    #       grouped_contours.add(Contour(points))
+    #       grouped_contours.remove(one)
+    #       grouped_contours.remove(two)
+    #       made_update = True
+    #       break
+
+    # contours = [contour.np_points for contour in grouped_contours]
+    # return contours
+
+
+
+    blank = np.zeros(self.resolution_yx, dtype=np.uint8)
+
+    grouped_contours = set()
+    contour_objects = [Contour(points) for points in contours]
+    for contour in [contour for contour in contour_objects if contour.area > 400]:
+      grouped_contours.add(contour)
+
+    filtered_contours = [contour.np_points for contour in grouped_contours]
+
+    blank = cv.drawContours(blank, filtered_contours, -1, 255, -1)
+    for _ in range(10):
+      blank = cv.dilate(blank, self.big_kernel)
+    for _ in range(5):
+      blank = cv.erode(blank, self.big_kernel)
+    contours, _ = cv.findContours(blank, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+
+    grouped_contours = set()
+    contour_objects = [Contour(points) for points in contours]
+    for contour in [contour for contour in contour_objects if contour.area > 1200]:
+      grouped_contours.add(contour)
+
+    return [contour.np_points for contour in grouped_contours], blank
 
   def begin_capture(self):
     """
@@ -253,17 +289,17 @@ class Camera:
         if avg_frame is None:
           avg_frame = frame
         cv.accumulateWeighted(frame, avg_frame, 0.2)
-        composite_average = np.add((init_frame * 0.25), (avg_frame * 0.75))
-        contours = self.process_frame(frame, init_frame)
+        composite_average = np.add((init_frame * 0.9), (avg_frame * 0.1))
+        contours, diff, frame = self.process_frame(frame, init_frame)
 
         diff = np.zeros_like(diff)
-        contours = group_contours(contours)
+        contours, grouping_output = self.group_contours(contours)
         self.update_pois(contours, diff)
         self.points_of_interest = [x for x in self.points_of_interest if x.count != 1]
         diff = self.draw_pois(diff)
 
-        out_frame = cv.resize(diff, (300, 225))
-        for frm in [self.current_background]:
+        out_frame = cv.resize(frame, (300, 225))
+        for frm in [grouping_output, diff, self.current_background]:
           if frm is not None:
             frm = cv.resize(frm, (300, 225))
             out_frame = np.vstack((out_frame, frm))
