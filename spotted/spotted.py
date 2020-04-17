@@ -48,7 +48,7 @@ class Spotted:
   Spotted
   """
 
-  def __init__(self):
+  def __init__(self, skip_cameras=False):
     """
     Create spotted instance
     Sets up state, calibration, personalities, cameras, room, fixtures and universes
@@ -64,9 +64,12 @@ class Spotted:
     self.pois = []
 
     self.setup_calibration()
-    self.setup_cameras()
+    self.cameras = []
+    if not skip_cameras:
+      self.setup_cameras()
     self.setup_room()
     self.setup_fixtures()
+    self.setup_max_subjects()
 
   def setup_calibration(self):
     """
@@ -109,6 +112,16 @@ class Spotted:
       self.room = Room(room_json['x'], room_json['y'], room_json['z'])
     else:
       exit_with_error(ErrorCode.MissingKey, 'room')
+
+  def setup_max_subjects(self):
+    """
+    Defines the maximum tracked subjects from config
+    """
+
+    if 'max_subjects' in self.config:
+      self.max_subjects = self.config['max_subjects']
+    else:
+      exit_with_error(ErrorCode.MissingKey, 'max_subjects')
 
   def setup_fixtures(self):
     """
@@ -162,7 +175,7 @@ class Spotted:
 
     print('distance:', euclid_distance)
 
-    if euclid_distance > 0.25:
+    if euclid_distance > 0.5:
       close_enough = False
     else:
       ps = np.add(poi1.position.as_vector(), s)
@@ -190,9 +203,9 @@ class Spotted:
     # print('There are', len(current_pois), 'pois coming in')
 
     for incoming_poi in current_pois:
+      new_position = incoming_poi.position
       made_update = False
       if len(self.pois) > 0:
-        new_position = incoming_poi.position
         poi = sorted(self.pois, key=lambda p, np=new_position: p.diff_from_position(np))[0]
         diff_from_pos = poi.diff_from_position(new_position)
         if diff_from_pos < 0.50:
@@ -237,51 +250,51 @@ class Spotted:
     pois = []
     for camera in self.cameras:
       fixture_camera_coordinates = []
-      inverse_rotation = np.linalg.inv(camera.rotation_matrix)
-      for fixt_pos in fixture_positions:
-        displaced = (fixt_pos - camera.position).as_vector()
+      # inverse_rotation = np.linalg.inv(camera.rotation_matrix)
+      # for fixt_pos in fixture_positions:
+      #   displaced = (fixt_pos - camera.position).as_vector()
 
-        # print('displaced:', displaced)
+      #   # print('displaced:', displaced)
 
-        # print('inverse_rotation:', inverse_rotation)
+      #   # print('inverse_rotation:', inverse_rotation)
 
-        identity = inverse_rotation[0].dot(displaced)
-        identity = inverse_rotation[1].dot(identity)
-        identity = inverse_rotation[2].dot(identity)
+      #   identity = inverse_rotation[0].dot(displaced)
+      #   identity = inverse_rotation[1].dot(identity)
+      #   identity = inverse_rotation[2].dot(identity)
 
-        # identity = identity
+      #   # identity = identity
 
-        # print('identity:', identity)
+      #   # print('identity:', identity)
 
-        angular_displacement_horizontal = math.degrees(math.atan2(identity[2], 1.0))
-        angular_displacement_vertical = -math.degrees(math.atan2(identity[1], 1.0))
+      #   angular_displacement_horizontal = math.degrees(math.atan2(identity[2], 1.0))
+      #   angular_displacement_vertical = -math.degrees(math.atan2(identity[1], 1.0))
 
-        # print('angular_displacement_horizontal:', angular_displacement_horizontal)
-        # print('angular_displacement_vertical:', angular_displacement_vertical)
+      #   # print('angular_displacement_horizontal:', angular_displacement_horizontal)
+      #   # print('angular_displacement_vertical:', angular_displacement_vertical)
 
-        displacement_horizontal = round(
-          scale(
-            angular_displacement_horizontal,
-            0, camera.angular_horiz_midpoint,
-            0, camera.horiz_midpoint
-          ) + camera.horiz_midpoint
-        )
-        displacement_vertical = round(
-          scale(
-            angular_displacement_vertical,
-            0, camera.angular_vert_midpoint,
-            0, camera.vert_midpoint
-          ) + camera.vert_midpoint
-        )
+      #   displacement_horizontal = round(
+      #     scale(
+      #       angular_displacement_horizontal,
+      #       0, camera.angular_horiz_midpoint,
+      #       0, camera.horiz_midpoint
+      #     ) + camera.horiz_midpoint
+      #   )
+      #   displacement_vertical = round(
+      #     scale(
+      #       angular_displacement_vertical,
+      #       0, camera.angular_vert_midpoint,
+      #       0, camera.vert_midpoint
+      #     ) + camera.vert_midpoint
+      #   )
 
-        print('predicted camera coordinates are', displacement_horizontal, displacement_vertical)
+      #   print('predicted camera coordinates are', displacement_horizontal, displacement_vertical)
 
-        fixture_camera_coordinates.append((displacement_horizontal, displacement_vertical))
+      #   fixture_camera_coordinates.append((displacement_horizontal, displacement_vertical))
 
-        camera.current_background = np.zeros(camera.resolution_yx, dtype=np.uint8)
+      #   camera.current_background = np.zeros(camera.resolution_yx, dtype=np.uint8)
 
-        camera_fixture_position = (displacement_vertical, displacement_horizontal)
-        cv.circle(camera.current_background, camera_fixture_position, 15, 255, 2)
+      #   camera_fixture_position = (displacement_vertical, displacement_horizontal)
+      #   cv.circle(camera.current_background, camera_fixture_position, 15, 255, 2)
 
       possible_camera_pois = camera.points_of_interest
       camera_pois = []
@@ -293,7 +306,7 @@ class Spotted:
 
           if abs(lx - fx) < threshold and abs(ly - fy) < threshold:
             print('poi got too close')
-            collision = True
+            # collision = True
 
         if not collision:
           camera_pois.append(poi)
@@ -397,14 +410,13 @@ class Spotted:
     while 1:
 
       # Uncomment this block for static values
-      # point = Coordinate(0, 0, 0.0)
+      # point = Coordinate(2.0, 0.0, 4.0)
       # for fixture in self.universes.universes[0].fixtures:
       #   fixture.point_at(point)
       #   fixture.open()
       #   # self.current_state['maps'][fixture.fixture_id] = id(live_pois[index])
       # time.sleep(1/30)
       # continue
-
 
       self.update_pois()
 
@@ -420,7 +432,6 @@ class Spotted:
       for poi in live_pois:
         self.current_state['subjects'][id(poi)] = poi.position.as_dict()
 
-      if len(live_pois) > 0:
         # if last_poi is None:
         #   last_poi = pois[0]
         #   point = pois[0]
@@ -442,27 +453,42 @@ class Spotted:
 
         # point = Coordinate(0.2, 1.7, 3.0)
 
-        self.current_state['maps'] = dict()
+      self.current_state['maps'] = dict()
 
-        # fixture_count = len(self.universes.universes[0].fixtures)
-        # poi_count = len(live_pois)
-        # for index in range(min(poi_count, fixture_count)):
-        #   fixture = self.universes.universes[0].fixtures[index]
-        #   fixture.point_at(live_pois[index].position)
-        #   # fixture.open()
-        #   self.current_state['maps'][fixture.fixture_id] = id(live_pois[index])
+      # fixture_count = len(self.universes.universes[0].fixtures)
+      # poi_count = len(live_pois)
+      # for index in range(min(poi_count, fixture_count)):
+      #   fixture = self.universes.universes[0].fixtures[index]
+      #   fixture.point_at(live_pois[index].position)
+      #   # fixture.open()
+      #   self.current_state['maps'][fixture.fixture_id] = id(live_pois[index])
 
-        pos = live_pois[0].position
-        for fixture in self.universes.universes[0].fixtures:
-          fixture.point_at(pos)
-          fixture.open()
+      current_poi_index = -1
+      for universe in self.universes.universes:
+        for fixture in universe.fixtures:
+          if len(live_pois) > 0:
+            current_poi_index = (current_poi_index + 1) % self.max_subjects
+            if current_poi_index >= len(live_pois): # We've got less than max subjects
+              current_poi_index = 0
+            fixture.point_at(live_pois[current_poi_index].position)
+            fixture.open()
 
-          self.current_state['maps'][fixture.fixture_id] = id(live_pois[0])
+            self.current_state['maps'][fixture.fixture_id] = id(live_pois[current_poi_index])
 
-          # time.sleep(1/30)
-      else:
-        for fixture in self.universes.universes[0].fixtures:
-          fixture.close()
+          else:
+            fixture.close()
+
+      #   pos = live_pois[0].position
+      #   for fixture in self.universes.universes[0].fixtures:
+      #     fixture.point_at(pos)
+      #     fixture.open()
+
+      #     self.current_state['maps'][fixture.fixture_id] = id(live_pois[0])
+
+      #     # time.sleep(1/30)
+      # else:
+      #   for fixture in self.universes.universes[0].fixtures:
+      #     fixture.close()
 
       out_frame = None
       if self.cameras[0].current_frame is not None:
