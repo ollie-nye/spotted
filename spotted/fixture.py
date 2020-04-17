@@ -108,11 +108,11 @@ class Fixture:
     """
 
     dimmer = self.personality.get_attribute('dimmer')
-    # self.levels[dimmer.offset] -= 2
-    self.levels[dimmer.offset] = 0
+    self.levels[dimmer.offset] -= 4
+    # self.levels[dimmer.offset] = 0
 
-    # if self.levels[dimmer.offset] < 0:
-    #   self.levels[dimmer.offset] = 0
+    if self.levels[dimmer.offset] < 0:
+      self.levels[dimmer.offset] = 0
 
   def point_at(self, position):
     """
