@@ -30,7 +30,11 @@ if __name__ == '__main__':
     print('Board has been written to "./chessboard.png"')
 
   elif FUNC == 'default':
-    Spotted().start_spotted()
+    skip_cameras = False
+    if args_count == 2:
+      if sys.argv[2] == 'true':
+        skip_cameras = True
+    Spotted(skip_cameras).start_spotted()
 
   elif FUNC == 'calibrate_lens':
     camera = Spotted().cameras[0]
