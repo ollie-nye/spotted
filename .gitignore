@@ -1,3 +1,5 @@
 calibrate_images/*
 */__pycache__/*
 *.pyc
+ui/js
+ui/css
