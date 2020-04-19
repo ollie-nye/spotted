@@ -44,6 +44,12 @@ class PointOfInterest:
     self.increment_step = increment_step
     self.decrement_step = decrement_step
 
+  def __str__(self):
+    return f"PointOfInterest at ({self.position.x}, {self.position.y}, {self.position.z})"
+
+  def __repr__(self):
+    return f"PointOfInterest at ({self.position.x}, {self.position.y}, {self.position.z})"
+
   def increment_count(self):
     """
     Increase count and recalculate weight
