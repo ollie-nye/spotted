@@ -1,5 +1,5 @@
 {
-  "network_interface": "eth1",
+  "network_interface": "enp4s0",
   "calibration": {
     "dimension": [2048, 1536],
     "camera": [[1560.4213486225046, 0.0, 1050.8972596532385], [0.0, 1563.2664464043153, 747.1487200699582], [0.0, 0.0, 1.0]],
@@ -12,16 +12,16 @@
       "id": 1,
       "url": "rtmp://10.0.0.23/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
       "position": { "x": 2.38, "y": 2.31, "z": 0.47 },
-      "rotation": { "x": -28.43, "y": 94.71, "z": 0 },
-      "viewing_angle": { "horizontal": 80, "vertical": 42 },
+      "rotation": { "x": -25, "y": 94, "z": 9 },
+      "viewing_angle": { "horizontal": 63, "vertical": 54 },
       "resolution": { "horizontal": 2048, "vertical": 1536 }
     },
     {
       "id": 2,
       "url": "rtmp://10.0.0.22/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
       "position": { "x": 2.03, "y": 2.28, "z": 7.56 },
-      "rotation": { "x": 24.20, "y": -91.39, "z": 0 },
-      "viewing_angle": { "horizontal": 80, "vertical": 42 },
+      "rotation": { "x": 25, "y": -95, "z": 0 },
+      "viewing_angle": { "horizontal": 63, "vertical": 54 },
       "resolution": { "horizontal": 2048, "vertical": 1536 }
     }
   ],

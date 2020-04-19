@@ -1,0 +1,73 @@
+{
+  "artnet": "10.0.0.50",
+  "calibration": {
+    "dimension": [2048, 1536],
+    "camera": [[1739.0072076512008, 0.0, 1094.1547861092195], [0.0, 1715.3793484933933, 714.8431601041761], [0.0, 0.0, 1.0]],
+    "distortion": [[0.10101718971446061], [-1.1768049120332442], [2.3397431068756416], [-1.877526489124148]]
+  },
+  "room": { "x": 3.221, "y": 3.220, "z": 7.205 },
+  "cameras": [
+    {
+      "id": 1,
+      "url": "rtmp://10.0.0.23/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
+      "position": { "x": 0.374, "y": 2.243, "z": 0.610 },
+      "rotation": { "x": -22, "y": 90, "z": 0 },
+      "viewing_angle": { "horizontal": 80, "vertical": 42 },
+      "resolution": { "horizontal": 2048, "vertical": 1536 }
+    },
+    {
+      "id": 2,
+      "url": "rtmp://10.0.0.22/bcs/channel0_main.bcs?channel=0&stream=0&user=admin",
+      "position": { "x": 1.337, "y": 2.256, "z": 6.707 },
+      "rotation": { "x": 30.0, "y": -70.0, "z": 0.0 },
+      "viewing_angle": { "horizontal": 80, "vertical": 42 },
+      "resolution": { "horizontal": 2048, "vertical": 1536 }
+    }
+  ],
+  "fixtures": [
+    {
+      "id": 1,
+      "personality": 1,
+      "mode": 1,
+      "net": 0,
+      "subnet": 0,
+      "universe": 0,
+      "address": 1,
+      "position": { "x": 0.374, "y": 2.728, "z":0.349 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+      "id": 2,
+      "personality": 1,
+      "mode": 1,
+      "net": 0,
+      "subnet": 0,
+      "universe": 0,
+      "address": 17,
+      "position": { "x": 1.307, "y": 2.705, "z": 0.349 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+      "id": 3,
+      "personality": 1,
+      "mode": 1,
+      "net": 0,
+      "subnet": 0,
+      "universe": 0,
+      "address": 33,
+      "position": { "x": 2.211, "y": 2.691, "z": 5.336 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    },
+    {
+      "id": 4,
+      "personality": 1,
+      "mode": 1,
+      "net": 0,
+      "subnet": 0,
+      "universe": 0,
+      "address": 49,
+      "position": { "x": 2.211, "y": 2.678, "z": 6.347 },
+      "rotation": { "x": 0, "y": 0, "z": 0 }
+    }
+  ]
+}
