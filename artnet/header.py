@@ -12,14 +12,14 @@ class Header:
     Creates a Header with the given opcode
 
     Arguments:
-      opcode {int} -- Opcode to send in header
+      opcode {Opcode} -- Opcode to send in header
 
     Returns:
       Header -- Instance of header
     """
 
     self.packet_id = 'Art-Net\0'
-    self.opcode = opcode
+    self.opcode = opcode.value
     self.protocol_version = 0x000e
 
   def serialize(self):

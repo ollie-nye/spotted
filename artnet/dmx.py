@@ -3,6 +3,7 @@ ArtNet DMX packet
 """
 
 from artnet.header import Header
+from artnet.opcode import Opcode
 
 class Dmx:
   """
@@ -22,7 +23,7 @@ class Dmx:
       Dmx -- Created packet structure, ready for serializing
     """
 
-    self.header = Header(0x5000)
+    self.header = Header(Opcode.OpDmx)
     self.sequence = sequence
     self.physical = 0x00
     self.sub_universe = universe.sub_universe
