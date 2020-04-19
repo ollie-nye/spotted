@@ -88,7 +88,6 @@ class Spotted:
 
     host_interfaces = netifaces.interfaces()
 
-
     if 'network_interface' in self.config:
       if self.config['network_interface'] in host_interfaces:
         addresses = netifaces.ifaddresses(self.config['network_interface'])
@@ -208,7 +207,7 @@ class Spotted:
 
     print('distance:', euclid_distance)
 
-    if euclid_distance > 0.5:
+    if euclid_distance > 1:
       close_enough = False
     else:
       ps = np.add(poi1.position.as_vector(), s)
@@ -283,51 +282,51 @@ class Spotted:
     pois = []
     for camera in self.cameras:
       fixture_camera_coordinates = []
-      # inverse_rotation = np.linalg.inv(camera.rotation_matrix)
-      # for fixt_pos in fixture_positions:
-      #   displaced = (fixt_pos - camera.position).as_vector()
+      inverse_rotation = np.linalg.inv(camera.rotation_matrix)
+      for fixt_pos in fixture_positions:
+        displaced = (fixt_pos - camera.position).as_vector()
 
-      #   # print('displaced:', displaced)
+        # print('displaced:', displaced)
 
-      #   # print('inverse_rotation:', inverse_rotation)
+        # print('inverse_rotation:', inverse_rotation)
 
-      #   identity = inverse_rotation[0].dot(displaced)
-      #   identity = inverse_rotation[1].dot(identity)
-      #   identity = inverse_rotation[2].dot(identity)
+        identity = inverse_rotation[0].dot(displaced)
+        identity = inverse_rotation[1].dot(identity)
+        identity = inverse_rotation[2].dot(identity)
 
-      #   # identity = identity
+        # identity = identity
 
-      #   # print('identity:', identity)
+        print('identity:', identity)
 
-      #   angular_displacement_horizontal = math.degrees(math.atan2(identity[2], 1.0))
-      #   angular_displacement_vertical = -math.degrees(math.atan2(identity[1], 1.0))
+        angular_displacement_horizontal = math.degrees(math.atan2(identity[2], identity[0]))
+        angular_displacement_vertical = -math.degrees(math.atan2(identity[1], identity[0]))
 
-      #   # print('angular_displacement_horizontal:', angular_displacement_horizontal)
-      #   # print('angular_displacement_vertical:', angular_displacement_vertical)
+        print('angular_displacement_horizontal:', angular_displacement_horizontal)
+        print('angular_displacement_vertical:', angular_displacement_vertical)
 
-      #   displacement_horizontal = round(
-      #     scale(
-      #       angular_displacement_horizontal,
-      #       0, camera.angular_horiz_midpoint,
-      #       0, camera.horiz_midpoint
-      #     ) + camera.horiz_midpoint
-      #   )
-      #   displacement_vertical = round(
-      #     scale(
-      #       angular_displacement_vertical,
-      #       0, camera.angular_vert_midpoint,
-      #       0, camera.vert_midpoint
-      #     ) + camera.vert_midpoint
-      #   )
+        displacement_horizontal = round(
+          scale(
+            angular_displacement_horizontal,
+            0, camera.angular_horiz_midpoint,
+            0, camera.horiz_midpoint
+          ) + camera.horiz_midpoint
+        )
+        displacement_vertical = round(
+          scale(
+            angular_displacement_vertical,
+            0, camera.angular_vert_midpoint,
+            0, camera.vert_midpoint
+          ) + camera.vert_midpoint
+        )
 
-      #   print('predicted camera coordinates are', displacement_horizontal, displacement_vertical)
+        print('predicted camera coordinates are', displacement_horizontal, displacement_vertical)
 
-      #   fixture_camera_coordinates.append((displacement_horizontal, displacement_vertical))
+        fixture_camera_coordinates.append((displacement_horizontal, displacement_vertical))
 
-      #   camera.current_background = np.zeros(camera.resolution_yx, dtype=np.uint8)
+        camera.current_background = np.zeros(camera.resolution_yx, dtype=np.uint8)
 
-      #   camera_fixture_position = (displacement_vertical, displacement_horizontal)
-      #   cv.circle(camera.current_background, camera_fixture_position, 15, 255, 2)
+        camera_fixture_position = (displacement_vertical, displacement_horizontal)
+        cv.circle(camera.current_background, camera_fixture_position, 15, 255, 2)
 
       possible_camera_pois = camera.points_of_interest
       camera_pois = []
@@ -380,7 +379,6 @@ class Spotted:
     ArtNet transmission thread
     """
 
-    print('Starting artnet')
     last_poll_transmission = datetime.now()
 
     delay = 1
@@ -391,15 +389,13 @@ class Spotted:
 
     while 1:
       # Send ArtPoll every 3 seconds
-      if (datetime.now() - last_poll_transmission).total_seconds() > 2:
+      if (datetime.now() - last_poll_transmission).total_seconds() > 3:
         last_poll_transmission = datetime.now()
         packet = Poll()
         transmit.put(packet)
-        print('Sending poll')
 
       for universe in self.universes.universes:
         packet = Dmx(0, universe)
-        # sock.sendto(packet.serialize(), (self.config['artnet'], 6454))
         transmit.put(packet)
       time.sleep(delay)
 
@@ -408,7 +404,8 @@ class Spotted:
 
     """
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.bind(('', 6454))
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    sock.bind((self.broadcast_address, 6454))
 
     while True:
       incoming = sock.recv(1024)
@@ -422,6 +419,9 @@ class Spotted:
 
   def artnet_transmitter(self, transmit):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    sock.bind((self.ip_address, 6454))
+    print('Starting artnet')
 
     while True:
       packet = transmit.get()
@@ -486,7 +486,7 @@ class Spotted:
       # Uncomment this block for static values
       # point = Coordinate(2.0, 0.0, 4.0)
       # for fixture in self.universes.universes[0].fixtures:
-      #   fixture.point_at(point)
+      #   fixture.point_at(self.cameras[1].initial_point)
       #   fixture.open()
       #   # self.current_state['maps'][fixture.fixture_id] = id(live_pois[index])
       # time.sleep(1/30)
@@ -570,7 +570,7 @@ class Spotted:
           out_frame = self.cameras[0].current_frame
         if self.cameras[1].current_frame is not None:
           if out_frame is not None:
-            out_frame = np.hstack((out_frame, self.cameras[1].current_frame))
+            out_frame = np.vstack((out_frame, self.cameras[1].current_frame))
           else:
             out_frame = self.cameras[1].current_frame
         if out_frame is not None:
