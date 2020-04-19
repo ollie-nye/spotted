@@ -38,7 +38,11 @@ class Fixture:
 
     for attribute in self.personality.attributes:
       channel = attribute.offset
-      self.levels[channel] = attribute.default
+      if attribute.multiplier_type == 'wide':
+        self.levels[channel] = attribute.default # Course channel
+        self.levels[channel + 1] = attribute.default # Fine channel
+      else:
+        self.levels[channel] = attribute.default
 
     pos = config['position']
     self.location = Coordinate(pos['x'], pos['y'], pos['z'])
