@@ -195,7 +195,6 @@ class Camera:
 
     # _, diff = cv.threshold(diff, 250, 255, cv.THRESH_TOZERO_INV)
     _, mask = cv.threshold(frame, 240, 255, cv.THRESH_TOZERO_INV, frame)
-    # mask = (mask.astype(bool) * 0.5) + 0.5 # 1s end up still being 1, but 0s are now 0.5
     mask = mask.astype(bool)
     _, diff = cv.threshold(diff, 255//4, 255, cv.THRESH_BINARY)
     diff = (diff * mask).astype(np.uint8)
@@ -220,39 +219,11 @@ class Camera:
       list -- New list of joined contours
     """
 
-    # grouped_contours = set()
-    # contour_objects = [Contour(points) for points in contours]
-    # for contour in [contour for contour in contour_objects if contour.area > 1500]:
-    #   grouped_contours.add(contour)
-
-    # made_update = True
-    # while made_update:
-    #   made_update = False
-
-    #   contour_pairs = sorted(itertools.combinations(grouped_contours, 2), key=contour_closeness)
-    #   for pair in contour_pairs:
-    #     one, two = pair
-    #     closeness = contour_closeness(pair)
-    #     if closeness < 15:
-    #       points = []
-    #       points.extend(one.points)
-    #       points.extend(two.points)
-    #       grouped_contours.add(Contour(points))
-    #       grouped_contours.remove(one)
-    #       grouped_contours.remove(two)
-    #       made_update = True
-    #       break
-
-    # contours = [contour.np_points for contour in grouped_contours]
-    # return contours
-
-
-
     blank = np.zeros(self.resolution_yx, dtype=np.uint8)
 
     grouped_contours = set()
     contour_objects = [Contour(points) for points in contours]
-    for contour in [contour for contour in contour_objects if contour.area > 400]:
+    for contour in [contour for contour in contour_objects if contour.area > 1200]:
       grouped_contours.add(contour)
 
     filtered_contours = [contour.np_points for contour in grouped_contours]
@@ -262,14 +233,39 @@ class Camera:
       blank = cv.dilate(blank, self.big_kernel)
     for _ in range(5):
       blank = cv.erode(blank, self.big_kernel)
+
     contours, _ = cv.findContours(blank, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
     grouped_contours = set()
     contour_objects = [Contour(points) for points in contours]
-    for contour in [contour for contour in contour_objects if contour.area > 1200]:
+    for contour in contour_objects:
       grouped_contours.add(contour)
 
-    return [contour.np_points for contour in grouped_contours], blank
+    made_update = True
+    while made_update:
+      made_update = False
+
+      contour_pairs = sorted(itertools.combinations(grouped_contours, 2), key=contour_closeness)
+      for pair in contour_pairs:
+        one, two = pair
+        closeness = contour_closeness(pair)
+        if closeness <= 30:
+          points = []
+          points.extend(one.points)
+          points.extend(two.points)
+          grouped_contours.add(Contour(points))
+          grouped_contours.remove(one)
+          grouped_contours.remove(two)
+          made_update = True
+          break
+        if closeness > 30: # Stop iterating the sorted list needlessly
+          break
+
+    contours = [contour.np_points for contour in grouped_contours]
+
+    contour_objects = [Contour(points) for points in contours]
+
+    return [contour.np_points for contour in contour_objects if contour.area > 2500], blank
 
   def begin_capture(self):
     """
@@ -300,9 +296,10 @@ class Camera:
 
         out_frame = cv.resize(frame, (300, 225))
         for frm in [grouping_output, diff, self.current_background]:
+        # for frm in [self.current_background]:
           if frm is not None:
             frm = cv.resize(frm, (300, 225))
-            out_frame = np.vstack((out_frame, frm))
+            out_frame = np.hstack((out_frame, frm))
         self.current_frame = out_frame
 
   def draw_pois(self, frame):
