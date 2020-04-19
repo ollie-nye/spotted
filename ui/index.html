@@ -115,11 +115,17 @@
         let cameras = state.cameras.map( function (camera) {
           cam_id = camera.id
 
+          let out = []
           camera_positions[cam_id] = camera.position
-          return [
-            [camera.position.x, camera.position.y, camera.position.z],
-            [camera.initial_point.x, camera.initial_point.y, camera.initial_point.z]
-          ]
+
+          out.push([camera.position.x, camera.position.y, camera.position.z])
+
+          if (camera.initial_point != undefined) {
+            out.push([camera.initial_point.x, camera.initial_point.y, camera.initial_point.z])
+          } else {
+            out.push([camera.position.x, camera.position.y, camera.position.z])
+          }
+          return out
         })
 
         console.log(camera_positions)
