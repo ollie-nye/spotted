@@ -10,15 +10,21 @@ import threading
 import socket
 import asyncio
 import itertools
+import netifaces
+import queue
 
 from http.server import HTTPServer
-
 import websockets
+from datetime import datetime
 
 import numpy as np
 import cv2 as cv
 
 from artnet.dmx import Dmx
+from artnet.poll import Poll
+from artnet.poll_reply import PollReply
+from artnet.deserialize import identify_header
+from artnet.opcode import Opcode
 from spotted.camera import Camera
 from spotted.personality import load_personalities
 from spotted.point_of_interest import PointOfInterest
@@ -32,6 +38,7 @@ from spotted.websocket import Websocket
 from spotted.static_server import StaticServer
 from spotted.helpers import scale
 from spotted.error import ErrorCode, exit_with_error
+from config.system import SystemConfig
 
 def start_ui(server_class=HTTPServer, handler_class=StaticServer, port=8080):
   """
@@ -63,6 +70,8 @@ class Spotted:
     self.current_state = dict()
     self.pois = []
 
+    self.setup_interface()
+
     self.setup_calibration()
     self.cameras = []
     if not skip_cameras:
@@ -70,6 +79,30 @@ class Spotted:
     self.setup_room()
     self.setup_fixtures()
     self.setup_max_subjects()
+
+  def setup_interface(self):
+    """
+    Validates configured interfaces against available system interfaces and
+    returns the first IPv4 address of the given interface
+    """
+
+    host_interfaces = netifaces.interfaces()
+
+
+    if 'network_interface' in self.config:
+      if self.config['network_interface'] in host_interfaces:
+        addresses = netifaces.ifaddresses(self.config['network_interface'])
+        if netifaces.AF_INET in addresses:
+          address = addresses[netifaces.AF_INET][0]
+          self.ip_address = address['addr']
+          self.broadcast_address = address['broadcast']
+        else:
+          exit_with_error(ErrorCode.InterfaceAddress, self.config['network_interface'])
+      else:
+        details = (self.config['network_interface'], host_interfaces)
+        exit_with_error(ErrorCode.MissingInterface, details)
+    else:
+      exit_with_error(ErrorCode.MissingKey, 'network_interface')
 
   def setup_calibration(self):
     """
@@ -342,19 +375,57 @@ class Spotted:
 
     return points_of_interest
 
-  def start_artnet(self):
+  def start_artnet(self, transmit):
     """
     ArtNet transmission thread
     """
 
     print('Starting artnet')
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    last_poll_transmission = datetime.now()
+
+    delay = 1
+    if SystemConfig.transmit_rate == 'continuous':
+      delay = 1/50
+    elif SystemConfig.transmit_rate == 'reduced':
+      delay = 1/15
+
     while 1:
+      # Send ArtPoll every 3 seconds
+      if (datetime.now() - last_poll_transmission).total_seconds() > 2:
+        last_poll_transmission = datetime.now()
+        packet = Poll()
+        transmit.put(packet)
+        print('Sending poll')
+
       for universe in self.universes.universes:
         packet = Dmx(0, universe)
-        sock.sendto(packet.serialize(), (self.config['artnet'], 6454))
-        sock.sendto(packet.serialize(), ('10.0.0.19', 6454))
-        time.sleep(1/50)
+        # sock.sendto(packet.serialize(), (self.config['artnet'], 6454))
+        transmit.put(packet)
+      time.sleep(delay)
+
+  def start_artnet_reply(self, transmit):
+    """
+
+    """
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.bind(('', 6454))
+
+    while True:
+      incoming = sock.recv(1024)
+
+      if len(incoming) > 0:
+        valid, opcode, packet = identify_header(incoming)
+        if valid:
+          if opcode is Opcode.OpPoll:
+            packet = PollReply(0, 0, self.ip_address, [0x50, 0x1A, 0xC5, 0xE7, 0xD6, 0x8F])
+            transmit.put(packet)
+
+  def artnet_transmitter(self, transmit):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+    while True:
+      packet = transmit.get()
+      sock.sendto(packet.serialize(), (self.broadcast_address, 6454))
 
   def start_websocket(self, port=8081):
     """
@@ -383,7 +454,10 @@ class Spotted:
     for camera in self.cameras:
       threading.Thread(target=camera.begin_capture, daemon=daemon).start()
 
-    threading.Thread(target=self.start_artnet, daemon=daemon).start()
+    transmit = queue.Queue()
+    threading.Thread(target=self.start_artnet, args=(transmit,), daemon=daemon).start()
+    threading.Thread(target=self.start_artnet_reply, args=(transmit,), daemon=daemon).start()
+    threading.Thread(target=self.artnet_transmitter, args=(transmit,), daemon=daemon).start()
 
     for universe in self.universes.universes:
       for fixture in universe.fixtures:
@@ -490,15 +564,16 @@ class Spotted:
       #   for fixture in self.universes.universes[0].fixtures:
       #     fixture.close()
 
-      out_frame = None
-      if self.cameras[0].current_frame is not None:
-        out_frame = self.cameras[0].current_frame
-      if self.cameras[1].current_frame is not None:
+      if len(self.cameras) >= 2:
+        out_frame = None
+        if self.cameras[0].current_frame is not None:
+          out_frame = self.cameras[0].current_frame
+        if self.cameras[1].current_frame is not None:
+          if out_frame is not None:
+            out_frame = np.hstack((out_frame, self.cameras[1].current_frame))
+          else:
+            out_frame = self.cameras[1].current_frame
         if out_frame is not None:
-          out_frame = np.hstack((out_frame, self.cameras[1].current_frame))
-        else:
-          out_frame = self.cameras[1].current_frame
-      if out_frame is not None:
-        cv.imshow('VIDEO', out_frame)
-        cv.waitKey(1)
+          cv.imshow('VIDEO', out_frame)
+          cv.waitKey(1)
       time.sleep(1/30)
