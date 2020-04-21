@@ -14,8 +14,15 @@
     <script src="js/three.js"></script>
     <script src="js/OrbitControls.js"></script>
     <div style="background-color: #ffffff; height: 9vh">
-      <button>Open camera 1</button>
-      <button>Open camera 2</button>
+      <div class="container-fluid pt-3">
+        <div class="row">
+          <div class="col-sm-12 mb-3">
+            <a class="btn btn-primary" href='/index.html'>Visualiser</a>
+            <a class="btn btn-primary" href='/config.html'>Configuration</a>
+            <a class="btn btn-primary" href='/personalities.html'>Personality Editor</a>
+          </div>
+        </div>
+      </div>
     </div>
     <script>
       var scene = new THREE.Scene();
@@ -112,9 +119,9 @@
 
         console.log(state)
 
-        let cameras = state.cameras.map( function (camera) {
-          cam_id = camera.id
-
+        let cameras = []
+        Object.keys(state.cameras).forEach(cam_id => {
+          var camera = state.cameras[cam_id]
           let out = []
           camera_positions[cam_id] = camera.position
 
@@ -125,15 +132,15 @@
           } else {
             out.push([camera.position.x, camera.position.y, camera.position.z])
           }
-          return out
+          cameras.push(out)
         })
 
         console.log(camera_positions)
 
-        fixtures = state.fixtures.reduce(function (map, fixt) {
-          map[fixt.id] = [fixt.position.x, fixt.position.y, fixt.position.z]
-          return map
-        }, {})
+        Object.keys(state.fixtures).forEach(fixture_id => {
+          let fixt = state.fixtures[fixture_id]
+          fixtures[fixture_id] = [fixt.position.x, fixt.position.y, fixt.position.z]
+        })
 
         cameras.forEach(function(element) {
           [[x, y, z], [ix, iy, iz]] = element
@@ -246,8 +253,5 @@
 
       animate();
     </script>
-    <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script> -->
   </body>
 </html>

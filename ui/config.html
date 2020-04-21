@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Spotted Configuration</title>
+    <link rel="shortcut icon" href="favicon.png" />
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <style>
+      body { margin: 0; }
+      canvas { width: 100%; height: 100% }
+    </style>
+  </head>
+  <body>
+    <script>
+      let config = {}
+    </script>
+    <div class="container-fluid mt-3">
+      <div class="row">
+        <div class="col-sm-12 mb-3">
+          <a class="btn btn-primary" href='/index.html'>Visualiser</a>
+          <a class="btn btn-primary" href='/config.html'>Configuration</a>
+          <a class="btn btn-primary" href='/personalities.html'>Personality Editor</a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-8 text-capitalize"><h1>Configuration</h1></div>
+        <div class="col-sm-4 text-right"><button class="btn btn-success" onclick="send_update()">Save and Refresh</button></div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div id="config" class="accordion"></div>
+        </div>
+      </div>
+    </div>
+    <script>
+      function http_get_async(path, callback) {
+        var xmlHttp = new XMLHttpRequest()
+        xmlHttp.onreadystatechange = function() {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            var response = JSON.parse(xmlHttp.responseText)
+            if (Object.keys(response).length == 0) {
+              response = {}
+            }
+            config = response
+            callback()
+          }
+        }
+        xmlHttp.open("GET", path, true)
+        xmlHttp.send(null)
+      }
+
+      function send_update() {
+        var xmlHttp = new XMLHttpRequest()
+        xmlHttp.onreadystatechange = function() {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 201) {
+            location.reload()
+          }
+        }
+        xmlHttp.open("POST", '/update/config', true)
+        xmlHttp.send(JSON.stringify(config))
+      }
+
+      function node(className, tag='div', attributes={}) {
+        element = document.createElement(tag)
+        element.className = className
+        Object.keys(attributes).forEach(key => {
+          if (key == 'onclick') {
+            element.onclick = attributes[key]
+          } else {
+            element.setAttribute(key, attributes[key])
+          }
+        })
+        return element
+      }
+
+      function delete_button(content_id, text, margin_left=true) {
+        button = node('btn btn-danger mt-3' + (margin_left ? ' ml-3' : ''), 'button', {
+          'onclick': () => {delete_field(content_id)},
+        })
+        button.innerText = 'Delete ' + text
+        return button
+      }
+
+      function field(name, value, content_id, placeholder='', disabled=false, type='text', to_json=false) {
+        var field_id = content_id + '-' + name.replace(' ', '_')
+        var form_group = node('form-group row')
+        var label = node('text-capitalize col-sm-4 col-form-label', 'label', {'for': field_id})
+        label.innerText = name
+
+        var input_wrapper = node('col-sm-8')
+        var attributes = {
+          'id': field_id,
+          'type': type,
+          'value': value,
+          'placeholder': placeholder
+        }
+        if (value == undefined) {
+          attributes['value'] = ''
+        }
+        if (to_json) {
+          attributes['value'] = JSON.stringify(value)
+        }
+        if (disabled) {
+          className = 'form-control-plaintext'
+          attributes['readonly'] = true
+        } else {
+          className = 'form-control'
+        }
+        var input = node(className, 'input', attributes)
+        input.onblur = () => { update_field(field_id, to_json) }
+
+        input_wrapper.appendChild(input)
+        form_group.appendChild(label)
+        form_group.appendChild(input_wrapper)
+
+        return form_group
+      }
+
+      function accordion_item(content_id, header_content) {
+        container = node('card')
+        header = node('header')
+        header_text = node('mb-0', 'h2')
+        button = node('btn btn-link text-capitalize', 'button', {
+          'type': 'button',
+          'data-toggle': 'collapse',
+          'data-target': '#' + content_id,
+          'aria-expanded': 'false',
+          'aria-controls': content_id
+        })
+        button.innerText = header_content
+        header_text.appendChild(button)
+        header.appendChild(header_text)
+        container.appendChild(header)
+        return container
+      }
+
+      function create_camera(camera_id=-1, content={}, parent=undefined) {
+        if (camera_id == -1) {
+          content = {}
+          config.cameras = config.cameras || {}
+          camera_id = generate_id('camera')
+          config.cameras[camera_id] = content
+        }
+        var content_id = 'cameras-' + camera_id
+        var camera_container = accordion_item(content_id, 'Camera ' + camera_id)
+
+        var camera_content = node('collapse' + (content.url ? '' : ' show'), 'div', {'id': content_id})
+        var camera_content_body = node('card-body')
+
+        var fields = [
+          field('id', camera_id, content_id, '', true),
+          field('url', content.url || '', content_id)
+        ]
+
+        fields.forEach(field => {
+          camera_content_body.appendChild(field)
+        })
+
+        var camera_accordion = node('accordion')
+
+        var position_content_id = content_id + '-position'
+        content.position = content.position || {}
+        var position_fields = [
+          field('x', (content.position.x != undefined ? content.position.x.toString() : ''), position_content_id, '', false, 'float'),
+          field('y', (content.position.y != undefined ? content.position.y.toString() : ''), position_content_id, '', false, 'float'),
+          field('z', (content.position.z != undefined ? content.position.z.toString() : ''), position_content_id, '', false, 'float')
+        ]
+        create_block(camera_accordion, position_content_id, 'Position', position_fields)
+
+        var rotation_content_id = content_id + '-rotation'
+        content.rotation = content.rotation || {}
+        var rotation_fields = [
+          field('x', (content.rotation.x != undefined ? content.rotation.x.toString() : ''), rotation_content_id, '', false, 'float'),
+          field('y', (content.rotation.y != undefined ? content.rotation.y.toString() : ''), rotation_content_id, '', false, 'float'),
+          field('z', (content.rotation.z != undefined ? content.rotation.z.toString() : ''), rotation_content_id, '', false, 'float')
+        ]
+        create_block(camera_accordion, rotation_content_id, 'Rotation', rotation_fields)
+
+        var viewing_angle_content_id = content_id + '-viewing_angle'
+        content.viewing_angle = content.viewing_angle || {}
+        var viewing_angle_fields = [
+          field('horizontal', (content.viewing_angle.horizontal != undefined ? content.viewing_angle.horizontal.toString() : ''), viewing_angle_content_id, '', false, 'float'),
+          field('vertical', (content.viewing_angle.vertical != undefined ? content.viewing_angle.vertical.toString() : ''), viewing_angle_content_id, '', false, 'float')
+        ]
+        create_block(camera_accordion, viewing_angle_content_id, 'Viewing angle', viewing_angle_fields)
+
+        var resolution_content_id = content_id + '-resolution'
+        content.resolution = content.resolution || {}
+        var resolution_fields = [
+          field('horizontal', (content.resolution.horizontal != undefined ? content.resolution.horizontal.toString() : ''), resolution_content_id, '', false, 'integer'),
+          field('vertical', (content.resolution.vertical != undefined ? content.resolution.vertical.toString() : ''), resolution_content_id, '', false, 'integer')
+        ]
+        create_block(camera_accordion, resolution_content_id, 'Resolution', resolution_fields)
+
+        camera_content_body.appendChild(camera_accordion)
+        camera_content_body.appendChild(delete_button(content_id, 'camera', false))
+
+        camera_content.appendChild(camera_content_body)
+        camera_container.appendChild(camera_content)
+
+        if (parent) {
+          parent.appendChild(camera_container)
+        }
+        return camera_container
+      }
+
+      function create_fixture(fixture_id=-1, content={}, parent=undefined) {
+        if (fixture_id == -1) {
+          content = {}
+          config.fixtures = config.fixtures || {}
+          fixture_id = generate_id('fixture')
+          config.fixtures[fixture_id] = content
+        }
+        var content_id = 'fixtures-' + fixture_id
+        var fixture_container = accordion_item(content_id, 'Fixture ' + fixture_id)
+
+        var fixture_content = node('collapse' + (content.personality ? '' : ' show'), 'div', {'id': content_id})
+        var fixture_content_body = node('card-body')
+
+        var fields = [
+          field('id', fixture_id, content_id, '', true),
+          field('personality', (content.personality != undefined ? content.personality.toString() : ''), content_id, '', false, 'integer'),
+          field('mode', (content.mode != undefined ? content.mode.toString() : ''), content_id, '', false, 'integer'),
+          field('net', (content.net != undefined ? content.net.toString() : ''), content_id, '', false, 'integer'),
+          field('subnet', (content.subnet != undefined ? content.subnet.toString() : ''), content_id, '', false, 'integer'),
+          field('universe', (content.universe != undefined ? content.universe.toString() : ''), content_id, '', false, 'integer'),
+          field('address', (content.address != undefined ? content.address.toString() : ''), content_id, '', false, 'integer')
+        ]
+
+        fields.forEach(field => {
+          fixture_content_body.appendChild(field)
+        })
+
+        var fixture_accordion = node('accordion')
+
+        var position_content_id = content_id + '-position'
+        content.position = content.position || {}
+        var position_fields = [
+          field('x', (content.position.x != undefined ? content.position.x.toString() : ''), position_content_id, '', false, 'float'),
+          field('y', (content.position.y != undefined ? content.position.y.toString() : ''), position_content_id, '', false, 'float'),
+          field('z', (content.position.z != undefined ? content.position.z.toString() : ''), position_content_id, '', false, 'float')
+        ]
+        create_block(fixture_accordion, position_content_id, 'Position', position_fields)
+
+        var rotation_content_id = content_id + '-rotation'
+        content.rotation = content.rotation || {}
+        var rotation_fields = [
+          field('x', (content.rotation.x != undefined ? content.rotation.x.toString() : ''), rotation_content_id, '', false, 'float'),
+          field('y', (content.rotation.y != undefined ? content.rotation.y.toString() : ''), rotation_content_id, '', false, 'float'),
+          field('z', (content.rotation.z != undefined ? content.rotation.z.toString() : ''), rotation_content_id, '', false, 'float')
+        ]
+        create_block(fixture_accordion, rotation_content_id, 'Rotation', rotation_fields)
+
+        fixture_content_body.appendChild(fixture_accordion)
+        fixture_content_body.appendChild(delete_button(content_id, 'fixture', false))
+
+        fixture_content.appendChild(fixture_content_body)
+        fixture_container.appendChild(fixture_content)
+
+        if (parent) {
+          parent.appendChild(fixture_container)
+        }
+        return fixture_container
+      }
+
+      function generate_id(collection) {
+        var keys
+        switch (collection) {
+          case 'camera':
+            keys = Object.keys(config.cameras)
+            break
+          case 'fixture':
+            keys = Object.keys(config.fixtures)
+            break
+        }
+
+        var last_id = keys[keys.length - 1]
+
+        if (last_id) {
+          return parseInt(last_id) + 1
+        } else {
+          return 0
+        }
+      }
+
+      function update_field(content_id, to_json=false) {
+        var ids = content_id.replace('field', '').split('-')
+        var field = document.getElementById(content_id)
+        var value = field.value
+
+        if (value == '' || field.getAttribute('readonly') == 'true') {
+          return
+        }
+
+        if (to_json) {
+          value = JSON.parse(value)
+        } else if (field.getAttribute('type') == 'integer') {
+          value = parseInt(value)
+        } else if (field.getAttribute('type') == 'float') {
+          value = parseFloat(value)
+        } else if (field.type == 'text') {
+          value = value.toLowerCase()
+        }
+
+        if (content_id.includes('name')) {
+          field.closest(".card").querySelector('button').innerText = value
+        }
+
+        if (ids[0] == 'cameras' || ids[0] == 'fixtures') {
+          item = config[ids[0]][ids[1]]
+          if (ids.length == 3) {
+            item[ids[2]] = value
+          } else {
+            item[ids[2]][ids[3]] = value
+          }
+        } else if (ids[0] == 'calibration' || ids[0] == 'room') {
+          config[ids[0]] = config[ids[0]] || {}
+          config[ids[0]][ids[1]] = value
+        } else {
+          config[ids[0]] = value
+        }
+      }
+
+      function delete_field(content_id) {
+        var ids = content_id.replace('field', '').split('-')
+        var field = document.getElementById(content_id)
+        var card = field.parentNode
+        card.parentNode.removeChild(card)
+
+        if (ids[0] == 'cameras' || ids[0] == 'fixtures') {
+          delete config[ids[0]][ids[1]]
+        }
+      }
+
+      function create_block(parent, name, display_name, fields) {
+        var container = accordion_item(name, display_name)
+        var content = node('collapse', 'div', {'id': name})
+        var content_body = node('card-body')
+
+        fields.forEach(field => {
+          content_body.appendChild(field)
+        })
+
+        content.appendChild(content_body)
+        container.appendChild(content)
+        parent.appendChild(container)
+        return content_body
+      }
+
+      function create_network_interface(content={}) {
+        var content_id = 'network_interface'
+        var fields = [
+          field('network interface', content || '', content_id, '', true)
+        ]
+        create_block(document.getElementById('config'), content_id, 'Network Interface', fields)
+      }
+
+      function create_calibration(content={}) {
+        var content_id = 'calibration'
+        var fields = [
+          field('dimension', content.dimension || '', content_id, '', false, 'text', true),
+          field('camera', content.camera || '', content_id, '', false, 'text', true),
+          field('distortion', content.distortion || '', content_id, '', false, 'text', true)
+        ]
+        create_block(document.getElementById('config'), content_id, 'Calibration', fields)
+      }
+
+      function create_max_subjects(content={}) {
+        var content_id = 'max_subjects'
+        var fields = [
+          field('max subjects', content || '', content_id, '', false, 'integer')
+        ]
+        create_block(document.getElementById('config'), content_id, 'Max Subjects', fields)
+      }
+
+      function create_room(content={}) {
+        var content_id = 'room'
+        var fields = [
+          field('x', content.x || '', content_id, '', false, 'float'),
+          field('y', content.y || '', content_id, '', false, 'float'),
+          field('z', content.z || '', content_id, '', false, 'float')
+        ]
+        create_block(document.getElementById('config'), content_id, 'Room', fields)
+      }
+
+      function create_cameras(content={}) {
+        var config_element = document.getElementById('config')
+
+        var fields = []
+        if (Object.keys(content).length == 0) {
+          fields = [create_camera()]
+        } else {
+          Object.keys(content).forEach(camera_id => {
+            var camera = content[camera_id]
+            fields.push(create_camera(camera_id, camera))
+          })
+        }
+
+        var camera_accordion = node('accordion')
+        fields.forEach(field => {
+          camera_accordion.appendChild(field)
+        })
+        var new_camera = node('btn btn-primary mt-3', 'button', {
+          'onclick': () => {create_camera(-1, {}, camera_accordion)}
+        })
+        new_camera.innerText = 'New Camera'
+
+        create_block(document.getElementById('config'), 'cameras', 'Cameras', [camera_accordion, new_camera])
+      }
+
+      function create_fixtures(content={}) {
+        var config_element = document.getElementById('config')
+
+        var fields = []
+        if (Object.keys(content).length == 0) {
+          fields = [create_fixture()]
+        } else {
+          Object.keys(content).forEach(fixture_id => {
+            var fixture = content[fixture_id]
+            fields.push(create_fixture(fixture_id, fixture))
+          })
+        }
+
+        var fixture_accordion = node('accordion')
+        fields.forEach(field => {
+          fixture_accordion.appendChild(field)
+        })
+        var new_fixture = node('btn btn-primary mt-3', 'button', {
+          'onclick': () => {create_fixture(-1, {}, fixture_accordion)}
+        })
+        new_fixture.innerText = 'New Fixture'
+
+        create_block(document.getElementById('config'), 'fixtures', 'Fixtures', [fixture_accordion, new_fixture])
+      }
+
+      http_get_async('/config.data', () => {
+        create_network_interface(config.network_interface)
+        create_calibration(config.calibration)
+        create_max_subjects(config.max_subjects)
+        create_room(config.room)
+        create_cameras(config.cameras)
+        create_fixtures(config.fixtures)
+      })
+    </script>
+    <script src="js/jquery-3.3.1.slim.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>

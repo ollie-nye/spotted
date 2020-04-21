@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Spotted Configuration - Personalities</title>
+    <link rel="shortcut icon" href="favicon.png" />
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <style>
+      body { margin: 0; }
+      canvas { width: 100%; height: 100% }
+    </style>
+  </head>
+  <body>
+    <script>
+      let personalities = {}
+    </script>
+    <div class="container-fluid mt-3">
+      <div class="row">
+        <div class="col-sm-12 mb-3">
+          <a class="btn btn-primary" href='/index.html'>Visualiser</a>
+          <a class="btn btn-primary" href='/config.html'>Configuration</a>
+          <a class="btn btn-primary" href='/personalities.html'>Personality Editor</a>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-8 text-capitalize"><h1>Personalities</h1></div>
+        <div class="col-sm-4 text-right"><button class="btn btn-success" onclick="send_update()">Save and Refresh</button></div>
+      </div>
+      <div class="row">
+        <div class="col-sm-12">
+          <div id="personalities" class="accordion"></div>
+          <button class="btn btn-primary mt-3" onclick="create_personality()">New personality</button>
+        </div>
+      </div>
+    </div>
+    <script>
+      function http_get_async(path, callback) {
+        var xmlHttp = new XMLHttpRequest()
+        xmlHttp.onreadystatechange = function() {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+            var response = JSON.parse(xmlHttp.responseText)
+            if (Object.keys(response).length == 0) {
+              response = [blank_personality()]
+            }
+            personalities = response
+            callback()
+          }
+        }
+        xmlHttp.open("GET", path, true)
+        xmlHttp.send(null)
+      }
+
+      function send_update() {
+        var xmlHttp = new XMLHttpRequest()
+        xmlHttp.onreadystatechange = function() {
+          if (xmlHttp.readyState == 4 && xmlHttp.status == 201) {
+            location.reload()
+          }
+        }
+        xmlHttp.open("POST", '/update/personalities', true)
+        xmlHttp.send(JSON.stringify(personalities))
+      }
+
+      function node(className, tag='div', attributes={}) {
+        element = document.createElement(tag)
+        element.className = className
+        Object.keys(attributes).forEach(key => {
+          if (key == 'onclick') {
+            element.onclick = attributes[key]
+          } else {
+            element.setAttribute(key, attributes[key])
+          }
+        })
+        return element
+      }
+
+      function delete_button(content_id, text, margin_left=true) {
+        button = node('btn btn-danger mt-3' + (margin_left ? ' ml-3' : ''), 'button', {
+          'onclick': () => {delete_field(content_id)},
+        })
+        button.innerText = 'Delete ' + text
+        return button
+      }
+
+      function field(name, value, content_id, placeholder='', disabled=false, type='text') {
+        var field_id = content_id + '-' + name.replace(' ', '_')
+        var form_group = node('form-group row')
+        var label = node('text-capitalize col-sm-4 col-form-label', 'label', {'for': field_id})
+        label.innerText = name
+
+        var input_wrapper = node('col-sm-8')
+        var attributes = {
+          'id': field_id,
+          'type': type,
+          'value': value,
+          'placeholder': placeholder
+        }
+        if (value == undefined) {
+          attributes['value'] = ''
+        }
+        if (disabled) {
+          className = 'form-control-plaintext'
+          attributes['readonly'] = true
+        } else {
+          className = 'form-control'
+        }
+        var input = node(className, 'input', attributes)
+        input.onblur = () => { update_field(field_id) }
+
+        input_wrapper.appendChild(input)
+        form_group.appendChild(label)
+        form_group.appendChild(input_wrapper)
+
+        return form_group
+      }
+
+      function accordion_item(content_id, header_content) {
+        container = node('card')
+        header = node('header')
+        header_text = node('mb-0', 'h2')
+        button = node('btn btn-link text-capitalize', 'button', {
+          'type': 'button',
+          'data-toggle': 'collapse',
+          'data-target': '#' + content_id,
+          'aria-expanded': 'false',
+          'aria-controls': content_id
+        })
+        button.innerText = header_content
+        header_text.appendChild(button)
+        header.appendChild(header_text)
+        container.appendChild(header)
+        return container
+      }
+
+      function create_attribute(accordion, mode_content_id, attribute_id=-1, content={}) {
+        if (attribute_id == -1) {
+          attribute_id = generate_id(mode_content_id + '-')
+          ids = mode_content_id.replace('field', '').split('-')
+          content = blank_attribute()
+          personalities[ids[0]].modes[ids[1]].attributes[attribute_id] = content
+        }
+        var attribute_content_id = mode_content_id + '-' + attribute_id
+        var attribute_container = accordion_item(attribute_content_id, content.name || 'New Attribute')
+
+        var attribute_content = node('collapse' + (content.name ? '' : ' show'), 'div', {'id': attribute_content_id})
+        var attribute_content_body = node('card-body')
+
+        var attribute_fields = [
+          field('name', content.name || '', attribute_content_id),
+          field('offset', content.offset || '', attribute_content_id, '', false, 'number'),
+          field('attribute type', content.attribute_type || '', attribute_content_id),
+          field('range', content.range || '', attribute_content_id, 255, false, 'number'),
+          field('default', content.default || '', attribute_content_id, 0, false, 'number'),
+          field('multiplier type', content.multiplier_type || '', attribute_content_id, 'normal'),
+          field('multiplier length', content.multiplier_length || '', attribute_content_id, 0, false, 'number'),
+          field('invert', content.invert || '', attribute_content_id, 'false'),
+          delete_button(attribute_content_id, 'attribute', false)
+        ]
+
+        attribute_fields.forEach(field => {
+          attribute_content_body.appendChild(field)
+        })
+
+        attribute_content.appendChild(attribute_content_body)
+        attribute_container.appendChild(attribute_content)
+        accordion.appendChild(attribute_container)
+      }
+
+      function create_mode(accordion, content_id, mode_id=-1, content={}) {
+        if (mode_id == -1) {
+          mode_id = generate_id(content_id + '-')
+          personality_id = content_id.replace('field', '').split('-')[0]
+          content = blank_mode()
+          personalities[personality_id].modes[mode_id] = content
+        }
+        var mode_content_id = content_id + '-' + mode_id
+        var mode_container = accordion_item(mode_content_id, (content.name || 'New mode'))
+
+        var mode_content = node('collapse' + (content.name ? '' : ' show'), 'div', {'id': mode_content_id})
+        var mode_content_body = node('card-body')
+
+        var mode_fields = [
+          field('id', mode_id, mode_content_id, '', true, 'number'),
+          field('name', content.name || 'New mode', mode_content_id),
+          field('channels', content.channels || '', mode_content_id, '', false, 'number')
+        ]
+
+        var attrs = node('accordion')
+        if (content.attributes) {
+          Object.keys(content.attributes).forEach(attribute_id => {
+            var attribute = content.attributes[attribute_id]
+            create_attribute(attrs, mode_content_id, attribute_id, attribute)
+          })
+        } else {
+          create_attribute(attrs, mode_content_id)
+        }
+        mode_fields.push(attrs)
+
+        var new_attribute = node('btn btn-primary mt-3', 'button', {
+          'onclick': () => {create_attribute(attrs, mode_content_id)}
+        })
+        new_attribute.innerText = 'Add Attribute'
+        mode_fields.push(new_attribute)
+        mode_fields.push(delete_button(mode_content_id, 'mode'))
+
+        mode_fields.forEach(field => {
+          mode_content_body.appendChild(field)
+        })
+
+        mode_content.appendChild(mode_content_body)
+        mode_container.appendChild(mode_content)
+        accordion.appendChild(mode_container)
+      }
+
+      function create_personality(personality_id=-1, content={}) {
+        if (personality_id == -1) {
+          personality_id = generate_id('')
+          content = blank_personality()
+          personalities[personality_id] = content
+        }
+        var personalities_element = document.getElementById('personalities')
+        var content_id = 'field' + personality_id
+        var personality_container = accordion_item(content_id, (content.model && content.manufacturer ? (content.manufacturer + ' ' + content.model) : 'New personality'))
+
+        var personality_content = node('collapse' + (content.manufacturer ? '' : ' show'), 'div', {'id': content_id})
+        var personality_content_body = node('card-body')
+
+        var fields = [
+          field('id', personality_id, content_id, '', true, 'number'),
+          field('manufacturer', content.manufacturer || '', content_id),
+          field('model', content.model || '', content_id)
+        ]
+
+        var modes = node('accordion')
+        if (content.modes) {
+          Object.keys(content.modes).forEach(mode_id => {
+            var mode = content.modes[mode_id]
+            create_mode(modes, content_id, mode_id, mode)
+          })
+        } else {
+          create_mode(modes, content_id)
+        }
+        fields.push(modes)
+
+        var new_mode = node('btn btn-primary mt-3', 'button', {
+            'onclick': () => {create_mode(modes, content_id)}
+          })
+        new_mode.innerText = 'New Mode'
+        fields.push(new_mode)
+        fields.push(delete_button(content_id, 'personality'))
+
+
+        fields.forEach(field => {
+          personality_content_body.appendChild(field)
+        })
+
+        personality_content.appendChild(personality_content_body)
+        personality_container.appendChild(personality_content)
+
+        personalities_element.appendChild(personality_container)
+      }
+
+      function blank_personality() {
+        var personality = {}
+        personality.modes = [blank_mode()]
+        return personality
+      }
+
+      function blank_mode() {
+        var mode = {}
+        mode.name = 'New mode'
+        mode.attributes = [blank_attribute()]
+        return mode
+      }
+
+      function blank_attribute() {
+        var attribute = {}
+        return attribute
+      }
+
+      function generate_id(content_id) {
+        console.log(content_id)
+        var ids = content_id.replace('field', '').split('-')
+
+        console.log(ids)
+
+        var keys = []
+        switch (ids.length) {
+          case 1: // Personality id
+            keys = Object.keys(personalities)
+            break
+          case 2: // Mode
+            keys = Object.keys(personalities[ids[0]].modes)
+            break
+          case 3: // Attribute
+            keys = Object.keys(personalities[ids[0]].modes[ids[1]].attributes)
+            break
+        }
+
+        var last_id = keys[keys.length - 1]
+
+        if (last_id) {
+          return parseInt(last_id) + 1
+        } else {
+          return 0
+        }
+      }
+
+      function update_field(content_id) {
+        var ids = content_id.replace('field', '').split('-')
+        var field = document.getElementById(content_id)
+        var value = field.value
+
+        if (value == '' || field.getAttribute('readonly') == 'true') {
+          return
+        }
+
+        if (field.type == 'text') {
+          value = value.toLowerCase()
+        } else if (field.type == 'number') {
+          value = parseInt(value)
+        }
+
+        if (content_id.includes('name')) {
+          field.closest(".card").querySelector('button').innerText = value
+        }
+
+        var personality = personalities[ids[0]]
+
+        if (personality == undefined) {
+          personality = blank_personality()
+          personalities[ids[0]] = personality
+        }
+
+        if (ids.length == 2) {
+          personality[ids[1]] = value
+        } else {
+          var mode = personality.modes[ids[1]]
+
+          if (mode == undefined) {
+            mode = blank_mode(personality.modes.length)
+            personality.modes[ids[1]] = mode
+          }
+
+          if (ids.length == 3) {
+            mode[ids[2]] = value
+          } else {
+            var attribute = mode.attributes[ids[2]]
+
+            if (attribute == undefined) {
+              attribute = blank_attribute()
+              mode.attributes[ids[2]] = attribute
+            }
+
+            attribute[ids[3]] = value
+          }
+        }
+      }
+
+      function delete_field(content_id) {
+        var ids = content_id.replace('field', '').split('-')
+        var field = document.getElementById(content_id)
+        var card = field.parentNode
+
+        card.parentNode.removeChild(card)
+
+        var personality = personalities[ids[0]]
+
+        if (personality == undefined) {
+          return
+        }
+
+        if (ids.length == 1) {
+          delete personalities[ids[0]]
+        } else {
+          var mode = personality.modes[ids[1]]
+
+          if (mode == undefined) {
+            return
+          }
+
+          if (ids.length == 2) {
+            delete personality.modes[ids[1]]
+          } else {
+            var attribute = mode.attributes[ids[2]]
+
+            if (attribute == undefined) {
+              return
+            }
+
+            delete mode.attributes[ids[2]]
+          }
+        }
+        console.log(personalities)
+      }
+
+      http_get_async('/personalities.data', (response) => {
+        Object.keys(personalities).forEach(personality_id => {
+          personality = personalities[personality_id]
+          create_personality(personality_id, personality)
+        })
+      })
+    </script>
+    <script src="js/jquery-3.3.1.slim.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+  </body>
+</html>
