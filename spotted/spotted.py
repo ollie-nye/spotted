@@ -36,19 +36,9 @@ from spotted.room import Room
 from spotted.calibration import Calibration
 from spotted.websocket import Websocket
 from spotted.static_server import StaticServer
-from spotted.helpers import scale
+from spotted.helpers import scale, handler_class_with_args
 from spotted.error import ErrorCode, exit_with_error
 from config.system import SystemConfig
-
-def start_ui(server_class=HTTPServer, handler_class=StaticServer, port=8080):
-  """
-  UI thread
-  """
-
-  print('Starting UI on port', port)
-  server_address = ('', port)
-  httpd = server_class(server_address, handler_class)
-  httpd.serve_forever()
 
 class Spotted:
   """
@@ -61,6 +51,13 @@ class Spotted:
     Sets up state, calibration, personalities, cameras, room, fixtures and universes
     """
 
+    self.skip_cameras = skip_cameras
+    self.init_config()
+
+    self.threads = {}
+    self.setup_interface()
+
+  def init_config(self):
     try:
       self.config = json.load(open('config/config.json'))
       load_personalities('config/personalities.json')
@@ -69,16 +66,20 @@ class Spotted:
 
     self.current_state = dict()
     self.pois = []
-
-    self.setup_interface()
+    self.stop_flags = {
+      'artnet': False,
+      'camera': False,
+      'fixture': False
+    }
 
     self.setup_calibration()
     self.cameras = []
-    if not skip_cameras:
+    if not self.skip_cameras:
       self.setup_cameras()
     self.setup_room()
     self.setup_fixtures()
     self.setup_max_subjects()
+
 
   def setup_interface(self):
     """
@@ -123,10 +124,10 @@ class Spotted:
       if len(self.config['cameras']) < 1:
         exit_with_error(ErrorCode.EmptyKey, 'cameras')
 
-      for index, camera in enumerate(self.config['cameras']):
-        cam = Camera(camera, self.calibration)
+      for camera_id, camera in self.config['cameras'].items():
+        cam = Camera(camera, camera_id, self.calibration, self.stop_flags['camera'])
         self.cameras.append(cam)
-        self.config['cameras'][index]['initial_point'] = cam.initial_point.as_dict()
+        self.config['cameras'][camera_id]['initial_point'] = cam.initial_point.as_dict()
     else:
       exit_with_error(ErrorCode.MissingKey, 'cameras')
 
@@ -165,8 +166,8 @@ class Spotted:
       if len(self.config['fixtures']) < 1:
         exit_with_error(ErrorCode.EmptyKey, 'fixtures')
 
-      for fixture_config in self.config['fixtures']:
-        fixture = Fixture(fixture_config)
+      for fixture_id, fixture_config in self.config['fixtures'].items():
+        fixture = Fixture(fixture_config, fixture_id, self.stop_flags)
         addr = fixture.address
         universe = self.universes.get_universe(addr['net'], addr['subnet'], addr['universe'])
         if universe is None:
@@ -387,7 +388,10 @@ class Spotted:
     elif SystemConfig.transmit_rate == 'reduced':
       delay = 1/15
 
-    while 1:
+    while True:
+      if self.stop_flags['artnet']:
+        break
+
       # Send ArtPoll every 3 seconds
       if (datetime.now() - last_poll_transmission).total_seconds() > 3:
         last_poll_transmission = datetime.now()
@@ -405,17 +409,24 @@ class Spotted:
     """
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    sock.setblocking(False)
     sock.bind((self.broadcast_address, 6454))
 
     while True:
-      incoming = sock.recv(1024)
+      if self.stop_flags['artnet']:
+        break
 
-      if len(incoming) > 0:
-        valid, opcode, packet = identify_header(incoming)
-        if valid:
-          if opcode is Opcode.OpPoll:
-            packet = PollReply(0, 0, self.ip_address, [0x50, 0x1A, 0xC5, 0xE7, 0xD6, 0x8F])
-            transmit.put(packet)
+      try:
+        incoming = sock.recv(1024)
+
+        if len(incoming) > 0:
+          valid, opcode, packet = identify_header(incoming)
+          if valid:
+            if opcode is Opcode.OpPoll:
+              packet = PollReply(0, 0, self.ip_address, [0x50, 0x1A, 0xC5, 0xE7, 0xD6, 0x8F])
+              transmit.put(packet)
+      except BlockingIOError:
+        time.sleep(1/50)
 
   def artnet_transmitter(self, transmit):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -423,9 +434,34 @@ class Spotted:
     sock.bind((self.ip_address, 6454))
     print('Starting artnet')
 
+    delay = 1
+    if SystemConfig.transmit_rate == 'continuous':
+      delay = 1/50
+    elif SystemConfig.transmit_rate == 'reduced':
+      delay = 1/15
+
     while True:
-      packet = transmit.get()
-      sock.sendto(packet.serialize(), (self.broadcast_address, 6454))
+      if self.stop_flags['artnet']:
+        break
+
+      try:
+        if self.stop_flags['artnet']:
+          break
+        packet = transmit.get_nowait()
+        sock.sendto(packet.serialize(), (self.broadcast_address, 6454))
+      except queue.Empty:
+        time.sleep(delay)
+
+  def start_ui(self, server_class=HTTPServer, handler_class=StaticServer, port=8080):
+    """
+    UI thread
+    """
+
+    print('Starting UI on port', port)
+    server_address = ('', port)
+    handler = handler_class_with_args(handler_class, self)
+    httpd = server_class(server_address, handler)
+    httpd.serve_forever()
 
   def start_websocket(self, port=8081):
     """
@@ -435,11 +471,36 @@ class Spotted:
     print('Starting websocket server on port', port)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    websocket = Websocket(self.config, self.current_state)
+    websocket = Websocket(self)
     start_server = websockets.serve(websocket.push_state, '0.0.0.0', port)
     loop.create_task(websocket.broadcast_state(1/30))
     loop.run_until_complete(start_server)
     loop.run_forever()
+
+  def start_support_threads(self, daemon):
+    self.threads['cameras'] = []
+    for camera in self.cameras:
+      thread = threading.Thread(target=camera.begin_capture, daemon=daemon)
+      self.threads['cameras'] = self.threads['cameras'] + [thread]
+      thread.start()
+
+    transmit = queue.Queue()
+
+    self.threads['artnet'] = [
+      threading.Thread(target=self.start_artnet, args=(transmit,), daemon=daemon),
+      threading.Thread(target=self.start_artnet_reply, args=(transmit,), daemon=daemon),
+      threading.Thread(target=self.artnet_transmitter, args=(transmit,), daemon=daemon)
+    ]
+
+    for thread in self.threads['artnet']:
+      thread.start()
+
+    self.threads['fixtures'] = []
+    for universe in self.universes.universes:
+      for fixture in universe.fixtures:
+        thread = threading.Thread(target=fixture.follow, daemon=daemon)
+        self.threads['fixtures'] = self.threads['fixtures'] + [thread]
+        thread.start()
 
   def start_spotted(self):
     """
@@ -448,20 +509,14 @@ class Spotted:
 
     daemon = False
 
-    threading.Thread(target=start_ui, daemon=daemon).start()
-    threading.Thread(target=self.start_websocket, daemon=daemon).start()
+    self.threads['ui'] = [
+      threading.Thread(target=self.start_ui, daemon=daemon),
+      threading.Thread(target=self.start_websocket, daemon=daemon)
+    ]
+    for thread in self.threads['ui']:
+      thread.start()
 
-    for camera in self.cameras:
-      threading.Thread(target=camera.begin_capture, daemon=daemon).start()
-
-    transmit = queue.Queue()
-    threading.Thread(target=self.start_artnet, args=(transmit,), daemon=daemon).start()
-    threading.Thread(target=self.start_artnet_reply, args=(transmit,), daemon=daemon).start()
-    threading.Thread(target=self.artnet_transmitter, args=(transmit,), daemon=daemon).start()
-
-    for universe in self.universes.universes:
-      for fixture in universe.fixtures:
-        threading.Thread(target=fixture.follow, daemon=daemon).start()
+    self.start_support_threads(daemon)
 
     # coords = [
     #   (0, 0),
