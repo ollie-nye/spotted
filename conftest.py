@@ -46,7 +46,7 @@ def personality():
 
 @pytest.fixture
 def fixture():
-  return Fixture(CONFIG['fixtures'][0])
+  return Fixture(CONFIG['fixtures']['0'], 0, {'fixture': False})
 
 @pytest.fixture
 def spherical_coordinate():

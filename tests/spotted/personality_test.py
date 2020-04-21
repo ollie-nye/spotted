@@ -2,8 +2,8 @@ from spotted.personality import find_personality_by_id
 from spotted.attribute import Attribute
 
 def test_init(personality):
-  assert personality.personality_id == 1
-  assert personality.manufacturer == 'Hex'
+  assert personality.personality_id == 0
+  assert personality.manufacturer == 'hex'
   assert personality.model == '150w beam'
   assert len(personality.modes) == 1
 
@@ -18,7 +18,7 @@ def test_init(personality):
 #   assert personality.get_attribute('notfrog') is None
 
 def test_find_personality_by_id(personality):
-  pers = find_personality_by_id(personality.personality_id, 1)
+  pers = find_personality_by_id(personality.personality_id, 0)
 
   assert pers.channels == 16
 
