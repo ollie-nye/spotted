@@ -68,7 +68,7 @@ class Camera:
   Spotted Camera
   """
 
-  def __init__(self, json, calibration):
+  def __init__(self, json, camera_id, calibration, stop_flag):
     """
     Create Camera object
       Also creates a camera capture object, so initialisation takes a second or so
@@ -81,7 +81,8 @@ class Camera:
       Camera
     """
 
-    self.cam_id = json['id']
+    self.stop_flag = stop_flag
+    self.cam_id = camera_id
     self.url = json['url']
 
     self.position = Coordinate(json['position']['x'], json['position']['y'], json['position']['z'])
@@ -277,6 +278,9 @@ class Camera:
     init_frame = self.create_initial_frame()
 
     while True:
+      if self.stop_flag:
+        break
+
       ret, frame = self.capture.read()
 
       if ret:

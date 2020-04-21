@@ -97,3 +97,10 @@ def pythagoras(a_x, a_y, b_x, b_y):
   """
 
   return math.sqrt((a_x - b_x) ** 2 + (a_y - b_y) ** 2)
+
+def handler_class_with_args(handler, handler_args):
+  class CustomHandler(handler):
+    def __init__(self, *args, **kwargs):
+      self.push_spotted_reference(handler_args)
+      super(CustomHandler, self).__init__(*args, **kwargs)
+  return CustomHandler

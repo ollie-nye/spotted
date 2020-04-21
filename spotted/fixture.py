@@ -17,7 +17,7 @@ class Fixture:
   """
 
   # pylint: disable=invalid-name, too-many-instance-attributes
-  def __init__(self, config):
+  def __init__(self, config, fixture_id, stop_flags):
     """
     Create fixture from given config
 
@@ -25,7 +25,8 @@ class Fixture:
       Fixture
     """
 
-    self.fixture_id = config['id']
+    self.stop_flags = stop_flags
+    self.fixture_id = fixture_id
     self.personality = find_personality_by_id(config['personality'], config['mode'])
     self.address = {
       'net': config['net'],
@@ -155,6 +156,9 @@ class Fixture:
     """
 
     while True:
+      if self.stop_flags['fixture']:
+        break
+
       time.sleep(1/50)
 
       if self.current_aim is None:
