@@ -10,13 +10,12 @@ class Websocket:
   Spotted Websocket
   """
 
-  def __init__(self, config, state):
+  def __init__(self, spotted):
     """
     Creates new websocket collection instance
     """
 
-    self.config = config
-    self.state = state
+    self.spotted = spotted
     self.clients = set()
 
   def state_event(self):
@@ -25,7 +24,7 @@ class Websocket:
       JSON string representation of self.state
     """
 
-    return json.dumps(self.state)
+    return json.dumps(self.spotted.current_state)
 
   async def register(self, websocket):
     """
@@ -36,7 +35,7 @@ class Websocket:
     """
 
     self.clients.add(websocket)
-    await websocket.send("init      " + json.dumps(self.config))
+    await websocket.send("init      " + json.dumps(self.spotted.config))
 
   async def unregister(self, websocket):
     """
