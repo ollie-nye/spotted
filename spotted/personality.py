@@ -11,7 +11,7 @@ class Personality:
   Spotted Personality
   """
 
-  def __init__(self, config):
+  def __init__(self, config, pers_id):
     """
     Creates an instance of a personality from the given config
     Creates an attribute array
@@ -20,13 +20,13 @@ class Personality:
       config {dict} -- json object to configure personality with
     """
 
-    self.personality_id = config['id']
+    self.personality_id = int(pers_id)
     self.manufacturer = config['manufacturer']
     self.model = config['model']
 
     self.modes = []
-    for mode_config in config['modes']:
-      self.modes.append(Mode(mode_config))
+    for mode_id, mode_config in config['modes'].items():
+      self.modes.append(Mode(mode_config, int(mode_id)))
 
 PERSONALITIES = []
 
@@ -40,8 +40,8 @@ def load_personalities(path):
   """
 
   personalities_json = json.load(open(path))
-  for pers in personalities_json:
-    PERSONALITIES.append(Personality(pers))
+  for pers_id, pers in personalities_json.items():
+    PERSONALITIES.append(Personality(pers, pers_id))
 
 def find_personality_by_id(personality_id, mode_id):
   """
