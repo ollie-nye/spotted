@@ -193,7 +193,6 @@ class Camera:
 
     diff = abs(np.subtract(frame, background)).astype(np.uint8)
 
-    # _, diff = cv.threshold(diff, 250, 255, cv.THRESH_TOZERO_INV)
     _, mask = cv.threshold(frame, 240, 255, cv.THRESH_TOZERO_INV, frame)
     mask = mask.astype(bool)
     _, diff = cv.threshold(diff, 45, 255, cv.THRESH_BINARY)
@@ -328,17 +327,11 @@ class Camera:
       scale(displacement_vertical, 0, self.vert_midpoint, 0, self.angular_vert_midpoint)
     )
 
-    # print('horiz:', angular_displacement_horizontal, 'vert:', angular_displacement_vertical)
-
     identity_x = 1.0
     identity_y = identity_x * math.tan(angular_displacement_vertical)
     identity_z = identity_x * math.tan(angular_displacement_horizontal)
 
     identity_position = [identity_x, identity_y, identity_z]
-
-    # rotated_position = self.rotation_matrix[1].dot(identity_position)
-    # rotated_position = self.rotation_matrix[0].dot(rotated_position)
-    # rotated_position = self.rotation_matrix[2].dot(rotated_position)
 
     rotated_position = self.rotation_matrix[2].dot(identity_position)
     rotated_position = self.rotation_matrix[1].dot(rotated_position)

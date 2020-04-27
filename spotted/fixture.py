@@ -129,30 +129,10 @@ class Fixture:
 
     if self.current_aim is None:
       self.last_position = position
-    # else:
-    #   diff = self.current_aim - position
-    #   if diff.x < 0.1 and diff.y < 0.1 and diff.z < 0.1:
-    #     return # 10cm differences aren't worth updating fixtures for
 
     self.current_aim = position
     self.position_step = (self.current_aim - self.last_position) / 10
     self.steps_taken = 0
-
-  def calibrate(self, room):
-    """
-    Aligns a fixtures' 0deg point to be away from the center of the room
-    Sets instance attributes pan_offset and tilt_invert
-
-    Arguments:
-      room {Room} -- Room to align to
-    """
-
-    # offset_angle = self.location.pan_angle(room.center())
-    # if offset_angle >= 180.0:
-    #   self.pan_offset = offset_angle - 180.0
-    #   self.tilt_invert = True
-    # else:
-    #   self.pan_offset = offset_angle
 
   def follow(self):
     """

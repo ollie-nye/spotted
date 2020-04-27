@@ -4,27 +4,6 @@ Helper functions shared between classes
 
 import math
 import numpy as np
-import cv2 as cv
-
-def imfill(frame):
-  """
-  Fill holes in a given frame
-
-  Arguments:
-    frame {2D np.array} -- Frame to fill
-
-  Returns:
-    2D np.array -- Frame with holes filled
-  """
-
-  im_flood_fill = frame.copy()
-  height, width = frame.shape[:2]
-  mask = np.zeros((height + 2, width + 2), np.uint8)
-  im_flood_fill = im_flood_fill.astype('uint8')
-  cv.floodFill(im_flood_fill, mask, (0, 0), 255)
-  im_flood_fill_inv = cv.bitwise_not(im_flood_fill)
-  frame = frame.astype('uint8')
-  return frame | im_flood_fill_inv
 
 def scale(value, old_min, old_max, new_min, new_max):
   """
