@@ -53,10 +53,6 @@ large enough to contain all fixtures and cameras
 
 JSON array containing the camera definitions
 
-##### id
-
-Camera identifier
-
 ##### url
 
 RTSP endpoint for the camera
@@ -82,7 +78,6 @@ Raw resolution input from the camera, in horizontal and vertical keys
 
 ```json
 {
-  "id": 1,
   "url": "rtmp://x.x.x.x/stream",
   "position": { "x": 1, "y": 2, "z": 3 },
   "rotation": { "x": -25, "y": 25, "z": 0 },
@@ -92,10 +87,6 @@ Raw resolution input from the camera, in horizontal and vertical keys
 ```
 
 #### fixtures
-
-##### id
-
-Fixture identifier
 
 ##### personality
 
@@ -134,7 +125,6 @@ is applied in the order y-x-z
 
 ```json
 {
-  "id": 1,
   "personality": 1,
   "net": 0,
   "subnet": 0,
@@ -156,20 +146,18 @@ is applied in the order y-x-z
     "distortion": [[0.10101718971446061], [-1.1768049120332442], [2.3397431068756416], [-1.877526489124148]]
   },
   "room": { "x": 15, "y": 6, "z": 12 },
-  "cameras": [
-    {
-      "id": 1,
+  "cameras": {
+    "0": {
       "url": "rtmp://x.x.x.x/stream",
       "position": { "x": 1, "y": 2, "z": 3 },
       "rotation": { "x": -25, "y": 25, "z": 0 },
       "viewing_angle": { "horizontal": 80, "vertical": 42 },
       "resolution": { "horizontal": 1920, "vertical": 1080 }
     }
-  ],
-  "fixtures": [
-    {
-      "id": 1,
-      "personality": 1,
+  },
+  "fixtures": {
+    "0": {
+      "personality": 0,
       "mode": 0,
       "net": 0,
       "subnet": 0,
@@ -178,7 +166,7 @@ is applied in the order y-x-z
       "position": { "x": 1, "y": 2, "z": 3 },
       "rotation": { "x": 0, "y": 0, "z": 0 }
     }
-  ]
+  }
 }
 ```
 
@@ -186,10 +174,6 @@ is applied in the order y-x-z
 
 Personalities are also defined through JSON, as an array of objects with the
 following keys
-
-#### id
-
-Personality identifier
 
 #### manufacturer
 
@@ -202,10 +186,6 @@ Fixture model
 #### modes
 
 Array of modes of the fixture
-
-##### id
-
-Mode identifier
 
 ##### name
 
@@ -259,14 +239,12 @@ A boolean value to set whether or not to invert the channel value on output
 #### example
 
 ```json
-[
-  {
-    "id": 1,
+{
+  "0": {
     "manufacturer": "Hex",
     "model": "150w beam",
-    "modes": [
-      {
-        "id": 1,
+    "modes": {
+      "0": {
         "name": "Extended",
         "channels": 16,
         "attributes": [
@@ -277,9 +255,9 @@ A boolean value to set whether or not to invert the channel value on output
           { "name": "gobo", "offset": 8, "attribute_type": "beam", "default": 0 }
         ]
       }
-    ]
+    }
   }
-]
+}
 ```
 
 ## Running
@@ -304,6 +282,9 @@ directory
 - 2 - Missing config file
 - 3 - Missing config key
 - 4 - Incorrect configuration
+- 5 - Could not connect to camera
+- 6 - Configured network interface is missing
+- 7 - Configured network interface does not have an address
 
 ## License
 

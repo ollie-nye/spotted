@@ -42,4 +42,4 @@ def exit_with_error(error_code, details=None):
     print(f"Configured interface '{details}' does not have an IPv4 address")
 
   print('Exiting')
-  sys.exit(error_code)
+  sys.exit(error_code.value)
