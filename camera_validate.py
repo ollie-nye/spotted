@@ -27,28 +27,31 @@ for universe in spotted.universes.universes:
 time.sleep(3)
 
 for _ in range(255):
-  point = Coordinate(2.0, 0.0, 2.0)
+  point = Coordinate(2.0, 0.0, 4.5)
   for fixture in spotted.universes.universes[0].fixtures:
     fixture.point_at(point)
     fixture.open()
     # self.current_state['maps'][fixture.fixture_id] = id(live_pois[index])
 time.sleep(2)
 
-# outframe = None
-# if spotted.cameras[0].current_frame is not None:
-#   out_frame = spotted.cameras[0].current_frame
-# if spotted.cameras[1].current_frame is not None:
-#   if out_frame is not None:
-#     out_frame = np.vstack((out_frame, spotted.cameras[1].current_frame))
-#   else:
-#     out_frame = spotted.cameras[1].current_frame
-# if out_frame is not None:
-#   cv.imshow('VIDEO', out_frame)
-#   cv.waitKey(1000)
+outframe = None
+if spotted.cameras[0].current_frame is not None:
+  out_frame = spotted.cameras[0].current_frame
+if spotted.cameras[1].current_frame is not None:
+  if out_frame is not None:
+    out_frame = np.vstack((out_frame, spotted.cameras[1].current_frame))
+  else:
+    out_frame = spotted.cameras[1].current_frame
+if out_frame is not None:
+  cv.imshow('VIDEO', out_frame)
+  cv.waitKey(1000)
 
 
 
 pois = spotted.combine_points()
+
+for camera in spotted.cameras:
+  print(camera.points_of_interest[0].direction_vector)
 
 poi = pois[0]
 print(poi.position.x)
@@ -57,4 +60,4 @@ print(poi.position.z)
 
 print(pois)
 
-sys.exit(0)
+# sys.exit(0)
