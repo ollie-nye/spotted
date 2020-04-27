@@ -36,7 +36,7 @@
             "name": "gobo",
             "offset": 8,
             "attribute_type": "beam",
-            "default": 10
+            "default": 0
           }
         },
         "channels": 16
