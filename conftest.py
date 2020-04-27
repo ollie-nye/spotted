@@ -1,10 +1,12 @@
 import json
 import pytest
+import numpy as np
 
 from spotted.attribute import Attribute
 from spotted.calibration import Calibration
 from spotted.camera import Camera
 from spotted.coordinate import Coordinate
+from spotted.contour import Contour
 from spotted.fixture import Fixture
 from spotted.personality import Personality, load_personalities, PERSONALITIES
 from spotted.point_of_interest import PointOfInterest
@@ -62,3 +64,13 @@ def point_of_interest():
   position = Coordinate(2, 4, 6)
   location = (200, 100)
   return PointOfInterest(position, location, camera_position)
+
+@pytest.fixture
+def contour_list():
+  points = [(1, 1), (1, 2), (2, 2), (2, 1)]
+  return Contour(points)
+
+@pytest.fixture
+def contour_array():
+  points = np.array([(1, 1), (1, 2), (2, 2), (2, 1)])
+  return Contour(points)
