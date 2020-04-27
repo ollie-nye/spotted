@@ -214,7 +214,7 @@
         var content_id = 'fixtures-' + fixture_id
         var fixture_container = accordion_item(content_id, 'Fixture ' + fixture_id)
 
-        var fixture_content = node('collapse' + (content.personality ? '' : ' show'), 'div', {'id': content_id})
+        var fixture_content = node('collapse' + (content.personality != undefined ? '' : ' show'), 'div', {'id': content_id})
         var fixture_content_body = node('card-body')
 
         var fields = [
