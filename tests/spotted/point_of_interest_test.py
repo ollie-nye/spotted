@@ -14,6 +14,13 @@ def test_init(point_of_interest):
   assert point_of_interest.weight == 1
   assert all([a == b for a, b in zip(point_of_interest.direction_vector, [1, 2, 3])])
 
+
+def test_str(point_of_interest):
+  assert str(point_of_interest) == "PointOfInterest at (2, 4, 6)"
+
+def test_repr(point_of_interest):
+  assert repr(point_of_interest) == "PointOfInterest at (2, 4, 6)"
+
 def test_increment_count(point_of_interest):
   point_of_interest.increment_count()
   assert point_of_interest.count == 102
