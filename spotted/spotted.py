@@ -80,7 +80,6 @@ class Spotted:
     self.setup_fixtures()
     self.setup_max_subjects()
 
-
   def setup_interface(self):
     """
     Validates configured interfaces against available system interfaces and
@@ -125,7 +124,7 @@ class Spotted:
         exit_with_error(ErrorCode.EmptyKey, 'cameras')
 
       for camera_id, camera in self.config['cameras'].items():
-        cam = Camera(camera, camera_id, self.calibration, self.stop_flags['camera'])
+        cam = Camera(camera, camera_id, self.calibration, self.stop_flags)
         self.cameras.append(cam)
         self.config['cameras'][camera_id]['initial_point'] = cam.initial_point.as_dict()
     else:
@@ -206,6 +205,7 @@ class Spotted:
 
     euclid_distance = math.sqrt(distance[0]**2 + distance[1]**2 + distance[2]**2)
 
+
     print('distance:', euclid_distance)
 
     if euclid_distance > 1:
@@ -241,7 +241,7 @@ class Spotted:
       if len(self.pois) > 0:
         poi = sorted(self.pois, key=lambda p, np=new_position: p.diff_from_position(np))[0]
         diff_from_pos = poi.diff_from_position(new_position)
-        if diff_from_pos < 0.50:
+        if diff_from_pos < 1:
           # print('Updated position')
           poi.update_position(new_position)
           poi.increment_count()
@@ -250,11 +250,11 @@ class Spotted:
           break
 
         if not made_update:
-          poi = PointOfInterest(new_position, decrement_step=2)
+          poi = PointOfInterest(new_position, decrement_step=5)
           updated_pois.append(poi)
           self.pois.append(poi)
       else:
-        poi = PointOfInterest(new_position, decrement_step=2)
+        poi = PointOfInterest(new_position, decrement_step=5)
         updated_pois.append(poi)
         self.pois.append(poi)
 
@@ -283,51 +283,51 @@ class Spotted:
     pois = []
     for camera in self.cameras:
       fixture_camera_coordinates = []
-      inverse_rotation = np.linalg.inv(camera.rotation_matrix)
-      for fixt_pos in fixture_positions:
-        displaced = (fixt_pos - camera.position).as_vector()
+      # inverse_rotation = np.linalg.inv(camera.rotation_matrix)
+      # for fixt_pos in fixture_positions:
+      #   displaced = (fixt_pos - camera.position).as_vector()
 
-        # print('displaced:', displaced)
+      #   # print('displaced:', displaced)
 
-        # print('inverse_rotation:', inverse_rotation)
+      #   # print('inverse_rotation:', inverse_rotation)
 
-        identity = inverse_rotation[0].dot(displaced)
-        identity = inverse_rotation[1].dot(identity)
-        identity = inverse_rotation[2].dot(identity)
+      #   identity = inverse_rotation[0].dot(displaced)
+      #   identity = inverse_rotation[1].dot(identity)
+      #   identity = inverse_rotation[2].dot(identity)
 
-        # identity = identity
+      #   # identity = identity
 
-        print('identity:', identity)
+      #   print('identity:', identity)
 
-        angular_displacement_horizontal = math.degrees(math.atan2(identity[2], identity[0]))
-        angular_displacement_vertical = -math.degrees(math.atan2(identity[1], identity[0]))
+      #   angular_displacement_horizontal = math.degrees(math.atan2(identity[2], identity[0]))
+      #   angular_displacement_vertical = -math.degrees(math.atan2(identity[1], identity[0]))
 
-        print('angular_displacement_horizontal:', angular_displacement_horizontal)
-        print('angular_displacement_vertical:', angular_displacement_vertical)
+      #   print('angular_displacement_horizontal:', angular_displacement_horizontal)
+      #   print('angular_displacement_vertical:', angular_displacement_vertical)
 
-        displacement_horizontal = round(
-          scale(
-            angular_displacement_horizontal,
-            0, camera.angular_horiz_midpoint,
-            0, camera.horiz_midpoint
-          ) + camera.horiz_midpoint
-        )
-        displacement_vertical = round(
-          scale(
-            angular_displacement_vertical,
-            0, camera.angular_vert_midpoint,
-            0, camera.vert_midpoint
-          ) + camera.vert_midpoint
-        )
+      #   displacement_horizontal = round(
+      #     scale(
+      #       angular_displacement_horizontal,
+      #       0, camera.angular_horiz_midpoint,
+      #       0, camera.horiz_midpoint
+      #     ) + camera.horiz_midpoint
+      #   )
+      #   displacement_vertical = round(
+      #     scale(
+      #       angular_displacement_vertical,
+      #       0, camera.angular_vert_midpoint,
+      #       0, camera.vert_midpoint
+      #     ) + camera.vert_midpoint
+      #   )
 
-        print('predicted camera coordinates are', displacement_horizontal, displacement_vertical)
+      #   print('predicted camera coordinates are', displacement_horizontal, displacement_vertical)
 
-        fixture_camera_coordinates.append((displacement_horizontal, displacement_vertical))
+      #   fixture_camera_coordinates.append((displacement_horizontal, displacement_vertical))
 
-        camera.current_background = np.zeros(camera.resolution_yx, dtype=np.uint8)
+      #   camera.current_background = np.zeros(camera.resolution_yx, dtype=np.uint8)
 
-        camera_fixture_position = (displacement_vertical, displacement_horizontal)
-        cv.circle(camera.current_background, camera_fixture_position, 15, 255, 2)
+      #   camera_fixture_position = (displacement_vertical, displacement_horizontal)
+      #   cv.circle(camera.current_background, camera_fixture_position, 15, 255, 2)
 
       possible_camera_pois = camera.points_of_interest
       camera_pois = []
@@ -536,8 +536,7 @@ class Spotted:
 
     # last_poi = None
 
-    while 1:
-
+    while True:
       # Uncomment this block for static values
       # point = Coordinate(2.0, 0.0, 4.0)
       # for fixture in self.universes.universes[0].fixtures:

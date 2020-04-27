@@ -198,7 +198,7 @@ class Camera:
     _, mask = cv.threshold(frame, 240, 255, cv.THRESH_TOZERO_INV, frame)
     mask = mask.astype(bool)
     _, diff = cv.threshold(diff, 45, 255, cv.THRESH_BINARY)
-    # diff = (diff * mask).astype(np.uint8)
+    diff = (diff * mask).astype(np.uint8)
 
     diff = cv.morphologyEx(diff, cv.MORPH_CLOSE, self.kernel)
     diff = cv.morphologyEx(diff, cv.MORPH_OPEN, self.kernel)

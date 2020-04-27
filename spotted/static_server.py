@@ -28,7 +28,6 @@ class StaticServer(BaseHTTPRequestHandler):
         thread.join()
       for thread in spotted.threads['artnet']:
         thread.join()
-      
 
       print('All threads stopped')
 
