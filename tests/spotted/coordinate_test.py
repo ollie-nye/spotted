@@ -15,6 +15,9 @@ def test_init(coordinate):
 def test_str(coordinate):
   assert str(coordinate) == "(0.1, 0.2, 0.3)"
 
+def test_repr(coordinate):
+  assert repr(coordinate) == "(0.1, 0.2, 0.3)"
+
 def test_add(coordinate):
   displaced = coordinate + coordinate
 
