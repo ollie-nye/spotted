@@ -68,7 +68,7 @@ class Camera:
   Spotted Camera
   """
 
-  def __init__(self, json, camera_id, calibration, stop_flag):
+  def __init__(self, json, camera_id, calibration, stop_flags):
     """
     Create Camera object
       Also creates a camera capture object, so initialisation takes a second or so
@@ -81,7 +81,7 @@ class Camera:
       Camera
     """
 
-    self.stop_flag = stop_flag
+    self.stop_flags = stop_flags
     self.cam_id = camera_id
     self.url = json['url']
 
@@ -197,8 +197,8 @@ class Camera:
     # _, diff = cv.threshold(diff, 250, 255, cv.THRESH_TOZERO_INV)
     _, mask = cv.threshold(frame, 240, 255, cv.THRESH_TOZERO_INV, frame)
     mask = mask.astype(bool)
-    _, diff = cv.threshold(diff, 255//4, 255, cv.THRESH_BINARY)
-    diff = (diff * mask).astype(np.uint8)
+    _, diff = cv.threshold(diff, 45, 255, cv.THRESH_BINARY)
+    # diff = (diff * mask).astype(np.uint8)
 
     diff = cv.morphologyEx(diff, cv.MORPH_CLOSE, self.kernel)
     diff = cv.morphologyEx(diff, cv.MORPH_OPEN, self.kernel)
@@ -237,36 +237,36 @@ class Camera:
 
     contours, _ = cv.findContours(blank, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
-    grouped_contours = set()
+    # grouped_contours = set()
+    # contour_objects = [Contour(points) for points in contours]
+    # for contour in contour_objects:
+    #   grouped_contours.add(contour)
+
+    # made_update = True
+    # while made_update:
+    #   made_update = False
+
+    #   contour_pairs = sorted(itertools.combinations(grouped_contours, 2), key=contour_closeness)
+    #   for pair in contour_pairs:
+    #     one, two = pair
+    #     closeness = contour_closeness(pair)
+    #     if closeness <= 30:
+    #       points = []
+    #       points.extend(one.points)
+    #       points.extend(two.points)
+    #       grouped_contours.add(Contour(points))
+    #       grouped_contours.remove(one)
+    #       grouped_contours.remove(two)
+    #       made_update = True
+    #       break
+    #     if closeness > 30: # Stop iterating the sorted list needlessly
+    #       break
+
+    # contours = [contour.np_points for contour in grouped_contours]
+
     contour_objects = [Contour(points) for points in contours]
-    for contour in contour_objects:
-      grouped_contours.add(contour)
 
-    made_update = True
-    while made_update:
-      made_update = False
-
-      contour_pairs = sorted(itertools.combinations(grouped_contours, 2), key=contour_closeness)
-      for pair in contour_pairs:
-        one, two = pair
-        closeness = contour_closeness(pair)
-        if closeness <= 30:
-          points = []
-          points.extend(one.points)
-          points.extend(two.points)
-          grouped_contours.add(Contour(points))
-          grouped_contours.remove(one)
-          grouped_contours.remove(two)
-          made_update = True
-          break
-        if closeness > 30: # Stop iterating the sorted list needlessly
-          break
-
-    contours = [contour.np_points for contour in grouped_contours]
-
-    contour_objects = [Contour(points) for points in contours]
-
-    return [contour.np_points for contour in contour_objects if contour.area > 2500], blank
+    return [contour.np_points for contour in contour_objects if contour.area > 2000], blank
 
   def begin_capture(self):
     """
@@ -278,7 +278,7 @@ class Camera:
     init_frame = self.create_initial_frame()
 
     while True:
-      if self.stop_flag:
+      if self.stop_flags['camera']:
         break
 
       ret, frame = self.capture.read()

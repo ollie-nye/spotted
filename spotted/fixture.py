@@ -129,6 +129,10 @@ class Fixture:
 
     if self.current_aim is None:
       self.last_position = position
+    # else:
+    #   diff = self.current_aim - position
+    #   if diff.x < 0.1 and diff.y < 0.1 and diff.z < 0.1:
+    #     return # 10cm differences aren't worth updating fixtures for
 
     self.current_aim = position
     self.position_step = (self.current_aim - self.last_position) / 10
