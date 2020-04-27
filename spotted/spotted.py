@@ -4,19 +4,17 @@ Spotted
 
 import math
 import json
-
 import time
 import threading
 import socket
 import asyncio
 import itertools
-import netifaces
 import queue
-
 from http.server import HTTPServer
-import websockets
 from datetime import datetime
 
+import netifaces
+import websockets
 import numpy as np
 import cv2 as cv
 
@@ -36,10 +34,11 @@ from spotted.room import Room
 from spotted.calibration import Calibration
 from spotted.websocket import Websocket
 from spotted.static_server import StaticServer
-from spotted.helpers import scale, handler_class_with_args
+from spotted.helpers import handler_class_with_args
 from spotted.error import ErrorCode, exit_with_error
 from config.system import SystemConfig
 
+# pylint: disable=too-many-instance-attributes
 class Spotted:
   """
   Spotted
@@ -52,12 +51,25 @@ class Spotted:
     """
 
     self.skip_cameras = skip_cameras
+
+    self.cameras = []
+    self.room = None
+    self.universes = Universes()
+    self.pois = []
+    self.max_subjects = None
+    self.calibration = None
+
     self.init_config()
 
     self.threads = {}
     self.setup_interface()
 
   def init_config(self):
+    """
+    Initialises all backend services in a repeatable fashion, allowing Spotted
+    to be partially restarted when config changes
+    """
+
     try:
       self.config = json.load(open('config/config.json'))
       load_personalities('config/personalities.json')
@@ -65,7 +77,6 @@ class Spotted:
       exit_with_error(ErrorCode.MissingConfig, error)
 
     self.current_state = dict()
-    self.pois = []
     self.stop_flags = {
       'artnet': False,
       'camera': False,
@@ -77,6 +88,8 @@ class Spotted:
     if not self.skip_cameras:
       self.setup_cameras()
     self.setup_room()
+    self.universes = Universes()
+    self.pois = []
     self.setup_fixtures()
     self.setup_max_subjects()
 
@@ -118,7 +131,6 @@ class Spotted:
     Defines the cameras from config
     """
 
-    self.cameras = []
     if 'cameras' in self.config:
       if len(self.config['cameras']) < 1:
         exit_with_error(ErrorCode.EmptyKey, 'cameras')
@@ -160,7 +172,6 @@ class Spotted:
     Creates the fixture structure from config
     """
 
-    self.universes = Universes()
     if 'fixtures' in self.config:
       if len(self.config['fixtures']) < 1:
         exit_with_error(ErrorCode.EmptyKey, 'fixtures')
@@ -173,7 +184,6 @@ class Spotted:
           universe = Universe(addr['net'], addr['subnet'], addr['universe'])
           self.universes.add_universe(universe)
         universe.add_fixture(fixture)
-      self.pois = []
     else:
       exit_with_error(ErrorCode.MissingKey, 'fixtures')
 
@@ -205,8 +215,7 @@ class Spotted:
 
     euclid_distance = math.sqrt(distance[0]**2 + distance[1]**2 + distance[2]**2)
 
-
-    print('distance:', euclid_distance)
+    # print('distance:', euclid_distance)
 
     if euclid_distance > 1:
       close_enough = False
@@ -377,7 +386,10 @@ class Spotted:
 
   def start_artnet(self, transmit):
     """
-    ArtNet transmission thread
+    Art-Net data stream generator
+
+    Arguments:
+      transmit {Queue} -- Queue to place transmittable packets onto
     """
 
     last_poll_transmission = datetime.now()
@@ -405,7 +417,10 @@ class Spotted:
 
   def start_artnet_reply(self, transmit):
     """
+    Listens for ArtPoll packets, and replies as necessary
 
+    Arguments:
+      transmit {Queue} -- Queue to place transmittable packets onto
     """
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
@@ -429,6 +444,13 @@ class Spotted:
         time.sleep(1/50)
 
   def artnet_transmitter(self, transmit):
+    """
+    Transmits Art-Net packets from the supplied queue constantly
+
+    Arguments:
+      transmit {Queue} -- Queue to transmit from
+    """
+
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
     sock.bind((self.ip_address, 6454))
@@ -478,6 +500,13 @@ class Spotted:
     loop.run_forever()
 
   def start_support_threads(self, daemon):
+    """
+    Start all backend service threads in one go
+
+    Arguments:
+      daemon {bool} -- Start threads in daemon mode or not
+    """
+
     self.threads['cameras'] = []
     for camera in self.cameras:
       thread = threading.Thread(target=camera.begin_capture, daemon=daemon)
@@ -518,24 +547,6 @@ class Spotted:
 
     self.start_support_threads(daemon)
 
-    # coords = [
-    #   (0, 0),
-    #   (960, 0),
-    #   (960, 720),
-    #   (0, 720),
-    #   (480, 360)
-    # ]
-
-    # for coord in coords:
-    #   real_coord = self.cameras[0].calculate_real_world_coordinate(coord)
-    #   print('1:', coord, 'is at', real_coord.x, real_coord.y, real_coord.z)
-
-    #   real_coord = self.cameras[1].calculate_real_world_coordinate(coord)
-    #   print('2:', coord, 'is at', real_coord.x, real_coord.y, real_coord.z)
-    # exit()
-
-    # last_poi = None
-
     while True:
       # Uncomment this block for static values
       # point = Coordinate(2.0, 0.0, 4.0)
@@ -548,7 +559,6 @@ class Spotted:
 
       self.update_pois()
 
-      # live_pois = [p for p in self.pois if p.weight > 2.5]
       live_pois = self.pois
 
       self.current_state['cameras'] = {}
@@ -560,36 +570,7 @@ class Spotted:
       for poi in live_pois:
         self.current_state['subjects'][id(poi)] = poi.position.as_dict()
 
-        # if last_poi is None:
-        #   last_poi = pois[0]
-        #   point = pois[0]
-        # else:
-        #   next_poi = None
-        #   shortest_distance = 1000
-        #   for poi in pois:
-        #     diff_x = (last_poi.x - poi.x) ** 2
-        #     diff_y = (last_poi.y - poi.y) ** 2
-        #     diff_z = (last_poi.z - poi.z) ** 2
-        #     distance = math.sqrt(diff_x + diff_y + diff_z)
-        #     if distance < shortest_distance:
-        #       shortest_distance = distance
-        #       next_poi = poi
-        #   point = next_poi
-
-
-        # print('There are', len(live_pois), 'points of interest')
-
-        # point = Coordinate(0.2, 1.7, 3.0)
-
       self.current_state['maps'] = dict()
-
-      # fixture_count = len(self.universes.universes[0].fixtures)
-      # poi_count = len(live_pois)
-      # for index in range(min(poi_count, fixture_count)):
-      #   fixture = self.universes.universes[0].fixtures[index]
-      #   fixture.point_at(live_pois[index].position)
-      #   # fixture.open()
-      #   self.current_state['maps'][fixture.fixture_id] = id(live_pois[index])
 
       current_poi_index = -1
       for universe in self.universes.universes:
@@ -605,18 +586,6 @@ class Spotted:
 
           else:
             fixture.close()
-
-      #   pos = live_pois[0].position
-      #   for fixture in self.universes.universes[0].fixtures:
-      #     fixture.point_at(pos)
-      #     fixture.open()
-
-      #     self.current_state['maps'][fixture.fixture_id] = id(live_pois[0])
-
-      #     # time.sleep(1/30)
-      # else:
-      #   for fixture in self.universes.universes[0].fixtures:
-      #     fixture.close()
 
       if len(self.cameras) >= 2:
         out_frame = None

@@ -12,6 +12,7 @@ class Poll:
   Art-Net ArtPoll packet
   """
 
+  # pylint: disable=too-many-arguments
   def __init__(
       self,
       vlc_disable=True,

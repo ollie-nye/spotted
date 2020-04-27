@@ -71,6 +71,7 @@ if __name__ == '__main__':
     _img_shape = gray.shape[:2]
     objpoints = [] # 3d point in real world space
     imgpoints = [] # 2d points in image plane.
+    img = images[0]
     for img in images:
       # Find the chess board corners
       ret, corners = cv.findChessboardCorners(

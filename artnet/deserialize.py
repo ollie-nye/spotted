@@ -1,12 +1,23 @@
 """
-
+Deserialize Art-Net packets into their original structures
 """
 
 from artnet.opcode import Opcode
 from artnet.poll import Poll
-from artnet.poll_reply import PollReply
 
 def identify_header(incoming):
+  """
+  Deserialize Art-Net packets into their original structures
+
+  Arguments:
+    incoming {bytearray} -- incoming packet
+
+  Returns:
+    {(status, opcode, packet)} -- status is True if packet was an Art-Net packet
+                                  opcode contains the opcode enum for the packet
+                                  packet contains the deserialized packet class
+  """
+
   opcode = 0
   packet = None
 

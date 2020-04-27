@@ -3,7 +3,6 @@ Spotted Camera
 """
 
 import math
-import itertools
 
 import numpy as np
 import cv2 as cv
@@ -237,33 +236,6 @@ class Camera:
 
     contours, _ = cv.findContours(blank, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
-    # grouped_contours = set()
-    # contour_objects = [Contour(points) for points in contours]
-    # for contour in contour_objects:
-    #   grouped_contours.add(contour)
-
-    # made_update = True
-    # while made_update:
-    #   made_update = False
-
-    #   contour_pairs = sorted(itertools.combinations(grouped_contours, 2), key=contour_closeness)
-    #   for pair in contour_pairs:
-    #     one, two = pair
-    #     closeness = contour_closeness(pair)
-    #     if closeness <= 30:
-    #       points = []
-    #       points.extend(one.points)
-    #       points.extend(two.points)
-    #       grouped_contours.add(Contour(points))
-    #       grouped_contours.remove(one)
-    #       grouped_contours.remove(two)
-    #       made_update = True
-    #       break
-    #     if closeness > 30: # Stop iterating the sorted list needlessly
-    #       break
-
-    # contours = [contour.np_points for contour in grouped_contours]
-
     contour_objects = [Contour(points) for points in contours]
 
     return [contour.np_points for contour in contour_objects if contour.area > 2000], blank
@@ -289,7 +261,6 @@ class Camera:
         if avg_frame is None:
           avg_frame = frame
         cv.accumulateWeighted(frame, avg_frame, 0.2)
-        composite_average = np.add((init_frame * 0.9), (avg_frame * 0.1))
         contours, diff, frame = self.process_frame(frame, init_frame)
 
         diff = np.zeros_like(diff)

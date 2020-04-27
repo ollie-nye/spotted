@@ -11,9 +11,23 @@ class StaticServer(BaseHTTPRequestHandler):
   """
 
   def push_spotted_reference(self, handler_args):
+    """
+    Bring a reference to Spotted into the server handler
+
+    Arguments:
+      handler_args {Spotted} -- incoming spotted reference
+    """
+
     self.spotted = handler_args
 
   def restart_threads(self, insurance):
+    """
+    Restarts all backend services
+
+    Arguments:
+      insurance {bool} -- Required to be True, stops this function running on parse
+    """
+
     if insurance:
       spotted = self.spotted
       spotted.stop_flags['fixture'] = True
@@ -72,7 +86,12 @@ class StaticServer(BaseHTTPRequestHandler):
       with open(filename, 'rb') as file_handle:
         self.wfile.write(file_handle.read())
 
+  # pylint: disable=invalid-name
   def do_POST(self):
+    """
+    Responds to POST requests
+    """
+
     content_length = int(self.headers['Content-Length'])
     data = self.rfile.read(content_length)
 

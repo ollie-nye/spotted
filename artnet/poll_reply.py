@@ -6,11 +6,14 @@ from enum import Enum
 
 from config.system import SystemConfig
 
-from artnet.diag_code import DiagCode
 from artnet.style_code import StyleCode
 from artnet.opcode import Opcode
 
 class PortProtocol(Enum):
+  """
+  Protocol used by a specific port
+  """
+
   DMX = 0b000000
   MIDI = 0b000001
   Avab = 0b000010
@@ -19,12 +22,25 @@ class PortProtocol(Enum):
   ArtNet = 0b00101
 
 def port_type(can_output=False, can_input=False, protocol=PortProtocol.DMX):
+  """
+  Produces the byte config for a type of port
+
+  Arguments:
+    can_output {bool} -- default False
+    can_input {bool} -- default False
+    protocol {PortProtocol} -- default PortProtocol.DMX
+
+  Returns:
+    {byte}
+  """
+
   value = 0
   value |= (can_output << 7)
   value |= (can_input << 6)
   value |= protocol
   return value
 
+# pylint: disable=too-many-arguments
 def input_status(
     data_received=True,
     dmx_test=False,
@@ -33,6 +49,10 @@ def input_status(
     disabled=False,
     receive_errors=False
 ):
+  """
+  Input status of a port
+  """
+
   value = 0
   value |= data_received << 7
   value |= dmx_test << 6
@@ -42,6 +62,7 @@ def input_status(
   value |= receive_errors << 2
   return value
 
+# pylint: disable=too-many-arguments
 def output_status(
     data_transmitted=True,
     dmx_test=False,
@@ -52,6 +73,10 @@ def output_status(
     merge_ltp=False,
     output_sacn=False
 ):
+  """
+  Output status of a port
+  """
+
   value = 0
   value |= data_transmitted << 7
   value |= dmx_test << 6
@@ -63,11 +88,13 @@ def output_status(
   value |= output_sacn
   return value
 
+# pylint: disable=too-many-instance-attributes
 class PollReply:
   """
   Art-Net ArtPollReply packet
   """
 
+  # pylint: disable=too-many-arguments,too-many-locals,dangerous-default-value
   def __init__(
       self,
       net_switch,
@@ -177,7 +204,7 @@ class PollReply:
     output.extend(self.sw_out)
     output.append(self.sw_video)
     output.append(self.sw_macro)
-    # output.append(self.sw_remote)
+    # output.append(self.sw_remote) # was interferring with DMXWorkshop packet ident
     output.append(0x01)
     output.extend([0, 0, 0]) # filler
     output.append(self.style)

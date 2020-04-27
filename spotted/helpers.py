@@ -99,8 +99,29 @@ def pythagoras(a_x, a_y, b_x, b_y):
   return math.sqrt((a_x - b_x) ** 2 + (a_y - b_y) ** 2)
 
 def handler_class_with_args(handler, handler_args):
+  """
+  Injects the given arguments into the given handler at init
+
+  Arguments:
+    handler {class} -- Handler to inject arguments into
+    handler_args {any} -- Args to pass to the handler injection function
+
+  Returns:
+    CustomHandler with arguments set
+  """
+
+  # pylint: disable=too-few-public-methods
   class CustomHandler(handler):
+    """
+    Wrapper around handler
+    """
+
     def __init__(self, *args, **kwargs):
+      """
+      Inits the handler with supplied handler_args
+      """
+
       self.push_spotted_reference(handler_args)
       super(CustomHandler, self).__init__(*args, **kwargs)
+
   return CustomHandler

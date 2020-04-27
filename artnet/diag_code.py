@@ -8,6 +8,7 @@ class DiagCode(Enum):
   """
   ArtPoll diagnostics codes
   """
+
   DpDisabled = 0x00
   DpLow = 0x10
   DpMed = 0x40
