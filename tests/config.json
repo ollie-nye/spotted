@@ -1,1 +1,89 @@
-{"network_interface": "wifi0", "calibration": {"dimension": [2048, 1536], "camera": [[1560.4213486225046, 0, 1050.8972596532385], [0, 1563.2664464043153, 747.1487200699582], [0, 0, 1]], "distortion": [[-0.059142684903839664], [0.02386601511813416], [-0.32038269497024474], [0.34536003649836755]]}, "max_subjects": 2, "room": {"x": 3, "y": 4, "z": 5}, "cameras": {"0": {"position": {"x": 2.38, "y": 2.31, "z": 0.47}, "rotation": {"x": -25, "y": 94, "z": 9}, "viewing_angle": {"horizontal": 63, "vertical": 54}, "resolution": {"horizontal": 2048, "vertical": 1536}, "url": "rtmp://10.0.0.23/bcs/channel0_main.bcs?channel=0&stream=0&user=admin"}, "1": {"position": {"x": 2.03, "y": 2.28, "z": 7.56}, "rotation": {"x": 25, "y": -95, "z": 0}, "viewing_angle": {"horizontal": 63, "vertical": 54}, "resolution": {"horizontal": 2048, "vertical": 1536}, "url": "rtmp://10.0.0.22/bcs/channel0_main.bcs?channel=0&stream=0&user=admin"}}, "fixtures": {"0": {"position": {"x": 2.169, "y": 2.716, "z": 0.349}, "rotation": {"x": 0, "y": 180, "z": 0}, "personality": 0, "mode": 0, "net": 0, "subnet": 0, "universe": 0, "address": 1}, "1": {"position": {"x": 3.602, "y": 2.716, "z": 0.349}, "rotation": {"x": 0, "y": 180, "z": 0}, "personality": 0, "mode": 0, "net": 0, "subnet": 0, "universe": 0, "address": 17}, "2": {"position": {"x": 4.005, "y": 2.716, "z": 5.508}, "rotation": {"x": 0, "y": -90, "z": 0}, "personality": 0, "mode": 0, "net": 0, "subnet": 0, "universe": 0, "address": 33}, "3": {"position": {"x": 4.005, "y": 2.716, "z": 6.291}, "rotation": {"x": 0, "y": -90, "z": 0}, "personality": 0, "mode": 0, "net": 0, "subnet": 0, "universe": 0, "address": 49}}}
+{
+  "network_interface": "wifi0",
+  "calibration": {
+    "dimension": [
+      2048,
+      1536
+    ],
+    "camera": [
+      [
+        1560.4213486225046,
+        0,
+        1050.8972596532385
+      ],
+      [
+        0,
+        1563.2664464043153,
+        747.1487200699582
+      ],
+      [
+        0,
+        0,
+        1
+      ]
+    ],
+    "distortion": [
+      [
+        -0.059142684903839664
+      ],
+      [
+        0.02386601511813416
+      ],
+      [
+        -0.32038269497024474
+      ],
+      [
+        0.34536003649836755
+      ]
+    ]
+  },
+  "max_subjects": 2,
+  "room": {
+    "x": 3,
+    "y": 4,
+    "z": 5
+  },
+  "cameras": {
+    "0": {
+      "position": {
+        "x": 2,
+        "y": 2,
+        "z": 0
+      },
+      "rotation": {
+        "x": -25,
+        "y": 90,
+        "z": 0
+      },
+      "viewing_angle": {
+        "horizontal": 63,
+        "vertical": 54
+      },
+      "resolution": {
+        "horizontal": 2048,
+        "vertical": 1536
+      },
+      "url": "rtmp://10.0.0.23/bcs/channel0_main.bcs?channel=0&stream=0&user=admin"
+    }
+  },
+  "fixtures": {
+    "0": {
+      "position": {
+        "x": 1,
+        "y": 2,
+        "z": 3
+      },
+      "rotation": {
+        "x": 0,
+        "y": 180,
+        "z": 0
+      },
+      "personality": 0,
+      "mode": 0,
+      "net": 0,
+      "subnet": 0,
+      "universe": 0,
+      "address": 1
+    }
+  }
+}
