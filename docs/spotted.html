@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted.spotted.spotted API documentation</title>
+<title>spotted.spotted API documentation</title>
 <meta name="description" content="Spotted" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>spotted.spotted.spotted</code></h1>
+<h1 class="title">Module <code>spotted.spotted</code></h1>
 </header>
 <section id="section-intro">
 <p>Spotted</p>
@@ -45,25 +45,25 @@ import websockets
 import numpy as np
 import cv2 as cv
 
-from spotted.artnet.dmx import Dmx
-from spotted.artnet.poll import Poll
-from spotted.artnet.poll_reply import PollReply
-from spotted.artnet.deserialize import identify_header
-from spotted.artnet.opcode import Opcode
-from spotted.spotted.camera import Camera
-from spotted.spotted.personality import load_personalities
-from spotted.spotted.point_of_interest import PointOfInterest
-from spotted.spotted.fixture import Fixture
-from spotted.spotted.universe import Universe
-from spotted.spotted.universes import Universes
-from spotted.spotted.coordinate import Coordinate
-from spotted.spotted.room import Room
-from spotted.spotted.calibration import Calibration
-from spotted.spotted.websocket import Websocket
-from spotted.spotted.static_server import StaticServer
-from spotted.spotted.helpers import handler_class_with_args
-from spotted.spotted.error import ErrorCode, exit_with_error
-from spotted.config.system import SystemConfig
+from artnet.dmx import Dmx
+from artnet.poll import Poll
+from artnet.poll_reply import PollReply
+from artnet.deserialize import identify_header
+from artnet.opcode import Opcode
+from spotted.camera import Camera
+from spotted.personality import load_personalities
+from spotted.point_of_interest import PointOfInterest
+from spotted.fixture import Fixture
+from spotted.universe import Universe
+from spotted.universes import Universes
+from spotted.coordinate import Coordinate
+from spotted.room import Room
+from spotted.calibration import Calibration
+from spotted.websocket import Websocket
+from spotted.static_server import StaticServer
+from spotted.helpers import handler_class_with_args
+from spotted.error import ErrorCode, exit_with_error
+from config.system import SystemConfig
 
 # pylint: disable=too-many-instance-attributes
 class Spotted:
@@ -98,8 +98,8 @@ class Spotted:
     &#34;&#34;&#34;
 
     try:
-      self.config = json.load(open(&#39;spotted/config/config.json&#39;))
-      load_personalities(&#39;spotted/config/personalities.json&#39;)
+      self.config = json.load(open(&#39;config/config.json&#39;))
+      load_personalities(&#39;config/personalities.json&#39;)
     except FileNotFoundError as error:
       exit_with_error(ErrorCode.MissingConfig, error)
 
@@ -638,7 +638,7 @@ class Spotted:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="spotted.spotted.spotted.Spotted"><code class="flex name class">
+<dt id="spotted.spotted.Spotted"><code class="flex name class">
 <span>class <span class="ident">Spotted</span></span>
 <span>(</span><span>skip_cameras=False)</span>
 </code></dt>
@@ -682,8 +682,8 @@ Sets up state, calibration, personalities, cameras, room, fixtures and universes
     &#34;&#34;&#34;
 
     try:
-      self.config = json.load(open(&#39;spotted/config/config.json&#39;))
-      load_personalities(&#39;spotted/config/personalities.json&#39;)
+      self.config = json.load(open(&#39;config/config.json&#39;))
+      load_personalities(&#39;config/personalities.json&#39;)
     except FileNotFoundError as error:
       exit_with_error(ErrorCode.MissingConfig, error)
 
@@ -1214,7 +1214,7 @@ Sets up state, calibration, personalities, cameras, room, fixtures and universes
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="spotted.spotted.spotted.Spotted.artnet_transmitter"><code class="name flex">
+<dt id="spotted.spotted.Spotted.artnet_transmitter"><code class="name flex">
 <span>def <span class="ident">artnet_transmitter</span></span>(<span>self, transmit)</span>
 </code></dt>
 <dd>
@@ -1257,7 +1257,7 @@ Sets up state, calibration, personalities, cameras, room, fixtures and universes
       time.sleep(delay)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.calculate_intersection"><code class="name flex">
+<dt id="spotted.spotted.Spotted.calculate_intersection"><code class="name flex">
 <span>def <span class="ident">calculate_intersection</span></span>(<span>self, poi1, poi2, close_enough, points)</span>
 </code></dt>
 <dd>
@@ -1313,7 +1313,7 @@ Sets up state, calibration, personalities, cameras, room, fixtures and universes
   return (close_enough, points)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.combine_points"><code class="name flex">
+<dt id="spotted.spotted.Spotted.combine_points"><code class="name flex">
 <span>def <span class="ident">combine_points</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1433,7 +1433,7 @@ interest</p></div>
   return points_of_interest</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.init_config"><code class="name flex">
+<dt id="spotted.spotted.Spotted.init_config"><code class="name flex">
 <span>def <span class="ident">init_config</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1450,8 +1450,8 @@ to be partially restarted when config changes</p></div>
   &#34;&#34;&#34;
 
   try:
-    self.config = json.load(open(&#39;spotted/config/config.json&#39;))
-    load_personalities(&#39;spotted/config/personalities.json&#39;)
+    self.config = json.load(open(&#39;config/config.json&#39;))
+    load_personalities(&#39;config/personalities.json&#39;)
   except FileNotFoundError as error:
     exit_with_error(ErrorCode.MissingConfig, error)
 
@@ -1473,7 +1473,7 @@ to be partially restarted when config changes</p></div>
   self.setup_max_subjects()</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.setup_calibration"><code class="name flex">
+<dt id="spotted.spotted.Spotted.setup_calibration"><code class="name flex">
 <span>def <span class="ident">setup_calibration</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1493,7 +1493,7 @@ to be partially restarted when config changes</p></div>
     exit_with_error(ErrorCode.MissingKey, &#39;calibration&#39;)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.setup_cameras"><code class="name flex">
+<dt id="spotted.spotted.Spotted.setup_cameras"><code class="name flex">
 <span>def <span class="ident">setup_cameras</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1523,7 +1523,7 @@ to be partially restarted when config changes</p></div>
       exit_with_error(ErrorCode.CameraConnect, camera.cam_id)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.setup_fixtures"><code class="name flex">
+<dt id="spotted.spotted.Spotted.setup_fixtures"><code class="name flex">
 <span>def <span class="ident">setup_fixtures</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1553,7 +1553,7 @@ to be partially restarted when config changes</p></div>
     exit_with_error(ErrorCode.MissingKey, &#39;fixtures&#39;)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.setup_interface"><code class="name flex">
+<dt id="spotted.spotted.Spotted.setup_interface"><code class="name flex">
 <span>def <span class="ident">setup_interface</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1587,7 +1587,7 @@ returns the first IPv4 address of the given interface</p></div>
     exit_with_error(ErrorCode.MissingKey, &#39;network_interface&#39;)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.setup_max_subjects"><code class="name flex">
+<dt id="spotted.spotted.Spotted.setup_max_subjects"><code class="name flex">
 <span>def <span class="ident">setup_max_subjects</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1607,7 +1607,7 @@ returns the first IPv4 address of the given interface</p></div>
     exit_with_error(ErrorCode.MissingKey, &#39;max_subjects&#39;)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.setup_room"><code class="name flex">
+<dt id="spotted.spotted.Spotted.setup_room"><code class="name flex">
 <span>def <span class="ident">setup_room</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1628,7 +1628,7 @@ returns the first IPv4 address of the given interface</p></div>
     exit_with_error(ErrorCode.MissingKey, &#39;room&#39;)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.start_artnet"><code class="name flex">
+<dt id="spotted.spotted.Spotted.start_artnet"><code class="name flex">
 <span>def <span class="ident">start_artnet</span></span>(<span>self, transmit)</span>
 </code></dt>
 <dd>
@@ -1671,7 +1671,7 @@ returns the first IPv4 address of the given interface</p></div>
     time.sleep(delay)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.start_artnet_reply"><code class="name flex">
+<dt id="spotted.spotted.Spotted.start_artnet_reply"><code class="name flex">
 <span>def <span class="ident">start_artnet_reply</span></span>(<span>self, transmit)</span>
 </code></dt>
 <dd>
@@ -1711,7 +1711,7 @@ returns the first IPv4 address of the given interface</p></div>
       time.sleep(1/50)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.start_spotted"><code class="name flex">
+<dt id="spotted.spotted.Spotted.start_spotted"><code class="name flex">
 <span>def <span class="ident">start_spotted</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1791,7 +1791,7 @@ returns the first IPv4 address of the given interface</p></div>
     time.sleep(1/30)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.start_support_threads"><code class="name flex">
+<dt id="spotted.spotted.Spotted.start_support_threads"><code class="name flex">
 <span>def <span class="ident">start_support_threads</span></span>(<span>self, daemon)</span>
 </code></dt>
 <dd>
@@ -1835,8 +1835,8 @@ returns the first IPv4 address of the given interface</p></div>
       thread.start()</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.start_ui"><code class="name flex">
-<span>def <span class="ident">start_ui</span></span>(<span>self, server_class=http.server.HTTPServer, handler_class=spotted.spotted.static_server.StaticServer, port=8080)</span>
+<dt id="spotted.spotted.Spotted.start_ui"><code class="name flex">
+<span>def <span class="ident">start_ui</span></span>(<span>self, server_class=http.server.HTTPServer, handler_class=spotted.static_server.StaticServer, port=8080)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>UI thread</p></div>
@@ -1856,7 +1856,7 @@ returns the first IPv4 address of the given interface</p></div>
   httpd.serve_forever()</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.start_websocket"><code class="name flex">
+<dt id="spotted.spotted.Spotted.start_websocket"><code class="name flex">
 <span>def <span class="ident">start_websocket</span></span>(<span>self, port=8081)</span>
 </code></dt>
 <dd>
@@ -1880,7 +1880,7 @@ returns the first IPv4 address of the given interface</p></div>
   loop.run_forever()</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.spotted.Spotted.update_pois"><code class="name flex">
+<dt id="spotted.spotted.Spotted.update_pois"><code class="name flex">
 <span>def <span class="ident">update_pois</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1944,31 +1944,31 @@ returns the first IPv4 address of the given interface</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.spotted" href="index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted" href="index.html">spotted</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="spotted.spotted.spotted.Spotted" href="#spotted.spotted.spotted.Spotted">Spotted</a></code></h4>
+<h4><code><a title="spotted.spotted.Spotted" href="#spotted.spotted.Spotted">Spotted</a></code></h4>
 <ul class="">
-<li><code><a title="spotted.spotted.spotted.Spotted.artnet_transmitter" href="#spotted.spotted.spotted.Spotted.artnet_transmitter">artnet_transmitter</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.calculate_intersection" href="#spotted.spotted.spotted.Spotted.calculate_intersection">calculate_intersection</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.combine_points" href="#spotted.spotted.spotted.Spotted.combine_points">combine_points</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.init_config" href="#spotted.spotted.spotted.Spotted.init_config">init_config</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.setup_calibration" href="#spotted.spotted.spotted.Spotted.setup_calibration">setup_calibration</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.setup_cameras" href="#spotted.spotted.spotted.Spotted.setup_cameras">setup_cameras</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.setup_fixtures" href="#spotted.spotted.spotted.Spotted.setup_fixtures">setup_fixtures</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.setup_interface" href="#spotted.spotted.spotted.Spotted.setup_interface">setup_interface</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.setup_max_subjects" href="#spotted.spotted.spotted.Spotted.setup_max_subjects">setup_max_subjects</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.setup_room" href="#spotted.spotted.spotted.Spotted.setup_room">setup_room</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.start_artnet" href="#spotted.spotted.spotted.Spotted.start_artnet">start_artnet</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.start_artnet_reply" href="#spotted.spotted.spotted.Spotted.start_artnet_reply">start_artnet_reply</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.start_spotted" href="#spotted.spotted.spotted.Spotted.start_spotted">start_spotted</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.start_support_threads" href="#spotted.spotted.spotted.Spotted.start_support_threads">start_support_threads</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.start_ui" href="#spotted.spotted.spotted.Spotted.start_ui">start_ui</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.start_websocket" href="#spotted.spotted.spotted.Spotted.start_websocket">start_websocket</a></code></li>
-<li><code><a title="spotted.spotted.spotted.Spotted.update_pois" href="#spotted.spotted.spotted.Spotted.update_pois">update_pois</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.artnet_transmitter" href="#spotted.spotted.Spotted.artnet_transmitter">artnet_transmitter</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.calculate_intersection" href="#spotted.spotted.Spotted.calculate_intersection">calculate_intersection</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.combine_points" href="#spotted.spotted.Spotted.combine_points">combine_points</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.init_config" href="#spotted.spotted.Spotted.init_config">init_config</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.setup_calibration" href="#spotted.spotted.Spotted.setup_calibration">setup_calibration</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.setup_cameras" href="#spotted.spotted.Spotted.setup_cameras">setup_cameras</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.setup_fixtures" href="#spotted.spotted.Spotted.setup_fixtures">setup_fixtures</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.setup_interface" href="#spotted.spotted.Spotted.setup_interface">setup_interface</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.setup_max_subjects" href="#spotted.spotted.Spotted.setup_max_subjects">setup_max_subjects</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.setup_room" href="#spotted.spotted.Spotted.setup_room">setup_room</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.start_artnet" href="#spotted.spotted.Spotted.start_artnet">start_artnet</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.start_artnet_reply" href="#spotted.spotted.Spotted.start_artnet_reply">start_artnet_reply</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.start_spotted" href="#spotted.spotted.Spotted.start_spotted">start_spotted</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.start_support_threads" href="#spotted.spotted.Spotted.start_support_threads">start_support_threads</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.start_ui" href="#spotted.spotted.Spotted.start_ui">start_ui</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.start_websocket" href="#spotted.spotted.Spotted.start_websocket">start_websocket</a></code></li>
+<li><code><a title="spotted.spotted.Spotted.update_pois" href="#spotted.spotted.Spotted.update_pois">update_pois</a></code></li>
 </ul>
 </li>
 </ul>

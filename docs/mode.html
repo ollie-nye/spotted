@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted.spotted.universes API documentation</title>
-<meta name="description" content="Collection of universes to transmit data for" />
+<title>spotted.mode API documentation</title>
+<meta name="description" content="Mode holds all data about a particular fixture mode" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,62 +17,58 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>spotted.spotted.universes</code></h1>
+<h1 class="title">Module <code>spotted.mode</code></h1>
 </header>
 <section id="section-intro">
-<p>Collection of universes to transmit data for</p>
+<p>Mode holds all data about a particular fixture mode</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-Collection of universes to transmit data for
+Mode holds all data about a particular fixture mode
 &#34;&#34;&#34;
 
-from spotted.spotted.universe import Universe
+from spotted.attribute import Attribute
 
-class Universes:
+class Mode:
   &#34;&#34;&#34;
-  Collection of universes to transmit data for
+  Mode holds all data about a particular fixture mode
   &#34;&#34;&#34;
 
-  def __init__(self):
-    self.universes = []
-
-  def add_universe(self, universe):
+  def __init__(self, config, mode_id):
     &#34;&#34;&#34;
-    Adds a universe to the collection
+    Creates a new instance of a mode
 
     Arguments:
-      universe {Universe} -- The universe to add
-
-    Raises:
-      &#39;Supplied universe is not an instance of Universe&#39;
-    &#34;&#34;&#34;
-    if isinstance(universe, Universe):
-      self.universes.append(universe)
-      return True
-    return False, &#39;Supplied universe is not an instance of Universe&#39;
-
-  def get_universe(self, uni_net, uni_subnet, uni_universe):
-    &#34;&#34;&#34;
-    Gets a universe by address properties
-
-    Arguments:
-      net {int} -- Universe net
-      subnet {int} -- Universe subnet
-      universe {int} -- Universe universe
+      json {dict} -- dictionary to prepopulate Mode
 
     Returns:
-      Universe -- if a universe is found with all three properties matching
-      None -- if no such universe is found
+      Mode
     &#34;&#34;&#34;
 
-    for universe in self.universes:
-      if universe.net == uni_net:
-        if universe.subnet == uni_subnet:
-          if universe.universe == uni_universe:
-            return universe
+    self.mode_id = mode_id
+    self.name = config[&#39;name&#39;]
+    self.channels = config[&#39;channels&#39;]
+    self.attributes = []
+    for _, attributes_config in config[&#39;attributes&#39;].items():
+      self.attributes.append(Attribute(attributes_config))
+
+  def get_attribute(self, name):
+    &#34;&#34;&#34;
+    Attribute getter by name
+
+    Arguments:
+      name {string} -- name of attribute to find
+
+    Returns:
+      Attribute if found
+      None if not
+    &#34;&#34;&#34;
+
+    for attribute in self.attributes:
+      if attribute.name == name:
+        return attribute
     return None</code></pre>
 </details>
 </section>
@@ -85,129 +81,99 @@ class Universes:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="spotted.spotted.universes.Universes"><code class="flex name class">
-<span>class <span class="ident">Universes</span></span>
+<dt id="spotted.mode.Mode"><code class="flex name class">
+<span>class <span class="ident">Mode</span></span>
+<span>(</span><span>config, mode_id)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Collection of universes to transmit data for</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Universes:
-  &#34;&#34;&#34;
-  Collection of universes to transmit data for
-  &#34;&#34;&#34;
-
-  def __init__(self):
-    self.universes = []
-
-  def add_universe(self, universe):
-    &#34;&#34;&#34;
-    Adds a universe to the collection
-
-    Arguments:
-      universe {Universe} -- The universe to add
-
-    Raises:
-      &#39;Supplied universe is not an instance of Universe&#39;
-    &#34;&#34;&#34;
-    if isinstance(universe, Universe):
-      self.universes.append(universe)
-      return True
-    return False, &#39;Supplied universe is not an instance of Universe&#39;
-
-  def get_universe(self, uni_net, uni_subnet, uni_universe):
-    &#34;&#34;&#34;
-    Gets a universe by address properties
-
-    Arguments:
-      net {int} -- Universe net
-      subnet {int} -- Universe subnet
-      universe {int} -- Universe universe
-
-    Returns:
-      Universe -- if a universe is found with all three properties matching
-      None -- if no such universe is found
-    &#34;&#34;&#34;
-
-    for universe in self.universes:
-      if universe.net == uni_net:
-        if universe.subnet == uni_subnet:
-          if universe.universe == uni_universe:
-            return universe
-    return None</code></pre>
-</details>
-<h3>Methods</h3>
-<dl>
-<dt id="spotted.spotted.universes.Universes.add_universe"><code class="name flex">
-<span>def <span class="ident">add_universe</span></span>(<span>self, universe)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Adds a universe to the collection</p>
+<div class="desc"><p>Mode holds all data about a particular fixture mode</p>
+<p>Creates a new instance of a mode</p>
 <h2 id="arguments">Arguments</h2>
-<p>universe {Universe} &ndash; The universe to add</p>
-<h2 id="raises">Raises</h2>
-<p>'Supplied universe is not an instance of Universe'</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def add_universe(self, universe):
-  &#34;&#34;&#34;
-  Adds a universe to the collection
-
-  Arguments:
-    universe {Universe} -- The universe to add
-
-  Raises:
-    &#39;Supplied universe is not an instance of Universe&#39;
-  &#34;&#34;&#34;
-  if isinstance(universe, Universe):
-    self.universes.append(universe)
-    return True
-  return False, &#39;Supplied universe is not an instance of Universe&#39;</code></pre>
-</details>
-</dd>
-<dt id="spotted.spotted.universes.Universes.get_universe"><code class="name flex">
-<span>def <span class="ident">get_universe</span></span>(<span>self, uni_net, uni_subnet, uni_universe)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Gets a universe by address properties</p>
-<h2 id="arguments">Arguments</h2>
-<p>net {int} &ndash; Universe net
-subnet {int} &ndash; Universe subnet
-universe {int} &ndash; Universe universe</p>
+<p>json {dict} &ndash; dictionary to prepopulate Mode</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>Universe -- if a universe is found with all three properties matching</code></dt>
-<dd>&nbsp;</dd>
-<dt><code>None -- if no such universe is found</code></dt>
+<dt><code><a title="spotted.mode.Mode" href="#spotted.mode.Mode">Mode</a></code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_universe(self, uni_net, uni_subnet, uni_universe):
+<pre><code class="python">class Mode:
   &#34;&#34;&#34;
-  Gets a universe by address properties
+  Mode holds all data about a particular fixture mode
+  &#34;&#34;&#34;
+
+  def __init__(self, config, mode_id):
+    &#34;&#34;&#34;
+    Creates a new instance of a mode
+
+    Arguments:
+      json {dict} -- dictionary to prepopulate Mode
+
+    Returns:
+      Mode
+    &#34;&#34;&#34;
+
+    self.mode_id = mode_id
+    self.name = config[&#39;name&#39;]
+    self.channels = config[&#39;channels&#39;]
+    self.attributes = []
+    for _, attributes_config in config[&#39;attributes&#39;].items():
+      self.attributes.append(Attribute(attributes_config))
+
+  def get_attribute(self, name):
+    &#34;&#34;&#34;
+    Attribute getter by name
+
+    Arguments:
+      name {string} -- name of attribute to find
+
+    Returns:
+      Attribute if found
+      None if not
+    &#34;&#34;&#34;
+
+    for attribute in self.attributes:
+      if attribute.name == name:
+        return attribute
+    return None</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="spotted.mode.Mode.get_attribute"><code class="name flex">
+<span>def <span class="ident">get_attribute</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Attribute getter by name</p>
+<h2 id="arguments">Arguments</h2>
+<p>name {string} &ndash; name of attribute to find</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Attribute if found</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>None if not</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_attribute(self, name):
+  &#34;&#34;&#34;
+  Attribute getter by name
 
   Arguments:
-    net {int} -- Universe net
-    subnet {int} -- Universe subnet
-    universe {int} -- Universe universe
+    name {string} -- name of attribute to find
 
   Returns:
-    Universe -- if a universe is found with all three properties matching
-    None -- if no such universe is found
+    Attribute if found
+    None if not
   &#34;&#34;&#34;
 
-  for universe in self.universes:
-    if universe.net == uni_net:
-      if universe.subnet == uni_subnet:
-        if universe.universe == uni_universe:
-          return universe
+  for attribute in self.attributes:
+    if attribute.name == name:
+      return attribute
   return None</code></pre>
 </details>
 </dd>
@@ -224,16 +190,15 @@ universe {int} &ndash; Universe universe</p>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.spotted" href="index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted" href="index.html">spotted</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="spotted.spotted.universes.Universes" href="#spotted.spotted.universes.Universes">Universes</a></code></h4>
+<h4><code><a title="spotted.mode.Mode" href="#spotted.mode.Mode">Mode</a></code></h4>
 <ul class="">
-<li><code><a title="spotted.spotted.universes.Universes.add_universe" href="#spotted.spotted.universes.Universes.add_universe">add_universe</a></code></li>
-<li><code><a title="spotted.spotted.universes.Universes.get_universe" href="#spotted.spotted.universes.Universes.get_universe">get_universe</a></code></li>
+<li><code><a title="spotted.mode.Mode.get_attribute" href="#spotted.mode.Mode.get_attribute">get_attribute</a></code></li>
 </ul>
 </li>
 </ul>

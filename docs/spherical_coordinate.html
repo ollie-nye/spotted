@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted.config.system API documentation</title>
-<meta name="description" content="System configuration variables" />
+<title>spotted.spherical_coordinate API documentation</title>
+<meta name="description" content="Spherical coordinate representation" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,28 +17,63 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>spotted.config.system</code></h1>
+<h1 class="title">Module <code>spotted.spherical_coordinate</code></h1>
 </header>
 <section id="section-intro">
-<p>System configuration variables</p>
+<p>Spherical coordinate representation</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-System configuration variables
+Spherical coordinate representation
 &#34;&#34;&#34;
 
-class SystemConfig:
+import math
+
+class SphericalCoordinate:
   &#34;&#34;&#34;
-  System configuration variables
+  Spherical coordinate representation
   &#34;&#34;&#34;
 
-  # Art-Net
+  def __init__(self, radius, azimuth, inclination):
+    &#34;&#34;&#34;
+    Creates a SphericalCoordinate from the given parameters
 
-  oem_code = 0xffff # unassigned code
-  esta_code = 0x7fff # prototype code
-  transmit_rate = &#39;continuous&#39; # or &#39;reduced&#39;</code></pre>
+    Arguments:
+      radius {float} -- radius component
+      azimuth {float} -- azimuth component
+      inclination {float} -- inclination component
+
+    Returns:
+      SphericalCoordinate -- instance configured with given parameters
+    &#34;&#34;&#34;
+
+    self.radius = radius
+    self.azimuth = azimuth
+    self.inclination = inclination
+    self.elevation = (math.pi / 2) - inclination
+
+  # pylint: disable=invalid-name
+  @staticmethod
+  def from_cartesian(x, y, z):
+    &#34;&#34;&#34;
+    Takes a cartesian coordinate in standard axis, converts it to spherical
+    0deg azimuth is +ve z axis
+
+    Arguments:
+      x {float} - x component
+      y {float} - y component
+      z {float} - z component
+
+    Returns:
+      SphericalCoordinate -- Pointing at the same position, from world origin
+    &#34;&#34;&#34;
+
+    radius = math.sqrt(x**2 + y**2 + z**2)
+    azimuth = math.atan2(x, z)
+    inclination = math.atan2(math.sqrt(x**2 + z**2), y)
+    return SphericalCoordinate(radius, azimuth, inclination)</code></pre>
 </details>
 </section>
 <section>
@@ -50,39 +85,111 @@ class SystemConfig:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="spotted.config.system.SystemConfig"><code class="flex name class">
-<span>class <span class="ident">SystemConfig</span></span>
+<dt id="spotted.spherical_coordinate.SphericalCoordinate"><code class="flex name class">
+<span>class <span class="ident">SphericalCoordinate</span></span>
+<span>(</span><span>radius, azimuth, inclination)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>System configuration variables</p></div>
+<div class="desc"><p>Spherical coordinate representation</p>
+<p>Creates a SphericalCoordinate from the given parameters</p>
+<h2 id="arguments">Arguments</h2>
+<p>radius {float} &ndash; radius component
+azimuth {float} &ndash; azimuth component
+inclination {float} &ndash; inclination component</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>SphericalCoordinate -- instance configured with given parameters</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class SystemConfig:
+<pre><code class="python">class SphericalCoordinate:
   &#34;&#34;&#34;
-  System configuration variables
+  Spherical coordinate representation
   &#34;&#34;&#34;
 
-  # Art-Net
+  def __init__(self, radius, azimuth, inclination):
+    &#34;&#34;&#34;
+    Creates a SphericalCoordinate from the given parameters
 
-  oem_code = 0xffff # unassigned code
-  esta_code = 0x7fff # prototype code
-  transmit_rate = &#39;continuous&#39; # or &#39;reduced&#39;</code></pre>
+    Arguments:
+      radius {float} -- radius component
+      azimuth {float} -- azimuth component
+      inclination {float} -- inclination component
+
+    Returns:
+      SphericalCoordinate -- instance configured with given parameters
+    &#34;&#34;&#34;
+
+    self.radius = radius
+    self.azimuth = azimuth
+    self.inclination = inclination
+    self.elevation = (math.pi / 2) - inclination
+
+  # pylint: disable=invalid-name
+  @staticmethod
+  def from_cartesian(x, y, z):
+    &#34;&#34;&#34;
+    Takes a cartesian coordinate in standard axis, converts it to spherical
+    0deg azimuth is +ve z axis
+
+    Arguments:
+      x {float} - x component
+      y {float} - y component
+      z {float} - z component
+
+    Returns:
+      SphericalCoordinate -- Pointing at the same position, from world origin
+    &#34;&#34;&#34;
+
+    radius = math.sqrt(x**2 + y**2 + z**2)
+    azimuth = math.atan2(x, z)
+    inclination = math.atan2(math.sqrt(x**2 + z**2), y)
+    return SphericalCoordinate(radius, azimuth, inclination)</code></pre>
 </details>
-<h3>Class variables</h3>
+<h3>Static methods</h3>
 <dl>
-<dt id="spotted.config.system.SystemConfig.esta_code"><code class="name">var <span class="ident">esta_code</span></code></dt>
+<dt id="spotted.spherical_coordinate.SphericalCoordinate.from_cartesian"><code class="name flex">
+<span>def <span class="ident">from_cartesian</span></span>(<span>x, y, z)</span>
+</code></dt>
 <dd>
-<div class="desc"></div>
-</dd>
-<dt id="spotted.config.system.SystemConfig.oem_code"><code class="name">var <span class="ident">oem_code</span></code></dt>
-<dd>
-<div class="desc"></div>
-</dd>
-<dt id="spotted.config.system.SystemConfig.transmit_rate"><code class="name">var <span class="ident">transmit_rate</span></code></dt>
-<dd>
-<div class="desc"></div>
+<div class="desc"><p>Takes a cartesian coordinate in standard axis, converts it to spherical
+0deg azimuth is +ve z axis</p>
+<h2 id="arguments">Arguments</h2>
+<p>x {float} - x component
+y {float} - y component
+z {float} - z component</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>SphericalCoordinate -- Pointing at the same position, from world origin</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def from_cartesian(x, y, z):
+  &#34;&#34;&#34;
+  Takes a cartesian coordinate in standard axis, converts it to spherical
+  0deg azimuth is +ve z axis
+
+  Arguments:
+    x {float} - x component
+    y {float} - y component
+    z {float} - z component
+
+  Returns:
+    SphericalCoordinate -- Pointing at the same position, from world origin
+  &#34;&#34;&#34;
+
+  radius = math.sqrt(x**2 + y**2 + z**2)
+  azimuth = math.atan2(x, z)
+  inclination = math.atan2(math.sqrt(x**2 + z**2), y)
+  return SphericalCoordinate(radius, azimuth, inclination)</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -97,17 +204,15 @@ class SystemConfig:
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.config" href="index.html">spotted.config</a></code></li>
+<li><code><a title="spotted" href="index.html">spotted</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="spotted.config.system.SystemConfig" href="#spotted.config.system.SystemConfig">SystemConfig</a></code></h4>
+<h4><code><a title="spotted.spherical_coordinate.SphericalCoordinate" href="#spotted.spherical_coordinate.SphericalCoordinate">SphericalCoordinate</a></code></h4>
 <ul class="">
-<li><code><a title="spotted.config.system.SystemConfig.esta_code" href="#spotted.config.system.SystemConfig.esta_code">esta_code</a></code></li>
-<li><code><a title="spotted.config.system.SystemConfig.oem_code" href="#spotted.config.system.SystemConfig.oem_code">oem_code</a></code></li>
-<li><code><a title="spotted.config.system.SystemConfig.transmit_rate" href="#spotted.config.system.SystemConfig.transmit_rate">transmit_rate</a></code></li>
+<li><code><a title="spotted.spherical_coordinate.SphericalCoordinate.from_cartesian" href="#spotted.spherical_coordinate.SphericalCoordinate.from_cartesian">from_cartesian</a></code></li>
 </ul>
 </li>
 </ul>

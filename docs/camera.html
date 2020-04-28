@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted.spotted.camera API documentation</title>
+<title>spotted.camera API documentation</title>
 <meta name="description" content="Spotted Camera" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>spotted.spotted.camera</code></h1>
+<h1 class="title">Module <code>spotted.camera</code></h1>
 </header>
 <section id="section-intro">
 <p>Spotted Camera</p>
@@ -34,10 +34,10 @@ import math
 import numpy as np
 import cv2 as cv
 
-from spotted.spotted.contour import Contour
-from spotted.spotted.coordinate import Coordinate
-from spotted.spotted.point_of_interest import PointOfInterest
-from spotted.spotted.helpers import scale, create_rotation_matrix, pythagoras
+from spotted.contour import Contour
+from spotted.coordinate import Coordinate
+from spotted.point_of_interest import PointOfInterest
+from spotted.helpers import scale, create_rotation_matrix, pythagoras
 
 def contour_center(contour):
   &#34;&#34;&#34;
@@ -215,7 +215,7 @@ class Camera:
       background {np.array} -- Background model
 
     Returns:
-      list of contours, diff, masked frame
+      list of contours
     &#34;&#34;&#34;
 
     diff = abs(np.subtract(frame, background)).astype(np.uint8)
@@ -422,7 +422,7 @@ class Camera:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="spotted.spotted.camera.contour_center"><code class="name flex">
+<dt id="spotted.camera.contour_center"><code class="name flex">
 <span>def <span class="ident">contour_center</span></span>(<span>contour)</span>
 </code></dt>
 <dd>
@@ -450,7 +450,7 @@ class Camera:
   return (int(moments[&#34;m10&#34;] / moments[&#34;m00&#34;]), int(moments[&#34;m01&#34;] / moments[&#34;m00&#34;]))</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.camera.contour_closeness"><code class="name flex">
+<dt id="spotted.camera.contour_closeness"><code class="name flex">
 <span>def <span class="ident">contour_closeness</span></span>(<span>pair)</span>
 </code></dt>
 <dd>
@@ -471,7 +471,7 @@ class Camera:
   return spread - one.radius - two.radius</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.camera.find_neighbours"><code class="name flex">
+<dt id="spotted.camera.find_neighbours"><code class="name flex">
 <span>def <span class="ident">find_neighbours</span></span>(<span>groups, center_x, center_y, threshold)</span>
 </code></dt>
 <dd>
@@ -520,7 +520,7 @@ threshold {float} &ndash; value to determine if a contour is close enough</p>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="spotted.spotted.camera.Camera"><code class="flex name class">
+<dt id="spotted.camera.Camera"><code class="flex name class">
 <span>class <span class="ident">Camera</span></span>
 <span>(</span><span>json, camera_id, calibration, stop_flags)</span>
 </code></dt>
@@ -533,7 +533,7 @@ Also creates a camera capture object, so initialisation takes a second or so</p>
 calibration {list} &ndash; Calibration data for frame restore</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code><a title="spotted.spotted.camera.Camera" href="#spotted.spotted.camera.Camera">Camera</a></code></dt>
+<dt><code><a title="spotted.camera.Camera" href="#spotted.camera.Camera">Camera</a></code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
 <details class="source">
@@ -666,7 +666,7 @@ calibration {list} &ndash; Calibration data for frame restore</p>
       background {np.array} -- Background model
 
     Returns:
-      list of contours, diff, masked frame
+      list of contours
     &#34;&#34;&#34;
 
     diff = abs(np.subtract(frame, background)).astype(np.uint8)
@@ -867,7 +867,7 @@ calibration {list} &ndash; Calibration data for frame restore</p>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="spotted.spotted.camera.Camera.begin_capture"><code class="name flex">
+<dt id="spotted.camera.Camera.begin_capture"><code class="name flex">
 <span>def <span class="ident">begin_capture</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -915,7 +915,7 @@ Sets self.current_frame to the overdrawn frame for possible output</p></div>
       self.current_frame = out_frame</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.camera.Camera.calculate_real_world_coordinate"><code class="name flex">
+<dt id="spotted.camera.Camera.calculate_real_world_coordinate"><code class="name flex">
 <span>def <span class="ident">calculate_real_world_coordinate</span></span>(<span>self, location)</span>
 </code></dt>
 <dd>
@@ -971,7 +971,7 @@ Takes into account viewing angle, camera rotation in space and position</p>
   return rotated_position + self.position</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.camera.Camera.create_initial_frame"><code class="name flex">
+<dt id="spotted.camera.Camera.create_initial_frame"><code class="name flex">
 <span>def <span class="ident">create_initial_frame</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -1010,7 +1010,7 @@ Takes into account viewing angle, camera rotation in space and position</p>
   return init_frame</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.camera.Camera.draw_pois"><code class="name flex">
+<dt id="spotted.camera.Camera.draw_pois"><code class="name flex">
 <span>def <span class="ident">draw_pois</span></span>(<span>self, frame)</span>
 </code></dt>
 <dd>
@@ -1055,7 +1055,7 @@ all others at 150 intensity.</p>
   return frame</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.camera.Camera.group_contours"><code class="name flex">
+<dt id="spotted.camera.Camera.group_contours"><code class="name flex">
 <span>def <span class="ident">group_contours</span></span>(<span>self, contours)</span>
 </code></dt>
 <dd>
@@ -1106,7 +1106,7 @@ Does not change any contours until all have been assigned to stop possible rando
   return [contour.np_points for contour in contour_objects if contour.area &gt; 2000], blank</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.camera.Camera.preprocess_frame"><code class="name flex">
+<dt id="spotted.camera.Camera.preprocess_frame"><code class="name flex">
 <span>def <span class="ident">preprocess_frame</span></span>(<span>self, frame)</span>
 </code></dt>
 <dd>
@@ -1142,7 +1142,7 @@ resizes to a standard size</p>
   return frame</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.camera.Camera.process_frame"><code class="name flex">
+<dt id="spotted.camera.Camera.process_frame"><code class="name flex">
 <span>def <span class="ident">process_frame</span></span>(<span>self, frame, background)</span>
 </code></dt>
 <dd>
@@ -1152,7 +1152,7 @@ resizes to a standard size</p>
 background {np.array} &ndash; Background model</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>list</code> of <code>contours, diff, masked frame</code></dt>
+<dt><code>list</code> of <code>contours</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
 <details class="source">
@@ -1168,7 +1168,7 @@ background {np.array} &ndash; Background model</p>
     background {np.array} -- Background model
 
   Returns:
-    list of contours, diff, masked frame
+    list of contours
   &#34;&#34;&#34;
 
   diff = abs(np.subtract(frame, background)).astype(np.uint8)
@@ -1187,7 +1187,7 @@ background {np.array} &ndash; Background model</p>
   return contours, diff, frame</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.camera.Camera.update_pois"><code class="name flex">
+<dt id="spotted.camera.Camera.update_pois"><code class="name flex">
 <span>def <span class="ident">update_pois</span></span>(<span>self, contours, frame)</span>
 </code></dt>
 <dd>
@@ -1261,29 +1261,29 @@ frame {list} &ndash; current camera frame</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.spotted" href="index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted" href="index.html">spotted</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="spotted.spotted.camera.contour_center" href="#spotted.spotted.camera.contour_center">contour_center</a></code></li>
-<li><code><a title="spotted.spotted.camera.contour_closeness" href="#spotted.spotted.camera.contour_closeness">contour_closeness</a></code></li>
-<li><code><a title="spotted.spotted.camera.find_neighbours" href="#spotted.spotted.camera.find_neighbours">find_neighbours</a></code></li>
+<li><code><a title="spotted.camera.contour_center" href="#spotted.camera.contour_center">contour_center</a></code></li>
+<li><code><a title="spotted.camera.contour_closeness" href="#spotted.camera.contour_closeness">contour_closeness</a></code></li>
+<li><code><a title="spotted.camera.find_neighbours" href="#spotted.camera.find_neighbours">find_neighbours</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="spotted.spotted.camera.Camera" href="#spotted.spotted.camera.Camera">Camera</a></code></h4>
+<h4><code><a title="spotted.camera.Camera" href="#spotted.camera.Camera">Camera</a></code></h4>
 <ul class="">
-<li><code><a title="spotted.spotted.camera.Camera.begin_capture" href="#spotted.spotted.camera.Camera.begin_capture">begin_capture</a></code></li>
-<li><code><a title="spotted.spotted.camera.Camera.calculate_real_world_coordinate" href="#spotted.spotted.camera.Camera.calculate_real_world_coordinate">calculate_real_world_coordinate</a></code></li>
-<li><code><a title="spotted.spotted.camera.Camera.create_initial_frame" href="#spotted.spotted.camera.Camera.create_initial_frame">create_initial_frame</a></code></li>
-<li><code><a title="spotted.spotted.camera.Camera.draw_pois" href="#spotted.spotted.camera.Camera.draw_pois">draw_pois</a></code></li>
-<li><code><a title="spotted.spotted.camera.Camera.group_contours" href="#spotted.spotted.camera.Camera.group_contours">group_contours</a></code></li>
-<li><code><a title="spotted.spotted.camera.Camera.preprocess_frame" href="#spotted.spotted.camera.Camera.preprocess_frame">preprocess_frame</a></code></li>
-<li><code><a title="spotted.spotted.camera.Camera.process_frame" href="#spotted.spotted.camera.Camera.process_frame">process_frame</a></code></li>
-<li><code><a title="spotted.spotted.camera.Camera.update_pois" href="#spotted.spotted.camera.Camera.update_pois">update_pois</a></code></li>
+<li><code><a title="spotted.camera.Camera.begin_capture" href="#spotted.camera.Camera.begin_capture">begin_capture</a></code></li>
+<li><code><a title="spotted.camera.Camera.calculate_real_world_coordinate" href="#spotted.camera.Camera.calculate_real_world_coordinate">calculate_real_world_coordinate</a></code></li>
+<li><code><a title="spotted.camera.Camera.create_initial_frame" href="#spotted.camera.Camera.create_initial_frame">create_initial_frame</a></code></li>
+<li><code><a title="spotted.camera.Camera.draw_pois" href="#spotted.camera.Camera.draw_pois">draw_pois</a></code></li>
+<li><code><a title="spotted.camera.Camera.group_contours" href="#spotted.camera.Camera.group_contours">group_contours</a></code></li>
+<li><code><a title="spotted.camera.Camera.preprocess_frame" href="#spotted.camera.Camera.preprocess_frame">preprocess_frame</a></code></li>
+<li><code><a title="spotted.camera.Camera.process_frame" href="#spotted.camera.Camera.process_frame">process_frame</a></code></li>
+<li><code><a title="spotted.camera.Camera.update_pois" href="#spotted.camera.Camera.update_pois">update_pois</a></code></li>
 </ul>
 </li>
 </ul>

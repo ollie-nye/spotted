@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted.spotted.websocket API documentation</title>
+<title>spotted.websocket API documentation</title>
 <meta name="description" content="Spotted Websocket" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>spotted.spotted.websocket</code></h1>
+<h1 class="title">Module <code>spotted.websocket</code></h1>
 </header>
 <section id="section-intro">
 <p>Spotted Websocket</p>
@@ -115,7 +115,7 @@ class Websocket:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="spotted.spotted.websocket.Websocket"><code class="flex name class">
+<dt id="spotted.websocket.Websocket"><code class="flex name class">
 <span>class <span class="ident">Websocket</span></span>
 <span>(</span><span>spotted)</span>
 </code></dt>
@@ -201,7 +201,7 @@ class Websocket:
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="spotted.spotted.websocket.Websocket.broadcast_state"><code class="name flex">
+<dt id="spotted.websocket.Websocket.broadcast_state"><code class="name flex">
 <span>async def <span class="ident">broadcast_state</span></span>(<span>self, sleep_time)</span>
 </code></dt>
 <dd>
@@ -230,7 +230,7 @@ sleep_time</p>
     await asyncio.sleep(sleep_time)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.websocket.Websocket.push_state"><code class="name flex">
+<dt id="spotted.websocket.Websocket.push_state"><code class="name flex">
 <span>async def <span class="ident">push_state</span></span>(<span>self, websocket, _)</span>
 </code></dt>
 <dd>
@@ -258,7 +258,7 @@ sleep_time</p>
     await self.unregister(websocket)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.websocket.Websocket.register"><code class="name flex">
+<dt id="spotted.websocket.Websocket.register"><code class="name flex">
 <span>async def <span class="ident">register</span></span>(<span>self, websocket)</span>
 </code></dt>
 <dd>
@@ -281,7 +281,7 @@ sleep_time</p>
   await websocket.send(&#34;init      &#34; + json.dumps(self.spotted.config))</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.websocket.Websocket.state_event"><code class="name flex">
+<dt id="spotted.websocket.Websocket.state_event"><code class="name flex">
 <span>def <span class="ident">state_event</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -303,7 +303,7 @@ sleep_time</p>
   return json.dumps(self.spotted.current_state)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.websocket.Websocket.unregister"><code class="name flex">
+<dt id="spotted.websocket.Websocket.unregister"><code class="name flex">
 <span>async def <span class="ident">unregister</span></span>(<span>self, websocket)</span>
 </code></dt>
 <dd>
@@ -338,19 +338,19 @@ sleep_time</p>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.spotted" href="index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted" href="index.html">spotted</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="spotted.spotted.websocket.Websocket" href="#spotted.spotted.websocket.Websocket">Websocket</a></code></h4>
+<h4><code><a title="spotted.websocket.Websocket" href="#spotted.websocket.Websocket">Websocket</a></code></h4>
 <ul class="">
-<li><code><a title="spotted.spotted.websocket.Websocket.broadcast_state" href="#spotted.spotted.websocket.Websocket.broadcast_state">broadcast_state</a></code></li>
-<li><code><a title="spotted.spotted.websocket.Websocket.push_state" href="#spotted.spotted.websocket.Websocket.push_state">push_state</a></code></li>
-<li><code><a title="spotted.spotted.websocket.Websocket.register" href="#spotted.spotted.websocket.Websocket.register">register</a></code></li>
-<li><code><a title="spotted.spotted.websocket.Websocket.state_event" href="#spotted.spotted.websocket.Websocket.state_event">state_event</a></code></li>
-<li><code><a title="spotted.spotted.websocket.Websocket.unregister" href="#spotted.spotted.websocket.Websocket.unregister">unregister</a></code></li>
+<li><code><a title="spotted.websocket.Websocket.broadcast_state" href="#spotted.websocket.Websocket.broadcast_state">broadcast_state</a></code></li>
+<li><code><a title="spotted.websocket.Websocket.push_state" href="#spotted.websocket.Websocket.push_state">push_state</a></code></li>
+<li><code><a title="spotted.websocket.Websocket.register" href="#spotted.websocket.Websocket.register">register</a></code></li>
+<li><code><a title="spotted.websocket.Websocket.state_event" href="#spotted.websocket.Websocket.state_event">state_event</a></code></li>
+<li><code><a title="spotted.websocket.Websocket.unregister" href="#spotted.websocket.Websocket.unregister">unregister</a></code></li>
 </ul>
 </li>
 </ul>

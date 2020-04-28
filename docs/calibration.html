@@ -4,8 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted.spotted.room API documentation</title>
-<meta name="description" content="Room to contain all fixtures and cameras" />
+<title>spotted.calibration API documentation</title>
+<meta name="description" content="Calibration is responsible for restoring an original image taken through a
+fisheye lens" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,51 +18,64 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>spotted.spotted.room</code></h1>
+<h1 class="title">Module <code>spotted.calibration</code></h1>
 </header>
 <section id="section-intro">
-<p>Room to contain all fixtures and cameras</p>
+<p>Calibration is responsible for restoring an original image taken through a
+fisheye lens</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-Room to contain all fixtures and cameras
+Calibration is responsible for restoring an original image taken through a
+fisheye lens
 &#34;&#34;&#34;
 
-from spotted.spotted.coordinate import Coordinate
+import numpy as np
+import cv2 as cv
 
-class Room:
+class Calibration:
   &#34;&#34;&#34;
-  Room to contain all fixtures and cameras
+  Calibration is responsible for restoring an original image taken through a
+  fisheye lens
   &#34;&#34;&#34;
-
-  def __init__(self, width, height, depth):
+  def __init__(self, json):
     &#34;&#34;&#34;
-    Creates a room from the given parameters
+    Creates a new instance of Calibration
 
     Arguments:
-      width {float} -- Room width
-      height {float} -- Room height
-      depth {float} -- Room depth
+      json {dict} -- dictionary to configure the instance
 
     Returns:
-      Room -- Configured with given parameters
+      Calibration -- The populated calibration instance
     &#34;&#34;&#34;
+    dimension = (json[&#39;dimension&#39;][0], json[&#39;dimension&#39;][1])
+    distortion = np.array(json[&#39;distortion&#39;])
+    camera = np.array(json[&#39;camera&#39;])
 
-    self.width = width
-    self.height = height
-    self.depth = depth
+    # pylint: disable=no-member
+    self.map1, self.map2 = cv.fisheye.initUndistortRectifyMap(
+      camera, distortion, np.eye(3), camera, dimension, cv.CV_16SC2
+    )
 
-  def center(self):
+  def restore(self, frame):
     &#34;&#34;&#34;
-    Gets the centerpoint of the room
+    Reverts the effect of the fish eye lens on a given frame
+
+    Arguments:
+      frame {array} -- frame to apply the filter to
 
     Returns:
-      Coordinate -- centerpoint of the room
+      array -- frame after applying the filter, same dimension as passed frame
     &#34;&#34;&#34;
-
-    return Coordinate(self.width / 2.0, self.height / 2.0, self.depth / 2.0)</code></pre>
+    return cv.remap(
+      frame,
+      self.map1,
+      self.map2,
+      interpolation=cv.INTER_LINEAR,
+      borderMode=cv.BORDER_CONSTANT
+    )</code></pre>
 </details>
 </section>
 <section>
@@ -73,83 +87,102 @@ class Room:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="spotted.spotted.room.Room"><code class="flex name class">
-<span>class <span class="ident">Room</span></span>
-<span>(</span><span>width, height, depth)</span>
+<dt id="spotted.calibration.Calibration"><code class="flex name class">
+<span>class <span class="ident">Calibration</span></span>
+<span>(</span><span>json)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Room to contain all fixtures and cameras</p>
-<p>Creates a room from the given parameters</p>
+<div class="desc"><p>Calibration is responsible for restoring an original image taken through a
+fisheye lens</p>
+<p>Creates a new instance of Calibration</p>
 <h2 id="arguments">Arguments</h2>
-<p>width {float} &ndash; Room width
-height {float} &ndash; Room height
-depth {float} &ndash; Room depth</p>
+<p>json {dict} &ndash; dictionary to configure the instance</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>Room -- Configured with given parameters</code></dt>
+<dt><code>Calibration -- The populated calibration instance</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Room:
+<pre><code class="python">class Calibration:
   &#34;&#34;&#34;
-  Room to contain all fixtures and cameras
+  Calibration is responsible for restoring an original image taken through a
+  fisheye lens
   &#34;&#34;&#34;
-
-  def __init__(self, width, height, depth):
+  def __init__(self, json):
     &#34;&#34;&#34;
-    Creates a room from the given parameters
+    Creates a new instance of Calibration
 
     Arguments:
-      width {float} -- Room width
-      height {float} -- Room height
-      depth {float} -- Room depth
+      json {dict} -- dictionary to configure the instance
 
     Returns:
-      Room -- Configured with given parameters
+      Calibration -- The populated calibration instance
     &#34;&#34;&#34;
+    dimension = (json[&#39;dimension&#39;][0], json[&#39;dimension&#39;][1])
+    distortion = np.array(json[&#39;distortion&#39;])
+    camera = np.array(json[&#39;camera&#39;])
 
-    self.width = width
-    self.height = height
-    self.depth = depth
+    # pylint: disable=no-member
+    self.map1, self.map2 = cv.fisheye.initUndistortRectifyMap(
+      camera, distortion, np.eye(3), camera, dimension, cv.CV_16SC2
+    )
 
-  def center(self):
+  def restore(self, frame):
     &#34;&#34;&#34;
-    Gets the centerpoint of the room
+    Reverts the effect of the fish eye lens on a given frame
+
+    Arguments:
+      frame {array} -- frame to apply the filter to
 
     Returns:
-      Coordinate -- centerpoint of the room
+      array -- frame after applying the filter, same dimension as passed frame
     &#34;&#34;&#34;
-
-    return Coordinate(self.width / 2.0, self.height / 2.0, self.depth / 2.0)</code></pre>
+    return cv.remap(
+      frame,
+      self.map1,
+      self.map2,
+      interpolation=cv.INTER_LINEAR,
+      borderMode=cv.BORDER_CONSTANT
+    )</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="spotted.spotted.room.Room.center"><code class="name flex">
-<span>def <span class="ident">center</span></span>(<span>self)</span>
+<dt id="spotted.calibration.Calibration.restore"><code class="name flex">
+<span>def <span class="ident">restore</span></span>(<span>self, frame)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Gets the centerpoint of the room</p>
+<div class="desc"><p>Reverts the effect of the fish eye lens on a given frame</p>
+<h2 id="arguments">Arguments</h2>
+<p>frame {array} &ndash; frame to apply the filter to</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>Coordinate -- centerpoint</code> of <code>the room</code></dt>
+<dt><code>array -- frame after applying the filter, same dimension as passed frame</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def center(self):
+<pre><code class="python">def restore(self, frame):
   &#34;&#34;&#34;
-  Gets the centerpoint of the room
+  Reverts the effect of the fish eye lens on a given frame
+
+  Arguments:
+    frame {array} -- frame to apply the filter to
 
   Returns:
-    Coordinate -- centerpoint of the room
+    array -- frame after applying the filter, same dimension as passed frame
   &#34;&#34;&#34;
-
-  return Coordinate(self.width / 2.0, self.height / 2.0, self.depth / 2.0)</code></pre>
+  return cv.remap(
+    frame,
+    self.map1,
+    self.map2,
+    interpolation=cv.INTER_LINEAR,
+    borderMode=cv.BORDER_CONSTANT
+  )</code></pre>
 </details>
 </dd>
 </dl>
@@ -165,15 +198,15 @@ depth {float} &ndash; Room depth</p>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.spotted" href="index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted" href="index.html">spotted</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="spotted.spotted.room.Room" href="#spotted.spotted.room.Room">Room</a></code></h4>
+<h4><code><a title="spotted.calibration.Calibration" href="#spotted.calibration.Calibration">Calibration</a></code></h4>
 <ul class="">
-<li><code><a title="spotted.spotted.room.Room.center" href="#spotted.spotted.room.Room.center">center</a></code></li>
+<li><code><a title="spotted.calibration.Calibration.restore" href="#spotted.calibration.Calibration.restore">restore</a></code></li>
 </ul>
 </li>
 </ul>

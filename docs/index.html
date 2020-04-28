@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted.artnet API documentation</title>
-<meta name="description" content="Art-Net packets and support" />
+<title>spotted API documentation</title>
+<meta name="description" content="" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,61 +17,90 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>spotted.artnet</code></h1>
+<h1 class="title">Package <code>spotted</code></h1>
 </header>
 <section id="section-intro">
-<p>Art-Net packets and support</p>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">&#34;&#34;&#34;
-Art-Net packets and support
-&#34;&#34;&#34;</code></pre>
-</details>
 </section>
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt><code class="name"><a title="spotted.artnet.deserialize" href="deserialize.html">spotted.artnet.deserialize</a></code></dt>
+<dt><code class="name"><a title="spotted.attribute" href="attribute.html">spotted.attribute</a></code></dt>
 <dd>
-<div class="desc"><p>Deserialize Art-Net packets into their original structures</p></div>
+<div class="desc"><p>Attribute holds all data about a particular fixture channel</p></div>
 </dd>
-<dt><code class="name"><a title="spotted.artnet.diag_code" href="diag_code.html">spotted.artnet.diag_code</a></code></dt>
+<dt><code class="name"><a title="spotted.calibration" href="calibration.html">spotted.calibration</a></code></dt>
 <dd>
-<div class="desc"><p>ArtPoll diagnostics codes</p></div>
+<div class="desc"><p>Calibration is responsible for restoring an original image taken through a
+fisheye lens</p></div>
 </dd>
-<dt><code class="name"><a title="spotted.artnet.dmx" href="dmx.html">spotted.artnet.dmx</a></code></dt>
+<dt><code class="name"><a title="spotted.camera" href="camera.html">spotted.camera</a></code></dt>
 <dd>
-<div class="desc"><p>ArtNet DMX packet</p></div>
+<div class="desc"><p>Spotted Camera</p></div>
 </dd>
-<dt><code class="name"><a title="spotted.artnet.header" href="header.html">spotted.artnet.header</a></code></dt>
+<dt><code class="name"><a title="spotted.contour" href="contour.html">spotted.contour</a></code></dt>
 <dd>
-<div class="desc"><p>ArtNet Header</p></div>
+<div class="desc"><p>OpenCV Contour handler</p></div>
 </dd>
-<dt><code class="name"><a title="spotted.artnet.helpers" href="helpers.html">spotted.artnet.helpers</a></code></dt>
+<dt><code class="name"><a title="spotted.coordinate" href="coordinate.html">spotted.coordinate</a></code></dt>
 <dd>
-<div class="desc"><p>Generic Art-Net helpers</p></div>
+<div class="desc"><p>Spotted Coordinate</p></div>
 </dd>
-<dt><code class="name"><a title="spotted.artnet.node_report" href="node_report.html">spotted.artnet.node_report</a></code></dt>
+<dt><code class="name"><a title="spotted.error" href="error.html">spotted.error</a></code></dt>
 <dd>
-<div class="desc"><p>ArtPoll/ArtPollReply node report codes</p></div>
+<div class="desc"><p>Spotted error codes</p></div>
 </dd>
-<dt><code class="name"><a title="spotted.artnet.opcode" href="opcode.html">spotted.artnet.opcode</a></code></dt>
+<dt><code class="name"><a title="spotted.fixture" href="fixture.html">spotted.fixture</a></code></dt>
 <dd>
-<div class="desc"><p>Art-Net opcode</p></div>
+<div class="desc"><p>Spotted Fixture</p></div>
 </dd>
-<dt><code class="name"><a title="spotted.artnet.poll" href="poll.html">spotted.artnet.poll</a></code></dt>
+<dt><code class="name"><a title="spotted.helpers" href="helpers.html">spotted.helpers</a></code></dt>
 <dd>
-<div class="desc"><p>Art-Net ArtPoll packet</p></div>
+<div class="desc"><p>Helper functions shared between classes</p></div>
 </dd>
-<dt><code class="name"><a title="spotted.artnet.poll_reply" href="poll_reply.html">spotted.artnet.poll_reply</a></code></dt>
+<dt><code class="name"><a title="spotted.mode" href="mode.html">spotted.mode</a></code></dt>
 <dd>
-<div class="desc"><p>Art-Net ArtPollReply packet</p></div>
+<div class="desc"><p>Mode holds all data about a particular fixture mode</p></div>
 </dd>
-<dt><code class="name"><a title="spotted.artnet.style_code" href="style_code.html">spotted.artnet.style_code</a></code></dt>
+<dt><code class="name"><a title="spotted.personality" href="personality.html">spotted.personality</a></code></dt>
 <dd>
-<div class="desc"><p>ArtPoll/ArtPollReply style codes</p></div>
+<div class="desc"><p>Spotted Personality</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.point_of_interest" href="point_of_interest.html">spotted.point_of_interest</a></code></dt>
+<dd>
+<div class="desc"><p>An interesting point for the system, knows about the camera position it came
+from, the position it is pointing at, and the relative pixel coordinates …</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.room" href="room.html">spotted.room</a></code></dt>
+<dd>
+<div class="desc"><p>Room to contain all fixtures and cameras</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spherical_coordinate" href="spherical_coordinate.html">spotted.spherical_coordinate</a></code></dt>
+<dd>
+<div class="desc"><p>Spherical coordinate representation</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted" href="spotted.html">spotted.spotted</a></code></dt>
+<dd>
+<div class="desc"><p>Spotted</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.static_server" href="static_server.html">spotted.static_server</a></code></dt>
+<dd>
+<div class="desc"><p>Simple static file server</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.universe" href="universe.html">spotted.universe</a></code></dt>
+<dd>
+<div class="desc"><p>Holds single universe data and fixtures</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.universes" href="universes.html">spotted.universes</a></code></dt>
+<dd>
+<div class="desc"><p>Collection of universes to transmit data for</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.websocket" href="websocket.html">spotted.websocket</a></code></dt>
+<dd>
+<div class="desc"><p>Spotted Websocket</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.websocket_server" href="websocket_server.html">spotted.websocket_server</a></code></dt>
+<dd>
+<div class="desc"><p>Websockets handler groups …</p></div>
 </dd>
 </dl>
 </section>
@@ -88,23 +117,27 @@ Art-Net packets and support
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3>Super-module</h3>
-<ul>
-<li><code><a title="spotted" href="../index.html">spotted</a></code></li>
-</ul>
-</li>
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li><code><a title="spotted.artnet.deserialize" href="deserialize.html">spotted.artnet.deserialize</a></code></li>
-<li><code><a title="spotted.artnet.diag_code" href="diag_code.html">spotted.artnet.diag_code</a></code></li>
-<li><code><a title="spotted.artnet.dmx" href="dmx.html">spotted.artnet.dmx</a></code></li>
-<li><code><a title="spotted.artnet.header" href="header.html">spotted.artnet.header</a></code></li>
-<li><code><a title="spotted.artnet.helpers" href="helpers.html">spotted.artnet.helpers</a></code></li>
-<li><code><a title="spotted.artnet.node_report" href="node_report.html">spotted.artnet.node_report</a></code></li>
-<li><code><a title="spotted.artnet.opcode" href="opcode.html">spotted.artnet.opcode</a></code></li>
-<li><code><a title="spotted.artnet.poll" href="poll.html">spotted.artnet.poll</a></code></li>
-<li><code><a title="spotted.artnet.poll_reply" href="poll_reply.html">spotted.artnet.poll_reply</a></code></li>
-<li><code><a title="spotted.artnet.style_code" href="style_code.html">spotted.artnet.style_code</a></code></li>
+<li><code><a title="spotted.attribute" href="attribute.html">spotted.attribute</a></code></li>
+<li><code><a title="spotted.calibration" href="calibration.html">spotted.calibration</a></code></li>
+<li><code><a title="spotted.camera" href="camera.html">spotted.camera</a></code></li>
+<li><code><a title="spotted.contour" href="contour.html">spotted.contour</a></code></li>
+<li><code><a title="spotted.coordinate" href="coordinate.html">spotted.coordinate</a></code></li>
+<li><code><a title="spotted.error" href="error.html">spotted.error</a></code></li>
+<li><code><a title="spotted.fixture" href="fixture.html">spotted.fixture</a></code></li>
+<li><code><a title="spotted.helpers" href="helpers.html">spotted.helpers</a></code></li>
+<li><code><a title="spotted.mode" href="mode.html">spotted.mode</a></code></li>
+<li><code><a title="spotted.personality" href="personality.html">spotted.personality</a></code></li>
+<li><code><a title="spotted.point_of_interest" href="point_of_interest.html">spotted.point_of_interest</a></code></li>
+<li><code><a title="spotted.room" href="room.html">spotted.room</a></code></li>
+<li><code><a title="spotted.spherical_coordinate" href="spherical_coordinate.html">spotted.spherical_coordinate</a></code></li>
+<li><code><a title="spotted.spotted" href="spotted.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted.static_server" href="static_server.html">spotted.static_server</a></code></li>
+<li><code><a title="spotted.universe" href="universe.html">spotted.universe</a></code></li>
+<li><code><a title="spotted.universes" href="universes.html">spotted.universes</a></code></li>
+<li><code><a title="spotted.websocket" href="websocket.html">spotted.websocket</a></code></li>
+<li><code><a title="spotted.websocket_server" href="websocket_server.html">spotted.websocket_server</a></code></li>
 </ul>
 </li>
 </ul>

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted.spotted.fixture API documentation</title>
+<title>spotted.fixture API documentation</title>
 <meta name="description" content="Spotted Fixture" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>spotted.spotted.fixture</code></h1>
+<h1 class="title">Module <code>spotted.fixture</code></h1>
 </header>
 <section id="section-intro">
 <p>Spotted Fixture</p>
@@ -33,10 +33,10 @@ import math
 import time
 import numpy as np
 
-from spotted.spotted.personality import find_personality_by_id
-from spotted.spotted.coordinate import Coordinate
-from spotted.spotted.spherical_coordinate import SphericalCoordinate
-from spotted.spotted.helpers import scale, create_rotation_matrix
+from spotted.personality import find_personality_by_id
+from spotted.coordinate import Coordinate
+from spotted.spherical_coordinate import SphericalCoordinate
+from spotted.helpers import scale, create_rotation_matrix
 
 class Fixture:
   &#34;&#34;&#34;
@@ -216,7 +216,7 @@ class Fixture:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="spotted.spotted.fixture.Fixture"><code class="flex name class">
+<dt id="spotted.fixture.Fixture"><code class="flex name class">
 <span>class <span class="ident">Fixture</span></span>
 <span>(</span><span>config, fixture_id, stop_flags)</span>
 </code></dt>
@@ -225,7 +225,7 @@ class Fixture:
 <p>Create fixture from given config</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code><a title="spotted.spotted.fixture.Fixture" href="#spotted.spotted.fixture.Fixture">Fixture</a></code></dt>
+<dt><code><a title="spotted.fixture.Fixture" href="#spotted.fixture.Fixture">Fixture</a></code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
 <details class="source">
@@ -402,7 +402,7 @@ class Fixture:
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="spotted.spotted.fixture.Fixture.close"><code class="name flex">
+<dt id="spotted.fixture.Fixture.close"><code class="name flex">
 <span>def <span class="ident">close</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -424,7 +424,7 @@ class Fixture:
     self.levels[dimmer.offset] = 0</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.fixture.Fixture.follow"><code class="name flex">
+<dt id="spotted.fixture.Fixture.follow"><code class="name flex">
 <span>def <span class="ident">follow</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -479,7 +479,7 @@ class Fixture:
     self.tilt(tilt_angle)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.fixture.Fixture.open"><code class="name flex">
+<dt id="spotted.fixture.Fixture.open"><code class="name flex">
 <span>def <span class="ident">open</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -501,7 +501,7 @@ class Fixture:
     self.levels[dimmer.offset] = max_val</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.fixture.Fixture.pan"><code class="name flex">
+<dt id="spotted.fixture.Fixture.pan"><code class="name flex">
 <span>def <span class="ident">pan</span></span>(<span>self, value)</span>
 </code></dt>
 <dd>
@@ -530,7 +530,7 @@ class Fixture:
     self.levels[channel] = value // 255</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.fixture.Fixture.point_at"><code class="name flex">
+<dt id="spotted.fixture.Fixture.point_at"><code class="name flex">
 <span>def <span class="ident">point_at</span></span>(<span>self, position)</span>
 </code></dt>
 <dd>
@@ -557,7 +557,7 @@ class Fixture:
   self.steps_taken = 0</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.fixture.Fixture.tilt"><code class="name flex">
+<dt id="spotted.fixture.Fixture.tilt"><code class="name flex">
 <span>def <span class="ident">tilt</span></span>(<span>self, value)</span>
 </code></dt>
 <dd>
@@ -599,20 +599,20 @@ class Fixture:
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.spotted" href="index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted" href="index.html">spotted</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="spotted.spotted.fixture.Fixture" href="#spotted.spotted.fixture.Fixture">Fixture</a></code></h4>
+<h4><code><a title="spotted.fixture.Fixture" href="#spotted.fixture.Fixture">Fixture</a></code></h4>
 <ul class="two-column">
-<li><code><a title="spotted.spotted.fixture.Fixture.close" href="#spotted.spotted.fixture.Fixture.close">close</a></code></li>
-<li><code><a title="spotted.spotted.fixture.Fixture.follow" href="#spotted.spotted.fixture.Fixture.follow">follow</a></code></li>
-<li><code><a title="spotted.spotted.fixture.Fixture.open" href="#spotted.spotted.fixture.Fixture.open">open</a></code></li>
-<li><code><a title="spotted.spotted.fixture.Fixture.pan" href="#spotted.spotted.fixture.Fixture.pan">pan</a></code></li>
-<li><code><a title="spotted.spotted.fixture.Fixture.point_at" href="#spotted.spotted.fixture.Fixture.point_at">point_at</a></code></li>
-<li><code><a title="spotted.spotted.fixture.Fixture.tilt" href="#spotted.spotted.fixture.Fixture.tilt">tilt</a></code></li>
+<li><code><a title="spotted.fixture.Fixture.close" href="#spotted.fixture.Fixture.close">close</a></code></li>
+<li><code><a title="spotted.fixture.Fixture.follow" href="#spotted.fixture.Fixture.follow">follow</a></code></li>
+<li><code><a title="spotted.fixture.Fixture.open" href="#spotted.fixture.Fixture.open">open</a></code></li>
+<li><code><a title="spotted.fixture.Fixture.pan" href="#spotted.fixture.Fixture.pan">pan</a></code></li>
+<li><code><a title="spotted.fixture.Fixture.point_at" href="#spotted.fixture.Fixture.point_at">point_at</a></code></li>
+<li><code><a title="spotted.fixture.Fixture.tilt" href="#spotted.fixture.Fixture.tilt">tilt</a></code></li>
 </ul>
 </li>
 </ul>

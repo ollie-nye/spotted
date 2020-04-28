@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted.spotted.point_of_interest API documentation</title>
+<title>spotted.point_of_interest API documentation</title>
 <meta name="description" content="An interesting point for the system, knows about the camera position it came
 from, the position it is pointing at, and the relative pixel coordinates …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
@@ -18,7 +18,7 @@ from, the position it is pointing at, and the relative pixel coordinates …" />
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>spotted.spotted.point_of_interest</code></h1>
+<h1 class="title">Module <code>spotted.point_of_interest</code></h1>
 </header>
 <section id="section-intro">
 <p>An interesting point for the system, knows about the camera position it came
@@ -69,7 +69,7 @@ class PointOfInterest:
     self.camera_position = camera_position
     self.update_position(position, location)
     self.count = 100
-    self.weight = 1.0
+    self.weight = 1
 
     self.increment_step = increment_step
     self.decrement_step = decrement_step
@@ -149,7 +149,7 @@ class PointOfInterest:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="spotted.spotted.point_of_interest.PointOfInterest"><code class="flex name class">
+<dt id="spotted.point_of_interest.PointOfInterest"><code class="flex name class">
 <span>class <span class="ident">PointOfInterest</span></span>
 <span>(</span><span>position, location=None, camera_position=None, *, increment_step=2, decrement_step=15)</span>
 </code></dt>
@@ -164,7 +164,7 @@ location {tuple} &ndash; Pixel coordinates of the point. Can be None
 camera_position {Coordinate} &ndash; Position of the origin camera. Can be None</p>
 <h2 id="returns">Returns</h2>
 <dl>
-<dt><code>Instance</code> of <code><a title="spotted.spotted.point_of_interest.PointOfInterest" href="#spotted.spotted.point_of_interest.PointOfInterest">PointOfInterest</a></code></dt>
+<dt><code>Instance</code> of <code><a title="spotted.point_of_interest.PointOfInterest" href="#spotted.point_of_interest.PointOfInterest">PointOfInterest</a></code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
 <details class="source">
@@ -202,7 +202,7 @@ camera_position {Coordinate} &ndash; Position of the origin camera. Can be None<
     self.camera_position = camera_position
     self.update_position(position, location)
     self.count = 100
-    self.weight = 1.0
+    self.weight = 1
 
     self.increment_step = increment_step
     self.decrement_step = decrement_step
@@ -274,7 +274,7 @@ camera_position {Coordinate} &ndash; Position of the origin camera. Can be None<
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="spotted.spotted.point_of_interest.PointOfInterest.decrement_count"><code class="name flex">
+<dt id="spotted.point_of_interest.PointOfInterest.decrement_count"><code class="name flex">
 <span>def <span class="ident">decrement_count</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -296,7 +296,7 @@ Count cannot go below 1</p></div>
   self.recalculate_weight()</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.point_of_interest.PointOfInterest.diff_from_position"><code class="name flex">
+<dt id="spotted.point_of_interest.PointOfInterest.diff_from_position"><code class="name flex">
 <span>def <span class="ident">diff_from_position</span></span>(<span>self, position)</span>
 </code></dt>
 <dd>
@@ -329,7 +329,7 @@ Count cannot go below 1</p></div>
   return math.sqrt(diff_x + diff_y + diff_z)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.point_of_interest.PointOfInterest.increment_count"><code class="name flex">
+<dt id="spotted.point_of_interest.PointOfInterest.increment_count"><code class="name flex">
 <span>def <span class="ident">increment_count</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -347,7 +347,7 @@ Count cannot go below 1</p></div>
   self.recalculate_weight()</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.point_of_interest.PointOfInterest.recalculate_weight"><code class="name flex">
+<dt id="spotted.point_of_interest.PointOfInterest.recalculate_weight"><code class="name flex">
 <span>def <span class="ident">recalculate_weight</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -368,7 +368,7 @@ Weight cannot go above 255</p></div>
     self.weight = 255</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.point_of_interest.PointOfInterest.update_position"><code class="name flex">
+<dt id="spotted.point_of_interest.PointOfInterest.update_position"><code class="name flex">
 <span>def <span class="ident">update_position</span></span>(<span>self, position, location=None)</span>
 </code></dt>
 <dd>
@@ -408,19 +408,19 @@ location {(x, y)} &ndash; pixel location of point in camera frame</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.spotted" href="index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted" href="index.html">spotted</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="spotted.spotted.point_of_interest.PointOfInterest" href="#spotted.spotted.point_of_interest.PointOfInterest">PointOfInterest</a></code></h4>
+<h4><code><a title="spotted.point_of_interest.PointOfInterest" href="#spotted.point_of_interest.PointOfInterest">PointOfInterest</a></code></h4>
 <ul class="">
-<li><code><a title="spotted.spotted.point_of_interest.PointOfInterest.decrement_count" href="#spotted.spotted.point_of_interest.PointOfInterest.decrement_count">decrement_count</a></code></li>
-<li><code><a title="spotted.spotted.point_of_interest.PointOfInterest.diff_from_position" href="#spotted.spotted.point_of_interest.PointOfInterest.diff_from_position">diff_from_position</a></code></li>
-<li><code><a title="spotted.spotted.point_of_interest.PointOfInterest.increment_count" href="#spotted.spotted.point_of_interest.PointOfInterest.increment_count">increment_count</a></code></li>
-<li><code><a title="spotted.spotted.point_of_interest.PointOfInterest.recalculate_weight" href="#spotted.spotted.point_of_interest.PointOfInterest.recalculate_weight">recalculate_weight</a></code></li>
-<li><code><a title="spotted.spotted.point_of_interest.PointOfInterest.update_position" href="#spotted.spotted.point_of_interest.PointOfInterest.update_position">update_position</a></code></li>
+<li><code><a title="spotted.point_of_interest.PointOfInterest.decrement_count" href="#spotted.point_of_interest.PointOfInterest.decrement_count">decrement_count</a></code></li>
+<li><code><a title="spotted.point_of_interest.PointOfInterest.diff_from_position" href="#spotted.point_of_interest.PointOfInterest.diff_from_position">diff_from_position</a></code></li>
+<li><code><a title="spotted.point_of_interest.PointOfInterest.increment_count" href="#spotted.point_of_interest.PointOfInterest.increment_count">increment_count</a></code></li>
+<li><code><a title="spotted.point_of_interest.PointOfInterest.recalculate_weight" href="#spotted.point_of_interest.PointOfInterest.recalculate_weight">recalculate_weight</a></code></li>
+<li><code><a title="spotted.point_of_interest.PointOfInterest.update_position" href="#spotted.point_of_interest.PointOfInterest.update_position">update_position</a></code></li>
 </ul>
 </li>
 </ul>

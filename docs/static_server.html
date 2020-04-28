@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted.spotted.static_server API documentation</title>
+<title>spotted.static_server API documentation</title>
 <meta name="description" content="Simple static file server" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>spotted.spotted.static_server</code></h1>
+<h1 class="title">Module <code>spotted.static_server</code></h1>
 </header>
 <section id="section-intro">
 <p>Simple static file server</p>
@@ -104,10 +104,10 @@ class StaticServer(BaseHTTPRequestHandler):
 
     self.end_headers()
     if filename == &#39;ui/personalities.data&#39;:
-      with open(&#39;spotted/config/personalities.json&#39;, &#39;rb&#39;) as file_handle:
+      with open(&#39;config/personalities.json&#39;, &#39;rb&#39;) as file_handle:
         self.wfile.write(file_handle.read())
     elif filename == &#39;ui/config.data&#39;:
-      with open(&#39;spotted/config/config.json&#39;, &#39;rb&#39;) as file_handle:
+      with open(&#39;config/config.json&#39;, &#39;rb&#39;) as file_handle:
         self.wfile.write(file_handle.read())
     else:
       with open(filename, &#39;rb&#39;) as file_handle:
@@ -124,12 +124,12 @@ class StaticServer(BaseHTTPRequestHandler):
 
     if self.path == &#39;/update/personalities&#39;:
       content = json.loads(data.decode(&#39;utf-8&#39;))
-      with open(&#39;spotted/config/personalities.json&#39;, &#39;w&#39;) as file_handle:
+      with open(&#39;config/personalities.json&#39;, &#39;w&#39;) as file_handle:
         json.dump(content, file_handle)
       self.send_response(201)
     elif self.path == &#39;/update/config&#39;:
       content = json.loads(data.decode(&#39;utf-8&#39;))
-      with open(&#39;spotted/config/config.json&#39;, &#39;w&#39;) as file_handle:
+      with open(&#39;config/config.json&#39;, &#39;w&#39;) as file_handle:
         json.dump(content, file_handle)
       self.restart_threads(True)
       self.send_response(201)
@@ -149,7 +149,7 @@ class StaticServer(BaseHTTPRequestHandler):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="spotted.spotted.static_server.StaticServer"><code class="flex name class">
+<dt id="spotted.static_server.StaticServer"><code class="flex name class">
 <span>class <span class="ident">StaticServer</span></span>
 <span>(</span><span>request, client_address, server)</span>
 </code></dt>
@@ -231,10 +231,10 @@ class StaticServer(BaseHTTPRequestHandler):
 
     self.end_headers()
     if filename == &#39;ui/personalities.data&#39;:
-      with open(&#39;spotted/config/personalities.json&#39;, &#39;rb&#39;) as file_handle:
+      with open(&#39;config/personalities.json&#39;, &#39;rb&#39;) as file_handle:
         self.wfile.write(file_handle.read())
     elif filename == &#39;ui/config.data&#39;:
-      with open(&#39;spotted/config/config.json&#39;, &#39;rb&#39;) as file_handle:
+      with open(&#39;config/config.json&#39;, &#39;rb&#39;) as file_handle:
         self.wfile.write(file_handle.read())
     else:
       with open(filename, &#39;rb&#39;) as file_handle:
@@ -251,12 +251,12 @@ class StaticServer(BaseHTTPRequestHandler):
 
     if self.path == &#39;/update/personalities&#39;:
       content = json.loads(data.decode(&#39;utf-8&#39;))
-      with open(&#39;spotted/config/personalities.json&#39;, &#39;w&#39;) as file_handle:
+      with open(&#39;config/personalities.json&#39;, &#39;w&#39;) as file_handle:
         json.dump(content, file_handle)
       self.send_response(201)
     elif self.path == &#39;/update/config&#39;:
       content = json.loads(data.decode(&#39;utf-8&#39;))
-      with open(&#39;spotted/config/config.json&#39;, &#39;w&#39;) as file_handle:
+      with open(&#39;config/config.json&#39;, &#39;w&#39;) as file_handle:
         json.dump(content, file_handle)
       self.restart_threads(True)
       self.send_response(201)
@@ -274,7 +274,7 @@ class StaticServer(BaseHTTPRequestHandler):
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="spotted.spotted.static_server.StaticServer.do_GET"><code class="name flex">
+<dt id="spotted.static_server.StaticServer.do_GET"><code class="name flex">
 <span>def <span class="ident">do_GET</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -309,17 +309,17 @@ class StaticServer(BaseHTTPRequestHandler):
 
   self.end_headers()
   if filename == &#39;ui/personalities.data&#39;:
-    with open(&#39;spotted/config/personalities.json&#39;, &#39;rb&#39;) as file_handle:
+    with open(&#39;config/personalities.json&#39;, &#39;rb&#39;) as file_handle:
       self.wfile.write(file_handle.read())
   elif filename == &#39;ui/config.data&#39;:
-    with open(&#39;spotted/config/config.json&#39;, &#39;rb&#39;) as file_handle:
+    with open(&#39;config/config.json&#39;, &#39;rb&#39;) as file_handle:
       self.wfile.write(file_handle.read())
   else:
     with open(filename, &#39;rb&#39;) as file_handle:
       self.wfile.write(file_handle.read())</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.static_server.StaticServer.do_POST"><code class="name flex">
+<dt id="spotted.static_server.StaticServer.do_POST"><code class="name flex">
 <span>def <span class="ident">do_POST</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -338,12 +338,12 @@ class StaticServer(BaseHTTPRequestHandler):
 
   if self.path == &#39;/update/personalities&#39;:
     content = json.loads(data.decode(&#39;utf-8&#39;))
-    with open(&#39;spotted/config/personalities.json&#39;, &#39;w&#39;) as file_handle:
+    with open(&#39;config/personalities.json&#39;, &#39;w&#39;) as file_handle:
       json.dump(content, file_handle)
     self.send_response(201)
   elif self.path == &#39;/update/config&#39;:
     content = json.loads(data.decode(&#39;utf-8&#39;))
-    with open(&#39;spotted/config/config.json&#39;, &#39;w&#39;) as file_handle:
+    with open(&#39;config/config.json&#39;, &#39;w&#39;) as file_handle:
       json.dump(content, file_handle)
     self.restart_threads(True)
     self.send_response(201)
@@ -354,7 +354,7 @@ class StaticServer(BaseHTTPRequestHandler):
   self.end_headers()</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.static_server.StaticServer.push_spotted_reference"><code class="name flex">
+<dt id="spotted.static_server.StaticServer.push_spotted_reference"><code class="name flex">
 <span>def <span class="ident">push_spotted_reference</span></span>(<span>self, handler_args)</span>
 </code></dt>
 <dd>
@@ -376,7 +376,7 @@ class StaticServer(BaseHTTPRequestHandler):
   self.spotted = handler_args</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.static_server.StaticServer.restart_threads"><code class="name flex">
+<dt id="spotted.static_server.StaticServer.restart_threads"><code class="name flex">
 <span>def <span class="ident">restart_threads</span></span>(<span>self, insurance)</span>
 </code></dt>
 <dd>
@@ -431,18 +431,18 @@ class StaticServer(BaseHTTPRequestHandler):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.spotted" href="index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted" href="index.html">spotted</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="spotted.spotted.static_server.StaticServer" href="#spotted.spotted.static_server.StaticServer">StaticServer</a></code></h4>
+<h4><code><a title="spotted.static_server.StaticServer" href="#spotted.static_server.StaticServer">StaticServer</a></code></h4>
 <ul class="">
-<li><code><a title="spotted.spotted.static_server.StaticServer.do_GET" href="#spotted.spotted.static_server.StaticServer.do_GET">do_GET</a></code></li>
-<li><code><a title="spotted.spotted.static_server.StaticServer.do_POST" href="#spotted.spotted.static_server.StaticServer.do_POST">do_POST</a></code></li>
-<li><code><a title="spotted.spotted.static_server.StaticServer.push_spotted_reference" href="#spotted.spotted.static_server.StaticServer.push_spotted_reference">push_spotted_reference</a></code></li>
-<li><code><a title="spotted.spotted.static_server.StaticServer.restart_threads" href="#spotted.spotted.static_server.StaticServer.restart_threads">restart_threads</a></code></li>
+<li><code><a title="spotted.static_server.StaticServer.do_GET" href="#spotted.static_server.StaticServer.do_GET">do_GET</a></code></li>
+<li><code><a title="spotted.static_server.StaticServer.do_POST" href="#spotted.static_server.StaticServer.do_POST">do_POST</a></code></li>
+<li><code><a title="spotted.static_server.StaticServer.push_spotted_reference" href="#spotted.static_server.StaticServer.push_spotted_reference">push_spotted_reference</a></code></li>
+<li><code><a title="spotted.static_server.StaticServer.restart_threads" href="#spotted.static_server.StaticServer.restart_threads">restart_threads</a></code></li>
 </ul>
 </li>
 </ul>

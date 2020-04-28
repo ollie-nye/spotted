@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted.artnet.deserialize API documentation</title>
-<meta name="description" content="Deserialize Art-Net packets into their original structures" />
+<title>spotted.attribute API documentation</title>
+<meta name="description" content="Attribute holds all data about a particular fixture channel" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,51 +17,65 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>spotted.artnet.deserialize</code></h1>
+<h1 class="title">Module <code>spotted.attribute</code></h1>
 </header>
 <section id="section-intro">
-<p>Deserialize Art-Net packets into their original structures</p>
+<p>Attribute holds all data about a particular fixture channel</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-Deserialize Art-Net packets into their original structures
+Attribute holds all data about a particular fixture channel
 &#34;&#34;&#34;
 
-from spotted.artnet.opcode import Opcode
-from spotted.artnet.poll import Poll
-
-def identify_header(incoming):
+# pylint: disable=too-many-instance-attributes, too-few-public-methods
+class Attribute:
   &#34;&#34;&#34;
-  Deserialize Art-Net packets into their original structures
-
-  Arguments:
-    incoming {bytearray} -- incoming packet
-
-  Returns:
-    {(status, opcode, packet)} -- status is True if packet was an Art-Net packet
-                                  opcode contains the opcode enum for the packet
-                                  packet contains the deserialized packet class
+  Attribute holds all data about a particular fixture channel
   &#34;&#34;&#34;
 
-  opcode = 0
-  packet = None
+  def __init__(self, json):
+    &#34;&#34;&#34;
+    Creates a new instance of an attribute
 
-  if incoming[0:8].decode(&#39;ascii&#39;) == &#39;Art-Net\0&#39;: # This is an art-net packet
-    opcode = incoming[8] + (incoming[9] &lt;&lt; 8)
-    try:
-      opcode = Opcode(opcode)
-      packet_data = incoming[12:]
-      if opcode is Opcode.OpPoll:
-        packet = Poll.deserialize(packet_data)
-      elif opcode is Opcode.OpPollReply:
-        #TODO: deserialize ArtPollReply
-        return True, opcode, None
-      return True, opcode, packet
-    except ValueError:
-      print(&#39;Unknown Art-Net packet received. Opcode&#39;, opcode)
-  return False, opcode, None</code></pre>
+    Arguments:
+      json {dict} -- dictionary to prepopulate Attribute
+
+    Returns:
+      Attribute -- The populated attribute instance. Default values are: [
+        range: 255,
+        default: 255,
+        multiplier_type: normal,
+        multiplier_length: 1,
+        invert: false
+      ]
+    &#34;&#34;&#34;
+
+    self.name = json[&#39;name&#39;]
+    self.offset = json[&#39;offset&#39;]
+    self.attribute_type = json[&#39;attribute_type&#39;]
+
+    self.range = 255
+    if &#39;range&#39; in json:
+      self.range = json[&#39;range&#39;]
+
+    self.default = 0
+    if &#39;default&#39; in json:
+      self.default = json[&#39;default&#39;]
+
+    self.multiplier_type = &#39;normal&#39;
+    if &#39;multiplier_type&#39; in json:
+      self.multiplier_type = json[&#39;multiplier_type&#39;]
+
+    self.multiplier_length = 1
+    if &#39;multiplier_length&#39; in json:
+      self.multiplier_length = json[&#39;multiplier_length&#39;]
+
+    self.invert = False
+    if &#39;invert&#39; in json:
+      if json[&#39;invert&#39;] == &#34;true&#34;:
+        self.invert = True</code></pre>
 </details>
 </section>
 <section>
@@ -69,58 +83,85 @@ def identify_header(incoming):
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="spotted.artnet.deserialize.identify_header"><code class="name flex">
-<span>def <span class="ident">identify_header</span></span>(<span>incoming)</span>
+<dt id="spotted.attribute.Attribute"><code class="flex name class">
+<span>class <span class="ident">Attribute</span></span>
+<span>(</span><span>json)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Deserialize Art-Net packets into their original structures</p>
+<div class="desc"><p>Attribute holds all data about a particular fixture channel</p>
+<p>Creates a new instance of an attribute</p>
 <h2 id="arguments">Arguments</h2>
-<p>incoming {bytearray} &ndash; incoming packet</p>
+<p>json {dict} &ndash; dictionary to prepopulate Attribute</p>
 <h2 id="returns">Returns</h2>
-<p>{(status, opcode, packet)} &ndash; status is True if packet was an Art-Net packet
-opcode contains the opcode enum for the packet
-packet contains the deserialized packet class</p></div>
+<dl>
+<dt><code>Attribute -- The populated attribute instance. Default values are: [</code></dt>
+<dd>&nbsp;</dd>
+<dt><code>
+range</code></dt>
+<dd>255,
+default: 255,
+multiplier_type: normal,
+multiplier_length: 1,
+invert: false</dd>
+</dl>
+<p>]</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def identify_header(incoming):
+<pre><code class="python">class Attribute:
   &#34;&#34;&#34;
-  Deserialize Art-Net packets into their original structures
-
-  Arguments:
-    incoming {bytearray} -- incoming packet
-
-  Returns:
-    {(status, opcode, packet)} -- status is True if packet was an Art-Net packet
-                                  opcode contains the opcode enum for the packet
-                                  packet contains the deserialized packet class
+  Attribute holds all data about a particular fixture channel
   &#34;&#34;&#34;
 
-  opcode = 0
-  packet = None
+  def __init__(self, json):
+    &#34;&#34;&#34;
+    Creates a new instance of an attribute
 
-  if incoming[0:8].decode(&#39;ascii&#39;) == &#39;Art-Net\0&#39;: # This is an art-net packet
-    opcode = incoming[8] + (incoming[9] &lt;&lt; 8)
-    try:
-      opcode = Opcode(opcode)
-      packet_data = incoming[12:]
-      if opcode is Opcode.OpPoll:
-        packet = Poll.deserialize(packet_data)
-      elif opcode is Opcode.OpPollReply:
-        #TODO: deserialize ArtPollReply
-        return True, opcode, None
-      return True, opcode, packet
-    except ValueError:
-      print(&#39;Unknown Art-Net packet received. Opcode&#39;, opcode)
-  return False, opcode, None</code></pre>
+    Arguments:
+      json {dict} -- dictionary to prepopulate Attribute
+
+    Returns:
+      Attribute -- The populated attribute instance. Default values are: [
+        range: 255,
+        default: 255,
+        multiplier_type: normal,
+        multiplier_length: 1,
+        invert: false
+      ]
+    &#34;&#34;&#34;
+
+    self.name = json[&#39;name&#39;]
+    self.offset = json[&#39;offset&#39;]
+    self.attribute_type = json[&#39;attribute_type&#39;]
+
+    self.range = 255
+    if &#39;range&#39; in json:
+      self.range = json[&#39;range&#39;]
+
+    self.default = 0
+    if &#39;default&#39; in json:
+      self.default = json[&#39;default&#39;]
+
+    self.multiplier_type = &#39;normal&#39;
+    if &#39;multiplier_type&#39; in json:
+      self.multiplier_type = json[&#39;multiplier_type&#39;]
+
+    self.multiplier_length = 1
+    if &#39;multiplier_length&#39; in json:
+      self.multiplier_length = json[&#39;multiplier_length&#39;]
+
+    self.invert = False
+    if &#39;invert&#39; in json:
+      if json[&#39;invert&#39;] == &#34;true&#34;:
+        self.invert = True</code></pre>
 </details>
 </dd>
 </dl>
-</section>
-<section>
 </section>
 </article>
 <nav id="sidebar">
@@ -131,12 +172,14 @@ packet contains the deserialized packet class</p></div>
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.artnet" href="index.html">spotted.artnet</a></code></li>
+<li><code><a title="spotted" href="index.html">spotted</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="spotted.artnet.deserialize.identify_header" href="#spotted.artnet.deserialize.identify_header">identify_header</a></code></li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="spotted.attribute.Attribute" href="#spotted.attribute.Attribute">Attribute</a></code></h4>
+</li>
 </ul>
 </li>
 </ul>

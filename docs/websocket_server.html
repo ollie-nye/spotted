@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted.spotted.websocket_server API documentation</title>
+<title>spotted.websocket_server API documentation</title>
 <meta name="description" content="Websockets handler groups …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
@@ -17,7 +17,7 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>spotted.spotted.websocket_server</code></h1>
+<h1 class="title">Module <code>spotted.websocket_server</code></h1>
 </header>
 <section id="section-intro">
 <p>Websockets handler groups</p>
@@ -226,7 +226,7 @@ class Websocket(HTTPWebSocketsHandler):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt id="spotted.spotted.websocket_server.HTTPWebSocketsHandler"><code class="flex name class">
+<dt id="spotted.websocket_server.HTTPWebSocketsHandler"><code class="flex name class">
 <span>class <span class="ident">HTTPWebSocketsHandler</span></span>
 </code></dt>
 <dd>
@@ -389,11 +389,11 @@ class Websocket(HTTPWebSocketsHandler):
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="spotted.spotted.websocket_server.Websocket" href="#spotted.spotted.websocket_server.Websocket">Websocket</a></li>
+<li><a title="spotted.websocket_server.Websocket" href="#spotted.websocket_server.Websocket">Websocket</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="spotted.spotted.websocket_server.HTTPWebSocketsHandler.do_GET"><code class="name flex">
+<dt id="spotted.websocket_server.HTTPWebSocketsHandler.do_GET"><code class="name flex">
 <span>def <span class="ident">do_GET</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -408,7 +408,7 @@ class Websocket(HTTPWebSocketsHandler):
     self.__read_messages()</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_closed"><code class="name flex">
+<dt id="spotted.websocket_server.HTTPWebSocketsHandler.on_ws_closed"><code class="name flex">
 <span>def <span class="ident">on_ws_closed</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -421,7 +421,7 @@ class Websocket(HTTPWebSocketsHandler):
   &#34;&#34;&#34;Override this handler.&#34;&#34;&#34;</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_connected"><code class="name flex">
+<dt id="spotted.websocket_server.HTTPWebSocketsHandler.on_ws_connected"><code class="name flex">
 <span>def <span class="ident">on_ws_connected</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -434,7 +434,7 @@ class Websocket(HTTPWebSocketsHandler):
   &#34;&#34;&#34;Override this handler.&#34;&#34;&#34;</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_message"><code class="name flex">
+<dt id="spotted.websocket_server.HTTPWebSocketsHandler.on_ws_message"><code class="name flex">
 <span>def <span class="ident">on_ws_message</span></span>(<span>self, message)</span>
 </code></dt>
 <dd>
@@ -447,7 +447,7 @@ class Websocket(HTTPWebSocketsHandler):
   &#34;&#34;&#34;Override this handler.&#34;&#34;&#34;</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.websocket_server.HTTPWebSocketsHandler.send_message"><code class="name flex">
+<dt id="spotted.websocket_server.HTTPWebSocketsHandler.send_message"><code class="name flex">
 <span>def <span class="ident">send_message</span></span>(<span>self, message)</span>
 </code></dt>
 <dd>
@@ -469,7 +469,7 @@ class Websocket(HTTPWebSocketsHandler):
   self.__send_message(Opcode.TEXT, message)</code></pre>
 </details>
 </dd>
-<dt id="spotted.spotted.websocket_server.HTTPWebSocketsHandler.setup"><code class="name flex">
+<dt id="spotted.websocket_server.HTTPWebSocketsHandler.setup"><code class="name flex">
 <span>def <span class="ident">setup</span></span>(<span>self)</span>
 </code></dt>
 <dd>
@@ -485,7 +485,7 @@ class Websocket(HTTPWebSocketsHandler):
 </dd>
 </dl>
 </dd>
-<dt id="spotted.spotted.websocket_server.Opcode"><code class="flex name class">
+<dt id="spotted.websocket_server.Opcode"><code class="flex name class">
 <span>class <span class="ident">Opcode</span></span>
 <span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
 </code></dt>
@@ -513,33 +513,33 @@ class Websocket(HTTPWebSocketsHandler):
 </ul>
 <h3>Class variables</h3>
 <dl>
-<dt id="spotted.spotted.websocket_server.Opcode.BINARY"><code class="name">var <span class="ident">BINARY</span></code></dt>
+<dt id="spotted.websocket_server.Opcode.BINARY"><code class="name">var <span class="ident">BINARY</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="spotted.spotted.websocket_server.Opcode.CLOSE"><code class="name">var <span class="ident">CLOSE</span></code></dt>
+<dt id="spotted.websocket_server.Opcode.CLOSE"><code class="name">var <span class="ident">CLOSE</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="spotted.spotted.websocket_server.Opcode.CONTINUE"><code class="name">var <span class="ident">CONTINUE</span></code></dt>
+<dt id="spotted.websocket_server.Opcode.CONTINUE"><code class="name">var <span class="ident">CONTINUE</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="spotted.spotted.websocket_server.Opcode.PING"><code class="name">var <span class="ident">PING</span></code></dt>
+<dt id="spotted.websocket_server.Opcode.PING"><code class="name">var <span class="ident">PING</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="spotted.spotted.websocket_server.Opcode.PONG"><code class="name">var <span class="ident">PONG</span></code></dt>
+<dt id="spotted.websocket_server.Opcode.PONG"><code class="name">var <span class="ident">PONG</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
-<dt id="spotted.spotted.websocket_server.Opcode.TEXT"><code class="name">var <span class="ident">TEXT</span></code></dt>
+<dt id="spotted.websocket_server.Opcode.TEXT"><code class="name">var <span class="ident">TEXT</span></code></dt>
 <dd>
 <div class="desc"></div>
 </dd>
 </dl>
 </dd>
-<dt id="spotted.spotted.websocket_server.WebSocketError"><code class="flex name class">
+<dt id="spotted.websocket_server.WebSocketError"><code class="flex name class">
 <span>class <span class="ident">WebSocketError</span></span>
 <span>(</span><span>...)</span>
 </code></dt>
@@ -560,7 +560,7 @@ class Websocket(HTTPWebSocketsHandler):
 <li>builtins.BaseException</li>
 </ul>
 </dd>
-<dt id="spotted.spotted.websocket_server.Websocket"><code class="flex name class">
+<dt id="spotted.websocket_server.Websocket"><code class="flex name class">
 <span>class <span class="ident">Websocket</span></span>
 </code></dt>
 <dd>
@@ -586,7 +586,7 @@ class Websocket(HTTPWebSocketsHandler):
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler">HTTPWebSocketsHandler</a></li>
+<li><a title="spotted.websocket_server.HTTPWebSocketsHandler" href="#spotted.websocket_server.HTTPWebSocketsHandler">HTTPWebSocketsHandler</a></li>
 <li>http.server.SimpleHTTPRequestHandler</li>
 <li>http.server.BaseHTTPRequestHandler</li>
 <li>socketserver.StreamRequestHandler</li>
@@ -594,13 +594,13 @@ class Websocket(HTTPWebSocketsHandler):
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler">HTTPWebSocketsHandler</a></b></code>:
+<li><code><b><a title="spotted.websocket_server.HTTPWebSocketsHandler" href="#spotted.websocket_server.HTTPWebSocketsHandler">HTTPWebSocketsHandler</a></b></code>:
 <ul class="hlist">
-<li><code><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler.do_GET" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler.do_GET">do_GET</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_closed" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_closed">on_ws_closed</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_connected" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_connected">on_ws_connected</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_message" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_message">on_ws_message</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler.send_message" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler.send_message">send_message</a></code></li>
+<li><code><a title="spotted.websocket_server.HTTPWebSocketsHandler.do_GET" href="#spotted.websocket_server.HTTPWebSocketsHandler.do_GET">do_GET</a></code></li>
+<li><code><a title="spotted.websocket_server.HTTPWebSocketsHandler.on_ws_closed" href="#spotted.websocket_server.HTTPWebSocketsHandler.on_ws_closed">on_ws_closed</a></code></li>
+<li><code><a title="spotted.websocket_server.HTTPWebSocketsHandler.on_ws_connected" href="#spotted.websocket_server.HTTPWebSocketsHandler.on_ws_connected">on_ws_connected</a></code></li>
+<li><code><a title="spotted.websocket_server.HTTPWebSocketsHandler.on_ws_message" href="#spotted.websocket_server.HTTPWebSocketsHandler.on_ws_message">on_ws_message</a></code></li>
+<li><code><a title="spotted.websocket_server.HTTPWebSocketsHandler.send_message" href="#spotted.websocket_server.HTTPWebSocketsHandler.send_message">send_message</a></code></li>
 </ul>
 </li>
 </ul>
@@ -616,38 +616,38 @@ class Websocket(HTTPWebSocketsHandler):
 <ul id="index">
 <li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.spotted" href="index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted" href="index.html">spotted</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
-<h4><code><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler">HTTPWebSocketsHandler</a></code></h4>
+<h4><code><a title="spotted.websocket_server.HTTPWebSocketsHandler" href="#spotted.websocket_server.HTTPWebSocketsHandler">HTTPWebSocketsHandler</a></code></h4>
 <ul class="two-column">
-<li><code><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler.do_GET" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler.do_GET">do_GET</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_closed" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_closed">on_ws_closed</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_connected" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_connected">on_ws_connected</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_message" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler.on_ws_message">on_ws_message</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler.send_message" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler.send_message">send_message</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.HTTPWebSocketsHandler.setup" href="#spotted.spotted.websocket_server.HTTPWebSocketsHandler.setup">setup</a></code></li>
+<li><code><a title="spotted.websocket_server.HTTPWebSocketsHandler.do_GET" href="#spotted.websocket_server.HTTPWebSocketsHandler.do_GET">do_GET</a></code></li>
+<li><code><a title="spotted.websocket_server.HTTPWebSocketsHandler.on_ws_closed" href="#spotted.websocket_server.HTTPWebSocketsHandler.on_ws_closed">on_ws_closed</a></code></li>
+<li><code><a title="spotted.websocket_server.HTTPWebSocketsHandler.on_ws_connected" href="#spotted.websocket_server.HTTPWebSocketsHandler.on_ws_connected">on_ws_connected</a></code></li>
+<li><code><a title="spotted.websocket_server.HTTPWebSocketsHandler.on_ws_message" href="#spotted.websocket_server.HTTPWebSocketsHandler.on_ws_message">on_ws_message</a></code></li>
+<li><code><a title="spotted.websocket_server.HTTPWebSocketsHandler.send_message" href="#spotted.websocket_server.HTTPWebSocketsHandler.send_message">send_message</a></code></li>
+<li><code><a title="spotted.websocket_server.HTTPWebSocketsHandler.setup" href="#spotted.websocket_server.HTTPWebSocketsHandler.setup">setup</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="spotted.spotted.websocket_server.Opcode" href="#spotted.spotted.websocket_server.Opcode">Opcode</a></code></h4>
+<h4><code><a title="spotted.websocket_server.Opcode" href="#spotted.websocket_server.Opcode">Opcode</a></code></h4>
 <ul class="two-column">
-<li><code><a title="spotted.spotted.websocket_server.Opcode.BINARY" href="#spotted.spotted.websocket_server.Opcode.BINARY">BINARY</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.Opcode.CLOSE" href="#spotted.spotted.websocket_server.Opcode.CLOSE">CLOSE</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.Opcode.CONTINUE" href="#spotted.spotted.websocket_server.Opcode.CONTINUE">CONTINUE</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.Opcode.PING" href="#spotted.spotted.websocket_server.Opcode.PING">PING</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.Opcode.PONG" href="#spotted.spotted.websocket_server.Opcode.PONG">PONG</a></code></li>
-<li><code><a title="spotted.spotted.websocket_server.Opcode.TEXT" href="#spotted.spotted.websocket_server.Opcode.TEXT">TEXT</a></code></li>
+<li><code><a title="spotted.websocket_server.Opcode.BINARY" href="#spotted.websocket_server.Opcode.BINARY">BINARY</a></code></li>
+<li><code><a title="spotted.websocket_server.Opcode.CLOSE" href="#spotted.websocket_server.Opcode.CLOSE">CLOSE</a></code></li>
+<li><code><a title="spotted.websocket_server.Opcode.CONTINUE" href="#spotted.websocket_server.Opcode.CONTINUE">CONTINUE</a></code></li>
+<li><code><a title="spotted.websocket_server.Opcode.PING" href="#spotted.websocket_server.Opcode.PING">PING</a></code></li>
+<li><code><a title="spotted.websocket_server.Opcode.PONG" href="#spotted.websocket_server.Opcode.PONG">PONG</a></code></li>
+<li><code><a title="spotted.websocket_server.Opcode.TEXT" href="#spotted.websocket_server.Opcode.TEXT">TEXT</a></code></li>
 </ul>
 </li>
 <li>
-<h4><code><a title="spotted.spotted.websocket_server.WebSocketError" href="#spotted.spotted.websocket_server.WebSocketError">WebSocketError</a></code></h4>
+<h4><code><a title="spotted.websocket_server.WebSocketError" href="#spotted.websocket_server.WebSocketError">WebSocketError</a></code></h4>
 </li>
 <li>
-<h4><code><a title="spotted.spotted.websocket_server.Websocket" href="#spotted.spotted.websocket_server.Websocket">Websocket</a></code></h4>
+<h4><code><a title="spotted.websocket_server.Websocket" href="#spotted.websocket_server.Websocket">Websocket</a></code></h4>
 </li>
 </ul>
 </li>
