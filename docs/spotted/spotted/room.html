@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted API documentation</title>
-<meta name="description" content="Spotted" />
+<title>spotted.spotted.room API documentation</title>
+<meta name="description" content="Room to contain all fixtures and cameras" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,41 +17,144 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Package <code>spotted</code></h1>
+<h1 class="title">Module <code>spotted.spotted.room</code></h1>
 </header>
 <section id="section-intro">
-<p>Spotted</p>
+<p>Room to contain all fixtures and cameras</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-Spotted
-&#34;&#34;&#34;</code></pre>
+Room to contain all fixtures and cameras
+&#34;&#34;&#34;
+
+from spotted.spotted.coordinate import Coordinate
+
+class Room:
+  &#34;&#34;&#34;
+  Room to contain all fixtures and cameras
+  &#34;&#34;&#34;
+
+  def __init__(self, width, height, depth):
+    &#34;&#34;&#34;
+    Creates a room from the given parameters
+
+    Arguments:
+      width {float} -- Room width
+      height {float} -- Room height
+      depth {float} -- Room depth
+
+    Returns:
+      Room -- Configured with given parameters
+    &#34;&#34;&#34;
+
+    self.width = width
+    self.height = height
+    self.depth = depth
+
+  def center(self):
+    &#34;&#34;&#34;
+    Gets the centerpoint of the room
+
+    Returns:
+      Coordinate -- centerpoint of the room
+    &#34;&#34;&#34;
+
+    return Coordinate(self.width / 2.0, self.height / 2.0, self.depth / 2.0)</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt><code class="name"><a title="spotted.artnet" href="artnet/index.html">spotted.artnet</a></code></dt>
+<dt id="spotted.spotted.room.Room"><code class="flex name class">
+<span>class <span class="ident">Room</span></span>
+<span>(</span><span>width, height, depth)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Art-Net packets and support</p></div>
-</dd>
-<dt><code class="name"><a title="spotted.config" href="config/index.html">spotted.config</a></code></dt>
+<div class="desc"><p>Room to contain all fixtures and cameras</p>
+<p>Creates a room from the given parameters</p>
+<h2 id="arguments">Arguments</h2>
+<p>width {float} &ndash; Room width
+height {float} &ndash; Room height
+depth {float} &ndash; Room depth</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Room -- Configured with given parameters</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Room:
+  &#34;&#34;&#34;
+  Room to contain all fixtures and cameras
+  &#34;&#34;&#34;
+
+  def __init__(self, width, height, depth):
+    &#34;&#34;&#34;
+    Creates a room from the given parameters
+
+    Arguments:
+      width {float} -- Room width
+      height {float} -- Room height
+      depth {float} -- Room depth
+
+    Returns:
+      Room -- Configured with given parameters
+    &#34;&#34;&#34;
+
+    self.width = width
+    self.height = height
+    self.depth = depth
+
+  def center(self):
+    &#34;&#34;&#34;
+    Gets the centerpoint of the room
+
+    Returns:
+      Coordinate -- centerpoint of the room
+    &#34;&#34;&#34;
+
+    return Coordinate(self.width / 2.0, self.height / 2.0, self.depth / 2.0)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="spotted.spotted.room.Room.center"><code class="name flex">
+<span>def <span class="ident">center</span></span>(<span>self)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Internal system configuration files</p></div>
-</dd>
-<dt><code class="name"><a title="spotted.spotted" href="spotted/index.html">spotted.spotted</a></code></dt>
-<dd>
-<div class="desc"><p>Spotted …</p></div>
+<div class="desc"><p>Gets the centerpoint of the room</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Coordinate -- centerpoint</code> of <code>the room</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def center(self):
+  &#34;&#34;&#34;
+  Gets the centerpoint of the room
+
+  Returns:
+    Coordinate -- centerpoint of the room
+  &#34;&#34;&#34;
+
+  return Coordinate(self.width / 2.0, self.height / 2.0, self.depth / 2.0)</code></pre>
+</details>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
-</section>
-<section>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -60,11 +163,19 @@ Spotted
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.artnet" href="artnet/index.html">spotted.artnet</a></code></li>
-<li><code><a title="spotted.config" href="config/index.html">spotted.config</a></code></li>
-<li><code><a title="spotted.spotted" href="spotted/index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted.spotted" href="index.html">spotted.spotted</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="spotted.spotted.room.Room" href="#spotted.spotted.room.Room">Room</a></code></h4>
+<ul class="">
+<li><code><a title="spotted.spotted.room.Room.center" href="#spotted.spotted.room.Room.center">center</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

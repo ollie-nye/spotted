@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted API documentation</title>
-<meta name="description" content="Spotted" />
+<title>spotted.artnet.diag_code API documentation</title>
+<meta name="description" content="ArtPoll diagnostics codes" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,41 +17,97 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Package <code>spotted</code></h1>
+<h1 class="title">Module <code>spotted.artnet.diag_code</code></h1>
 </header>
 <section id="section-intro">
-<p>Spotted</p>
+<p>ArtPoll diagnostics codes</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-Spotted
-&#34;&#34;&#34;</code></pre>
+ArtPoll diagnostics codes
+&#34;&#34;&#34;
+
+from enum import Enum
+
+class DiagCode(Enum):
+  &#34;&#34;&#34;
+  ArtPoll diagnostics codes
+  &#34;&#34;&#34;
+
+  DpDisabled = 0x00
+  DpLow = 0x10
+  DpMed = 0x40
+  DpHigh = 0x80
+  DpCritical = 0xe0
+  DpVolatile = 0xf0</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt><code class="name"><a title="spotted.artnet" href="artnet/index.html">spotted.artnet</a></code></dt>
+<dt id="spotted.artnet.diag_code.DiagCode"><code class="flex name class">
+<span>class <span class="ident">DiagCode</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Art-Net packets and support</p></div>
+<div class="desc"><p>ArtPoll diagnostics codes</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DiagCode(Enum):
+  &#34;&#34;&#34;
+  ArtPoll diagnostics codes
+  &#34;&#34;&#34;
+
+  DpDisabled = 0x00
+  DpLow = 0x10
+  DpMed = 0x40
+  DpHigh = 0x80
+  DpCritical = 0xe0
+  DpVolatile = 0xf0</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="spotted.artnet.diag_code.DiagCode.DpCritical"><code class="name">var <span class="ident">DpCritical</span></code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="spotted.config" href="config/index.html">spotted.config</a></code></dt>
+<dt id="spotted.artnet.diag_code.DiagCode.DpDisabled"><code class="name">var <span class="ident">DpDisabled</span></code></dt>
 <dd>
-<div class="desc"><p>Internal system configuration files</p></div>
+<div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="spotted.spotted" href="spotted/index.html">spotted.spotted</a></code></dt>
+<dt id="spotted.artnet.diag_code.DiagCode.DpHigh"><code class="name">var <span class="ident">DpHigh</span></code></dt>
 <dd>
-<div class="desc"><p>Spotted …</p></div>
+<div class="desc"></div>
+</dd>
+<dt id="spotted.artnet.diag_code.DiagCode.DpLow"><code class="name">var <span class="ident">DpLow</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="spotted.artnet.diag_code.DiagCode.DpMed"><code class="name">var <span class="ident">DpMed</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="spotted.artnet.diag_code.DiagCode.DpVolatile"><code class="name">var <span class="ident">DpVolatile</span></code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
-</section>
-<section>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -60,11 +116,24 @@ Spotted
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.artnet" href="artnet/index.html">spotted.artnet</a></code></li>
-<li><code><a title="spotted.config" href="config/index.html">spotted.config</a></code></li>
-<li><code><a title="spotted.spotted" href="spotted/index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted.artnet" href="index.html">spotted.artnet</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="spotted.artnet.diag_code.DiagCode" href="#spotted.artnet.diag_code.DiagCode">DiagCode</a></code></h4>
+<ul class="two-column">
+<li><code><a title="spotted.artnet.diag_code.DiagCode.DpCritical" href="#spotted.artnet.diag_code.DiagCode.DpCritical">DpCritical</a></code></li>
+<li><code><a title="spotted.artnet.diag_code.DiagCode.DpDisabled" href="#spotted.artnet.diag_code.DiagCode.DpDisabled">DpDisabled</a></code></li>
+<li><code><a title="spotted.artnet.diag_code.DiagCode.DpHigh" href="#spotted.artnet.diag_code.DiagCode.DpHigh">DpHigh</a></code></li>
+<li><code><a title="spotted.artnet.diag_code.DiagCode.DpLow" href="#spotted.artnet.diag_code.DiagCode.DpLow">DpLow</a></code></li>
+<li><code><a title="spotted.artnet.diag_code.DiagCode.DpMed" href="#spotted.artnet.diag_code.DiagCode.DpMed">DpMed</a></code></li>
+<li><code><a title="spotted.artnet.diag_code.DiagCode.DpVolatile" href="#spotted.artnet.diag_code.DiagCode.DpVolatile">DpVolatile</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

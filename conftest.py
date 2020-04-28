@@ -2,18 +2,18 @@ import json
 import pytest
 import numpy as np
 
-from spotted.attribute import Attribute
-from spotted.calibration import Calibration
-from spotted.camera import Camera
-from spotted.coordinate import Coordinate
-from spotted.contour import Contour
-from spotted.fixture import Fixture
-from spotted.personality import Personality, load_personalities, PERSONALITIES
-from spotted.point_of_interest import PointOfInterest
-from spotted.room import Room
-from spotted.spherical_coordinate import SphericalCoordinate
-from spotted.universe import Universe
-from spotted.universes import Universes
+from spotted.spotted.attribute import Attribute
+from spotted.spotted.calibration import Calibration
+from spotted.spotted.camera import Camera
+from spotted.spotted.coordinate import Coordinate
+from spotted.spotted.contour import Contour
+from spotted.spotted.fixture import Fixture
+from spotted.spotted.personality import Personality, load_personalities, PERSONALITIES
+from spotted.spotted.point_of_interest import PointOfInterest
+from spotted.spotted.room import Room
+from spotted.spotted.spherical_coordinate import SphericalCoordinate
+from spotted.spotted.universe import Universe
+from spotted.spotted.universes import Universes
 
 CONFIG = json.load(open('tests/config.json'))
 load_personalities('tests/personalities.json')
