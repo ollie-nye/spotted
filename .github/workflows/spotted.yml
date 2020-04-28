@@ -35,8 +35,11 @@ jobs:
     - name: Update documentation
       run: |
         pip install pdoc3
+        pdoc --html --force --output-dir docs_raw spotted
         rm -rf docs
-        pdoc --html --force --output-dir docs spotted
+        mkdir docs
+        mv docs_raw/spotted/* docs/
+        rm -rf docs_raw
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
         git add docs
