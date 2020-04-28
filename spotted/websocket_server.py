@@ -1,5 +1,7 @@
 """
 Websockets handler groups
+
+Based on https://gist.github.com/SevenW/47be2f9ab74cac26bf21
 """
 
 import struct
