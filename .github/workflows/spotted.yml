@@ -32,3 +32,19 @@ jobs:
       run: |
         pip install pytest
         pytest
+    - name: Update documentation
+      run: |
+        pip install pdoc3
+        pdoc --html --output-dir docs_raw spotted
+        rm -rf docs
+        mkdir docs
+        mv docs_raw/spotted/* docs/
+        rm -rf docs_raw
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add docs
+        git commit -m "Update documentation"
+    - name: Push documentation update
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
