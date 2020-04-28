@@ -1,4 +1,4 @@
-from artnet.diag_code import DiagCode
+from spotted.artnet.diag_code import DiagCode
 
 def test_disabled():
   assert DiagCode.DpDisabled.value == 0x00

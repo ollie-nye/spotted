@@ -1,6 +1,6 @@
 import math
-from spotted.personality import find_personality_by_id
-from spotted.coordinate import Coordinate
+from spotted.spotted.personality import find_personality_by_id
+from spotted.spotted.coordinate import Coordinate
 
 def test_init(fixture):
   assert fixture.stop_flags == {'fixture': False}

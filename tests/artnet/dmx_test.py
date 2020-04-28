@@ -1,5 +1,5 @@
-from artnet.dmx import Dmx
-from spotted.universe import Universe
+from spotted.artnet.dmx import Dmx
+from spotted.spotted.universe import Universe
 import numpy as np
 
 universe = Universe(0x12, 0x3, 0x4)

@@ -1,4 +1,4 @@
-from spotted.coordinate import Coordinate
+from spotted.spotted.coordinate import Coordinate
 
 def test_init_width(room):
   assert room.width == 3

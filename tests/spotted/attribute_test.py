@@ -1,4 +1,4 @@
-from spotted.attribute import Attribute
+from spotted.spotted.attribute import Attribute
 
 def test_init():
   config = {

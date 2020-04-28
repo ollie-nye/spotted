@@ -2,10 +2,10 @@
 Art-Net ArtPoll packet
 """
 
-from artnet.helpers import get_bit
-from artnet.header import Header
-from artnet.diag_code import DiagCode
-from artnet.opcode import Opcode
+from spotted.artnet.helpers import get_bit
+from spotted.artnet.header import Header
+from spotted.artnet.diag_code import DiagCode
+from spotted.artnet.opcode import Opcode
 
 class Poll:
   """

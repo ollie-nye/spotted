@@ -1,4 +1,4 @@
-from spotted.error import ErrorCode, exit_with_error
+from spotted.spotted.error import ErrorCode, exit_with_error
 import pytest
 
 def test_missing_config():

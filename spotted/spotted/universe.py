@@ -4,7 +4,7 @@ Holds single universe data and fixtures
 
 import numpy as np
 
-from spotted.fixture import Fixture
+from spotted.spotted.fixture import Fixture
 
 class Universe:
   """

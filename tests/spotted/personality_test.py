@@ -1,4 +1,4 @@
-from spotted.personality import find_personality_by_id
+from spotted.spotted.personality import find_personality_by_id
 
 def test_init(personality):
   assert personality.personality_id == 0

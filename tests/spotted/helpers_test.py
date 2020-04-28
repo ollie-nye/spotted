@@ -1,4 +1,4 @@
-from spotted.helpers import scale, pythagoras, handler_class_with_args
+from spotted.spotted.helpers import scale, pythagoras, handler_class_with_args
 
 def test_scale():
   assert scale(0.5, 0, 1, 0, 10) == 5

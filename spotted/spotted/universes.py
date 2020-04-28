@@ -2,9 +2,7 @@
 Collection of universes to transmit data for
 """
 
-import threading
-
-from spotted.universe import Universe
+from spotted.spotted.universe import Universe
 
 class Universes:
   """
@@ -13,7 +11,6 @@ class Universes:
 
   def __init__(self):
     self.universes = []
-    self._lock = threading.Lock()
 
   def add_universe(self, universe):
     """

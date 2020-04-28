@@ -1,6 +1,6 @@
 import numpy as np
 import cv2 as cv
-from spotted.calibration import Calibration
+from spotted.spotted.calibration import Calibration
 
 def test_init():
   dimension = (2048, 1536)

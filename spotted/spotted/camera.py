@@ -7,10 +7,10 @@ import math
 import numpy as np
 import cv2 as cv
 
-from spotted.contour import Contour
-from spotted.coordinate import Coordinate
-from spotted.point_of_interest import PointOfInterest
-from spotted.helpers import scale, create_rotation_matrix, pythagoras
+from spotted.spotted.contour import Contour
+from spotted.spotted.coordinate import Coordinate
+from spotted.spotted.point_of_interest import PointOfInterest
+from spotted.spotted.helpers import scale, create_rotation_matrix, pythagoras
 
 def contour_center(contour):
   """
@@ -188,7 +188,7 @@ class Camera:
       background {np.array} -- Background model
 
     Returns:
-      list of contours
+      list of contours, diff, masked frame
     """
 
     diff = abs(np.subtract(frame, background)).astype(np.uint8)

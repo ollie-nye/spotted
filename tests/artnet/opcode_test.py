@@ -1,4 +1,4 @@
-from artnet.opcode import Opcode
+from spotted.artnet.opcode import Opcode
 
 
 def test_OpPoll():

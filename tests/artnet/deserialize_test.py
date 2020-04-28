@@ -1,8 +1,8 @@
-from artnet.deserialize import identify_header
-from artnet.header import Header
-from artnet.opcode import Opcode
-from artnet.poll import Poll
-from artnet.poll_reply import PollReply
+from spotted.artnet.deserialize import identify_header
+from spotted.artnet.header import Header
+from spotted.artnet.opcode import Opcode
+from spotted.artnet.poll import Poll
+from spotted.artnet.poll_reply import PollReply
 
 def test_artnet_poll():
   packet = Poll()

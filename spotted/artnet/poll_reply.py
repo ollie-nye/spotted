@@ -4,10 +4,10 @@ Art-Net ArtPollReply packet
 
 from enum import Enum
 
-from config.system import SystemConfig
+from spotted.config.system import SystemConfig
 
-from artnet.style_code import StyleCode
-from artnet.opcode import Opcode
+from spotted.artnet.style_code import StyleCode
+from spotted.artnet.opcode import Opcode
 
 class PortProtocol(Enum):
   """

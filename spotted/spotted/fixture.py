@@ -6,10 +6,10 @@ import math
 import time
 import numpy as np
 
-from spotted.personality import find_personality_by_id
-from spotted.coordinate import Coordinate
-from spotted.spherical_coordinate import SphericalCoordinate
-from spotted.helpers import scale, create_rotation_matrix
+from spotted.spotted.personality import find_personality_by_id
+from spotted.spotted.coordinate import Coordinate
+from spotted.spotted.spherical_coordinate import SphericalCoordinate
+from spotted.spotted.helpers import scale, create_rotation_matrix
 
 class Fixture:
   """

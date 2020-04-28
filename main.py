@@ -11,7 +11,7 @@ import cv2 as cv
 from cv2 import aruco
 import numpy as np
 
-from spotted.spotted import Spotted
+from spotted.spotted.spotted import Spotted
 
 # pylint: disable=invalid-name,no-member
 if __name__ == '__main__':
@@ -234,7 +234,7 @@ if __name__ == '__main__':
       'marker_size': 5.7
     }
 
-    with open('config/calibration.json', 'w') as fp:
+    with open('spotted/config/calibration.json', 'w') as fp:
       json.dump(calibration, fp)
     print('Calibration finished and written to file.')
 
@@ -248,7 +248,7 @@ if __name__ == '__main__':
     pattern = np.array([189.7, 27.6, 340.2])
 
     camera = spotted.cameras[1]
-    with open('config/calibration.json', 'r') as fp:
+    with open('spotted/config/calibration.json', 'r') as fp:
       calibration = json.load(fp)
 
     aruco_dictionary = cv.aruco.Dictionary_get(calibration['board_type'])

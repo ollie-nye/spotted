@@ -1,5 +1,5 @@
-from spotted.spherical_coordinate import SphericalCoordinate
-from spotted.coordinate import Coordinate
+from spotted.spotted.spherical_coordinate import SphericalCoordinate
+from spotted.spotted.coordinate import Coordinate
 
 def test_init_r(spherical_coordinate):
   assert spherical_coordinate.radius == 0.1

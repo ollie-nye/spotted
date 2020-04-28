@@ -77,10 +77,10 @@ class StaticServer(BaseHTTPRequestHandler):
 
     self.end_headers()
     if filename == 'ui/personalities.data':
-      with open('config/personalities.json', 'rb') as file_handle:
+      with open('spotted/config/personalities.json', 'rb') as file_handle:
         self.wfile.write(file_handle.read())
     elif filename == 'ui/config.data':
-      with open('config/config.json', 'rb') as file_handle:
+      with open('spotted/config/config.json', 'rb') as file_handle:
         self.wfile.write(file_handle.read())
     else:
       with open(filename, 'rb') as file_handle:
@@ -97,12 +97,12 @@ class StaticServer(BaseHTTPRequestHandler):
 
     if self.path == '/update/personalities':
       content = json.loads(data.decode('utf-8'))
-      with open('config/personalities.json', 'w') as file_handle:
+      with open('spotted/config/personalities.json', 'w') as file_handle:
         json.dump(content, file_handle)
       self.send_response(201)
     elif self.path == '/update/config':
       content = json.loads(data.decode('utf-8'))
-      with open('config/config.json', 'w') as file_handle:
+      with open('spotted/config/config.json', 'w') as file_handle:
         json.dump(content, file_handle)
       self.restart_threads(True)
       self.send_response(201)

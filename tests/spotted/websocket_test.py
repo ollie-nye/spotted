@@ -1,4 +1,4 @@
-from spotted.websocket import Websocket
+from spotted.spotted.websocket import Websocket
 
 def test_init():
   spotted = {'value': True}

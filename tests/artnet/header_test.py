@@ -1,5 +1,5 @@
-from artnet.header import Header
-from artnet.opcode import Opcode
+from spotted.artnet.header import Header
+from spotted.artnet.opcode import Opcode
 
 opcode = Opcode.OpPoll
 init_header = Header(opcode)

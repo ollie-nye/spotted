@@ -1,6 +1,6 @@
 import math
-from spotted.point_of_interest import PointOfInterest
-from spotted.coordinate import Coordinate
+from spotted.spotted.point_of_interest import PointOfInterest
+from spotted.spotted.coordinate import Coordinate
 
 def test_init(point_of_interest):
   assert point_of_interest.camera_position.x == 1

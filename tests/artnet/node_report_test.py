@@ -1,4 +1,4 @@
-from artnet.node_report import NodeReport
+from spotted.artnet.node_report import NodeReport
 
 def test_RcDebug():
   assert NodeReport.RcDebug.value == 0x0000

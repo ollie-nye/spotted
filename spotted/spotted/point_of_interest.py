@@ -39,7 +39,7 @@ class PointOfInterest:
     self.camera_position = camera_position
     self.update_position(position, location)
     self.count = 100
-    self.weight = 1
+    self.weight = 1.0
 
     self.increment_step = increment_step
     self.decrement_step = decrement_step

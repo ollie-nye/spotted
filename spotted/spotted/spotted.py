@@ -18,25 +18,25 @@ import websockets
 import numpy as np
 import cv2 as cv
 
-from artnet.dmx import Dmx
-from artnet.poll import Poll
-from artnet.poll_reply import PollReply
-from artnet.deserialize import identify_header
-from artnet.opcode import Opcode
-from spotted.camera import Camera
-from spotted.personality import load_personalities
-from spotted.point_of_interest import PointOfInterest
-from spotted.fixture import Fixture
-from spotted.universe import Universe
-from spotted.universes import Universes
-from spotted.coordinate import Coordinate
-from spotted.room import Room
-from spotted.calibration import Calibration
-from spotted.websocket import Websocket
-from spotted.static_server import StaticServer
-from spotted.helpers import handler_class_with_args
-from spotted.error import ErrorCode, exit_with_error
-from config.system import SystemConfig
+from spotted.artnet.dmx import Dmx
+from spotted.artnet.poll import Poll
+from spotted.artnet.poll_reply import PollReply
+from spotted.artnet.deserialize import identify_header
+from spotted.artnet.opcode import Opcode
+from spotted.spotted.camera import Camera
+from spotted.spotted.personality import load_personalities
+from spotted.spotted.point_of_interest import PointOfInterest
+from spotted.spotted.fixture import Fixture
+from spotted.spotted.universe import Universe
+from spotted.spotted.universes import Universes
+from spotted.spotted.coordinate import Coordinate
+from spotted.spotted.room import Room
+from spotted.spotted.calibration import Calibration
+from spotted.spotted.websocket import Websocket
+from spotted.spotted.static_server import StaticServer
+from spotted.spotted.helpers import handler_class_with_args
+from spotted.spotted.error import ErrorCode, exit_with_error
+from spotted.config.system import SystemConfig
 
 # pylint: disable=too-many-instance-attributes
 class Spotted:
@@ -71,8 +71,8 @@ class Spotted:
     """
 
     try:
-      self.config = json.load(open('config/config.json'))
-      load_personalities('config/personalities.json')
+      self.config = json.load(open('spotted/config/config.json'))
+      load_personalities('spotted/config/personalities.json')
     except FileNotFoundError as error:
       exit_with_error(ErrorCode.MissingConfig, error)
 

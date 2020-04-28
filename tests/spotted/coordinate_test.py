@@ -1,4 +1,4 @@
-from spotted.coordinate import Coordinate
+from spotted.spotted.coordinate import Coordinate
 
 def test_init(coordinate):
   assert coordinate.x == 0.1

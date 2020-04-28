@@ -2,8 +2,8 @@
 Deserialize Art-Net packets into their original structures
 """
 
-from artnet.opcode import Opcode
-from artnet.poll import Poll
+from spotted.artnet.opcode import Opcode
+from spotted.artnet.poll import Poll
 
 def identify_header(incoming):
   """

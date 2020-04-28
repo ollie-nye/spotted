@@ -2,7 +2,7 @@
 Mode holds all data about a particular fixture mode
 """
 
-from spotted.attribute import Attribute
+from spotted.spotted.attribute import Attribute
 
 class Mode:
   """
@@ -35,8 +35,8 @@ class Mode:
       name {string} -- name of attribute to find
 
     Returns:
-      Attribute if found
-      None if not
+      {Attribute} if found
+      {None} if not
     """
 
     for attribute in self.attributes:
