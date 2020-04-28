@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted API documentation</title>
-<meta name="description" content="Spotted" />
+<title>spotted.artnet.deserialize API documentation</title>
+<meta name="description" content="Deserialize Art-Net packets into their original structures" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,40 +17,108 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Package <code>spotted</code></h1>
+<h1 class="title">Module <code>spotted.artnet.deserialize</code></h1>
 </header>
 <section id="section-intro">
-<p>Spotted</p>
+<p>Deserialize Art-Net packets into their original structures</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-Spotted
-&#34;&#34;&#34;</code></pre>
+Deserialize Art-Net packets into their original structures
+&#34;&#34;&#34;
+
+from spotted.artnet.opcode import Opcode
+from spotted.artnet.poll import Poll
+
+def identify_header(incoming):
+  &#34;&#34;&#34;
+  Deserialize Art-Net packets into their original structures
+
+  Arguments:
+    incoming {bytearray} -- incoming packet
+
+  Returns:
+    {(status, opcode, packet)} -- status is True if packet was an Art-Net packet
+                                  opcode contains the opcode enum for the packet
+                                  packet contains the deserialized packet class
+  &#34;&#34;&#34;
+
+  opcode = 0
+  packet = None
+
+  if incoming[0:8].decode(&#39;ascii&#39;) == &#39;Art-Net\0&#39;: # This is an art-net packet
+    opcode = incoming[8] + (incoming[9] &lt;&lt; 8)
+    try:
+      opcode = Opcode(opcode)
+      packet_data = incoming[12:]
+      if opcode is Opcode.OpPoll:
+        packet = Poll.deserialize(packet_data)
+      elif opcode is Opcode.OpPollReply:
+        #TODO: deserialize ArtPollReply
+        return True, opcode, None
+      return True, opcode, packet
+    except ValueError:
+      print(&#39;Unknown Art-Net packet received. Opcode&#39;, opcode)
+  return False, opcode, None</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt><code class="name"><a title="spotted.artnet" href="artnet/index.html">spotted.artnet</a></code></dt>
+<dt id="spotted.artnet.deserialize.identify_header"><code class="name flex">
+<span>def <span class="ident">identify_header</span></span>(<span>incoming)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Art-Net packets and support</p></div>
-</dd>
-<dt><code class="name"><a title="spotted.config" href="config/index.html">spotted.config</a></code></dt>
-<dd>
-<div class="desc"><p>Internal system configuration files</p></div>
-</dd>
-<dt><code class="name"><a title="spotted.spotted" href="spotted/index.html">spotted.spotted</a></code></dt>
-<dd>
-<div class="desc"><p>Spotted
-A vision based live followspot system</p></div>
+<div class="desc"><p>Deserialize Art-Net packets into their original structures</p>
+<h2 id="arguments">Arguments</h2>
+<p>incoming {bytearray} &ndash; incoming packet</p>
+<h2 id="returns">Returns</h2>
+<p>{(status, opcode, packet)} &ndash; status is True if packet was an Art-Net packet
+opcode contains the opcode enum for the packet
+packet contains the deserialized packet class</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def identify_header(incoming):
+  &#34;&#34;&#34;
+  Deserialize Art-Net packets into their original structures
+
+  Arguments:
+    incoming {bytearray} -- incoming packet
+
+  Returns:
+    {(status, opcode, packet)} -- status is True if packet was an Art-Net packet
+                                  opcode contains the opcode enum for the packet
+                                  packet contains the deserialized packet class
+  &#34;&#34;&#34;
+
+  opcode = 0
+  packet = None
+
+  if incoming[0:8].decode(&#39;ascii&#39;) == &#39;Art-Net\0&#39;: # This is an art-net packet
+    opcode = incoming[8] + (incoming[9] &lt;&lt; 8)
+    try:
+      opcode = Opcode(opcode)
+      packet_data = incoming[12:]
+      if opcode is Opcode.OpPoll:
+        packet = Poll.deserialize(packet_data)
+      elif opcode is Opcode.OpPollReply:
+        #TODO: deserialize ArtPollReply
+        return True, opcode, None
+      return True, opcode, packet
+    except ValueError:
+      print(&#39;Unknown Art-Net packet received. Opcode&#39;, opcode)
+  return False, opcode, None</code></pre>
+</details>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
 </section>
 <section>
 </section>
@@ -61,11 +129,14 @@ A vision based live followspot system</p></div>
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.artnet" href="artnet/index.html">spotted.artnet</a></code></li>
-<li><code><a title="spotted.config" href="config/index.html">spotted.config</a></code></li>
-<li><code><a title="spotted.spotted" href="spotted/index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted.artnet" href="index.html">spotted.artnet</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="spotted.artnet.deserialize.identify_header" href="#spotted.artnet.deserialize.identify_header">identify_header</a></code></li>
 </ul>
 </li>
 </ul>

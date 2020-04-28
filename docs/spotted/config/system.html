@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted API documentation</title>
-<meta name="description" content="Spotted" />
+<title>spotted.config.system API documentation</title>
+<meta name="description" content="System configuration variables" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,42 +17,76 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Package <code>spotted</code></h1>
+<h1 class="title">Module <code>spotted.config.system</code></h1>
 </header>
 <section id="section-intro">
-<p>Spotted</p>
+<p>System configuration variables</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-Spotted
-&#34;&#34;&#34;</code></pre>
+System configuration variables
+&#34;&#34;&#34;
+
+class SystemConfig:
+  &#34;&#34;&#34;
+  System configuration variables
+  &#34;&#34;&#34;
+
+  # Art-Net
+
+  oem_code = 0xffff # unassigned code
+  esta_code = 0x7fff # prototype code
+  transmit_rate = &#39;continuous&#39; # or &#39;reduced&#39;</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt><code class="name"><a title="spotted.artnet" href="artnet/index.html">spotted.artnet</a></code></dt>
+<dt id="spotted.config.system.SystemConfig"><code class="flex name class">
+<span>class <span class="ident">SystemConfig</span></span>
+</code></dt>
 <dd>
-<div class="desc"><p>Art-Net packets and support</p></div>
+<div class="desc"><p>System configuration variables</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SystemConfig:
+  &#34;&#34;&#34;
+  System configuration variables
+  &#34;&#34;&#34;
+
+  # Art-Net
+
+  oem_code = 0xffff # unassigned code
+  esta_code = 0x7fff # prototype code
+  transmit_rate = &#39;continuous&#39; # or &#39;reduced&#39;</code></pre>
+</details>
+<h3>Class variables</h3>
+<dl>
+<dt id="spotted.config.system.SystemConfig.esta_code"><code class="name">var <span class="ident">esta_code</span></code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="spotted.config" href="config/index.html">spotted.config</a></code></dt>
+<dt id="spotted.config.system.SystemConfig.oem_code"><code class="name">var <span class="ident">oem_code</span></code></dt>
 <dd>
-<div class="desc"><p>Internal system configuration files</p></div>
+<div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="spotted.spotted" href="spotted/index.html">spotted.spotted</a></code></dt>
+<dt id="spotted.config.system.SystemConfig.transmit_rate"><code class="name">var <span class="ident">transmit_rate</span></code></dt>
 <dd>
-<div class="desc"><p>Spotted
-A vision based live followspot system</p></div>
+<div class="desc"></div>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
-</section>
-<section>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -61,11 +95,21 @@ A vision based live followspot system</p></div>
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.artnet" href="artnet/index.html">spotted.artnet</a></code></li>
-<li><code><a title="spotted.config" href="config/index.html">spotted.config</a></code></li>
-<li><code><a title="spotted.spotted" href="spotted/index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted.config" href="index.html">spotted.config</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="spotted.config.system.SystemConfig" href="#spotted.config.system.SystemConfig">SystemConfig</a></code></h4>
+<ul class="">
+<li><code><a title="spotted.config.system.SystemConfig.esta_code" href="#spotted.config.system.SystemConfig.esta_code">esta_code</a></code></li>
+<li><code><a title="spotted.config.system.SystemConfig.oem_code" href="#spotted.config.system.SystemConfig.oem_code">oem_code</a></code></li>
+<li><code><a title="spotted.config.system.SystemConfig.transmit_rate" href="#spotted.config.system.SystemConfig.transmit_rate">transmit_rate</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

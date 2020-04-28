@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted API documentation</title>
-<meta name="description" content="Spotted" />
+<title>spotted.artnet.style_code API documentation</title>
+<meta name="description" content="ArtPoll/ArtPollReply style codes" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,42 +17,103 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Package <code>spotted</code></h1>
+<h1 class="title">Module <code>spotted.artnet.style_code</code></h1>
 </header>
 <section id="section-intro">
-<p>Spotted</p>
+<p>ArtPoll/ArtPollReply style codes</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
-Spotted
-&#34;&#34;&#34;</code></pre>
+ArtPoll/ArtPollReply style codes
+&#34;&#34;&#34;
+
+from enum import Enum
+
+class StyleCode(Enum):
+  &#34;&#34;&#34;
+  ArtPoll/ArtPollReply style codes
+  &#34;&#34;&#34;
+
+  StNode = 0x00
+  StController = 0x01
+  StMedia = 0x02
+  StRoute = 0x03
+  StBackup = 0x04
+  StConfig = 0x05
+  StVisual = 0x06</code></pre>
 </details>
 </section>
 <section>
-<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
-<dt><code class="name"><a title="spotted.artnet" href="artnet/index.html">spotted.artnet</a></code></dt>
+<dt id="spotted.artnet.style_code.StyleCode"><code class="flex name class">
+<span>class <span class="ident">StyleCode</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
 <dd>
-<div class="desc"><p>Art-Net packets and support</p></div>
+<div class="desc"><p>ArtPoll/ArtPollReply style codes</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class StyleCode(Enum):
+  &#34;&#34;&#34;
+  ArtPoll/ArtPollReply style codes
+  &#34;&#34;&#34;
+
+  StNode = 0x00
+  StController = 0x01
+  StMedia = 0x02
+  StRoute = 0x03
+  StBackup = 0x04
+  StConfig = 0x05
+  StVisual = 0x06</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="spotted.artnet.style_code.StyleCode.StBackup"><code class="name">var <span class="ident">StBackup</span></code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="spotted.config" href="config/index.html">spotted.config</a></code></dt>
+<dt id="spotted.artnet.style_code.StyleCode.StConfig"><code class="name">var <span class="ident">StConfig</span></code></dt>
 <dd>
-<div class="desc"><p>Internal system configuration files</p></div>
+<div class="desc"></div>
 </dd>
-<dt><code class="name"><a title="spotted.spotted" href="spotted/index.html">spotted.spotted</a></code></dt>
+<dt id="spotted.artnet.style_code.StyleCode.StController"><code class="name">var <span class="ident">StController</span></code></dt>
 <dd>
-<div class="desc"><p>Spotted
-A vision based live followspot system</p></div>
+<div class="desc"></div>
+</dd>
+<dt id="spotted.artnet.style_code.StyleCode.StMedia"><code class="name">var <span class="ident">StMedia</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="spotted.artnet.style_code.StyleCode.StNode"><code class="name">var <span class="ident">StNode</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="spotted.artnet.style_code.StyleCode.StRoute"><code class="name">var <span class="ident">StRoute</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="spotted.artnet.style_code.StyleCode.StVisual"><code class="name">var <span class="ident">StVisual</span></code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 </dl>
-</section>
-<section>
-</section>
-<section>
-</section>
-<section>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -61,11 +122,25 @@ A vision based live followspot system</p></div>
 <ul></ul>
 </div>
 <ul id="index">
-<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<li><h3>Super-module</h3>
 <ul>
-<li><code><a title="spotted.artnet" href="artnet/index.html">spotted.artnet</a></code></li>
-<li><code><a title="spotted.config" href="config/index.html">spotted.config</a></code></li>
-<li><code><a title="spotted.spotted" href="spotted/index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted.artnet" href="index.html">spotted.artnet</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="spotted.artnet.style_code.StyleCode" href="#spotted.artnet.style_code.StyleCode">StyleCode</a></code></h4>
+<ul class="two-column">
+<li><code><a title="spotted.artnet.style_code.StyleCode.StBackup" href="#spotted.artnet.style_code.StyleCode.StBackup">StBackup</a></code></li>
+<li><code><a title="spotted.artnet.style_code.StyleCode.StConfig" href="#spotted.artnet.style_code.StyleCode.StConfig">StConfig</a></code></li>
+<li><code><a title="spotted.artnet.style_code.StyleCode.StController" href="#spotted.artnet.style_code.StyleCode.StController">StController</a></code></li>
+<li><code><a title="spotted.artnet.style_code.StyleCode.StMedia" href="#spotted.artnet.style_code.StyleCode.StMedia">StMedia</a></code></li>
+<li><code><a title="spotted.artnet.style_code.StyleCode.StNode" href="#spotted.artnet.style_code.StyleCode.StNode">StNode</a></code></li>
+<li><code><a title="spotted.artnet.style_code.StyleCode.StRoute" href="#spotted.artnet.style_code.StyleCode.StRoute">StRoute</a></code></li>
+<li><code><a title="spotted.artnet.style_code.StyleCode.StVisual" href="#spotted.artnet.style_code.StyleCode.StVisual">StVisual</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
