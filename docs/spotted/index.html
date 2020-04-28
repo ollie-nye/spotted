@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.8.1" />
-<title>spotted API documentation</title>
-<meta name="description" content="Spotted" />
+<title>spotted.spotted API documentation</title>
+<meta name="description" content="Spotted …" />
 <link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
@@ -17,33 +17,102 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Package <code>spotted</code></h1>
+<h1 class="title">Module <code>spotted.spotted</code></h1>
 </header>
 <section id="section-intro">
 <p>Spotted</p>
+<p>A vision based live followspot system</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">&#34;&#34;&#34;
 Spotted
+
+A vision based live followspot system
 &#34;&#34;&#34;</code></pre>
 </details>
 </section>
 <section>
 <h2 class="section-title" id="header-submodules">Sub-modules</h2>
 <dl>
-<dt><code class="name"><a title="spotted.artnet" href="artnet/index.html">spotted.artnet</a></code></dt>
+<dt><code class="name"><a title="spotted.spotted.attribute" href="attribute.html">spotted.spotted.attribute</a></code></dt>
 <dd>
-<div class="desc"><p>Art-Net packets and support</p></div>
+<div class="desc"><p>Attribute holds all data about a particular fixture channel</p></div>
 </dd>
-<dt><code class="name"><a title="spotted.config" href="config/index.html">spotted.config</a></code></dt>
+<dt><code class="name"><a title="spotted.spotted.calibration" href="calibration.html">spotted.spotted.calibration</a></code></dt>
 <dd>
-<div class="desc"><p>Internal system configuration files</p></div>
+<div class="desc"><p>Calibration is responsible for restoring an original image taken through a
+fisheye lens</p></div>
 </dd>
-<dt><code class="name"><a title="spotted.spotted" href="spotted/index.html">spotted.spotted</a></code></dt>
+<dt><code class="name"><a title="spotted.spotted.camera" href="camera.html">spotted.spotted.camera</a></code></dt>
 <dd>
-<div class="desc"><p>Spotted …</p></div>
+<div class="desc"><p>Spotted Camera</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.contour" href="contour.html">spotted.spotted.contour</a></code></dt>
+<dd>
+<div class="desc"><p>OpenCV Contour handler</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.coordinate" href="coordinate.html">spotted.spotted.coordinate</a></code></dt>
+<dd>
+<div class="desc"><p>Spotted Coordinate</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.error" href="error.html">spotted.spotted.error</a></code></dt>
+<dd>
+<div class="desc"><p>Spotted error codes</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.fixture" href="fixture.html">spotted.spotted.fixture</a></code></dt>
+<dd>
+<div class="desc"><p>Spotted Fixture</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.helpers" href="helpers.html">spotted.spotted.helpers</a></code></dt>
+<dd>
+<div class="desc"><p>Helper functions shared between classes</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.mode" href="mode.html">spotted.spotted.mode</a></code></dt>
+<dd>
+<div class="desc"><p>Mode holds all data about a particular fixture mode</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.personality" href="personality.html">spotted.spotted.personality</a></code></dt>
+<dd>
+<div class="desc"><p>Spotted Personality</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.point_of_interest" href="point_of_interest.html">spotted.spotted.point_of_interest</a></code></dt>
+<dd>
+<div class="desc"><p>An interesting point for the system, knows about the camera position it came
+from, the position it is pointing at, and the relative pixel coordinates …</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.room" href="room.html">spotted.spotted.room</a></code></dt>
+<dd>
+<div class="desc"><p>Room to contain all fixtures and cameras</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.spherical_coordinate" href="spherical_coordinate.html">spotted.spotted.spherical_coordinate</a></code></dt>
+<dd>
+<div class="desc"><p>Spherical coordinate representation</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.spotted" href="spotted.html">spotted.spotted.spotted</a></code></dt>
+<dd>
+<div class="desc"><p>Spotted</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.static_server" href="static_server.html">spotted.spotted.static_server</a></code></dt>
+<dd>
+<div class="desc"><p>Simple static file server</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.universe" href="universe.html">spotted.spotted.universe</a></code></dt>
+<dd>
+<div class="desc"><p>Holds single universe data and fixtures</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.universes" href="universes.html">spotted.spotted.universes</a></code></dt>
+<dd>
+<div class="desc"><p>Collection of universes to transmit data for</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.websocket" href="websocket.html">spotted.spotted.websocket</a></code></dt>
+<dd>
+<div class="desc"><p>Spotted Websocket</p></div>
+</dd>
+<dt><code class="name"><a title="spotted.spotted.websocket_server" href="websocket_server.html">spotted.spotted.websocket_server</a></code></dt>
+<dd>
+<div class="desc"><p>Websockets handler groups …</p></div>
 </dd>
 </dl>
 </section>
@@ -60,11 +129,32 @@ Spotted
 <ul></ul>
 </div>
 <ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="spotted" href="../index.html">spotted</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-submodules">Sub-modules</a></h3>
 <ul>
-<li><code><a title="spotted.artnet" href="artnet/index.html">spotted.artnet</a></code></li>
-<li><code><a title="spotted.config" href="config/index.html">spotted.config</a></code></li>
-<li><code><a title="spotted.spotted" href="spotted/index.html">spotted.spotted</a></code></li>
+<li><code><a title="spotted.spotted.attribute" href="attribute.html">spotted.spotted.attribute</a></code></li>
+<li><code><a title="spotted.spotted.calibration" href="calibration.html">spotted.spotted.calibration</a></code></li>
+<li><code><a title="spotted.spotted.camera" href="camera.html">spotted.spotted.camera</a></code></li>
+<li><code><a title="spotted.spotted.contour" href="contour.html">spotted.spotted.contour</a></code></li>
+<li><code><a title="spotted.spotted.coordinate" href="coordinate.html">spotted.spotted.coordinate</a></code></li>
+<li><code><a title="spotted.spotted.error" href="error.html">spotted.spotted.error</a></code></li>
+<li><code><a title="spotted.spotted.fixture" href="fixture.html">spotted.spotted.fixture</a></code></li>
+<li><code><a title="spotted.spotted.helpers" href="helpers.html">spotted.spotted.helpers</a></code></li>
+<li><code><a title="spotted.spotted.mode" href="mode.html">spotted.spotted.mode</a></code></li>
+<li><code><a title="spotted.spotted.personality" href="personality.html">spotted.spotted.personality</a></code></li>
+<li><code><a title="spotted.spotted.point_of_interest" href="point_of_interest.html">spotted.spotted.point_of_interest</a></code></li>
+<li><code><a title="spotted.spotted.room" href="room.html">spotted.spotted.room</a></code></li>
+<li><code><a title="spotted.spotted.spherical_coordinate" href="spherical_coordinate.html">spotted.spotted.spherical_coordinate</a></code></li>
+<li><code><a title="spotted.spotted.spotted" href="spotted.html">spotted.spotted.spotted</a></code></li>
+<li><code><a title="spotted.spotted.static_server" href="static_server.html">spotted.spotted.static_server</a></code></li>
+<li><code><a title="spotted.spotted.universe" href="universe.html">spotted.spotted.universe</a></code></li>
+<li><code><a title="spotted.spotted.universes" href="universes.html">spotted.spotted.universes</a></code></li>
+<li><code><a title="spotted.spotted.websocket" href="websocket.html">spotted.spotted.websocket</a></code></li>
+<li><code><a title="spotted.spotted.websocket_server" href="websocket_server.html">spotted.spotted.websocket_server</a></code></li>
 </ul>
 </li>
 </ul>
