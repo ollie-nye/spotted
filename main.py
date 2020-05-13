@@ -326,6 +326,8 @@ if __name__ == '__main__':
           y = 0.0
           z = 0.0
 
+          # Magical formulas below taken from https://www.gregslabaugh.net/publications/euler.pdf
+
           if R[2][0] != -1 and R[2][0] != 1:
             x = -math.asin(R[2][0])
             z = math.atan2((R[2][1]/math.cos(x)), (R[2][2]/math.cos(x)))
