@@ -1,8 +1,8 @@
 import math
 import numpy as np
 
-from spotted.helpers import create_rotation_matrix
-from spotted.coordinate import Coordinate
+from spotted.spotted.helpers import create_rotation_matrix
+from spotted.spotted.coordinate import Coordinate
 
 def apply_rotation(initial_position, rotation):
   identity_position = [1, 0, 0]

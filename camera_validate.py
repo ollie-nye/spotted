@@ -1,5 +1,5 @@
-from spotted.spotted import Spotted
-from spotted.coordinate import Coordinate
+from spotted.spotted.spotted import Spotted
+from spotted.spotted.coordinate import Coordinate
 import threading
 import time
 import queue
